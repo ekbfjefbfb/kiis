@@ -1,93 +1,85 @@
-import { authService } from './auth.service';
+/* 
+ * Servicio AI Simulado
+ * Soporta modo DEMO para desarrollo si no hay API Key real
+ */
 
-const API_CONFIG = {
-  BASE_URL: 'https://kiis-backend.onrender.com',
-  CHAT_URL: '/api/unified-chat',
-  SEARCH_URL: '/api/search'
-};
+const DEMO_MODE = true; // Set to false to use real Gemini API
+const GEMINI_API_KEY = "tu_api_key_aqui";
 
-export class AIService {
-  private shouldStop = false;
-  private readonly DEMO_MODE = true;
+// Instrucción de sistema para controlar el frontend
+const SYSTEM_PROMPT = `
+Eres un asistente estudiantil muy inteligente y amigable de la app "Notdeer".
+Habla siempre en español.
+Puedes ayudar a responder preguntas sobre clases, resumir textos y dar consejos.
 
-  async chat(message: string, onChunk?: (text: string) => void): Promise<string> {
-    this.shouldStop = false;
-    
-    const lowerMessage = message.toLowerCase();
-    if (lowerMessage.includes('parar') || lowerMessage.includes('detener') || lowerMessage.includes('stop')) {
-      return 'Entendido, he detenido la respuesta.';
+IMPORTANTE: Tienes la capacidad de navegar por la aplicación del usuario.
+Si el usuario te dice o implica algo como "Llévame a mi perfil", "Abre el calendario", "Quiero ir al inicio" o "Abre mis notas", DEBES incluir al final de tu respuesta el comando exacto en este formato:
+[NAVIGATE:/ruta_destino]
+
+Las rutas válidas son:
+- /dashboard (Inicio, página principal)
+- /calendar (Calendario)
+- /notes (Mis Notas)
+- /profile (Mi Perfil)
+
+Por ejemplo:
+Usuario: "Llévame a mi perfil"
+Tú: "¡Claro! Te llevo a tu perfil ahora mismo. [NAVIGATE:/profile]"
+
+Usuario: "¿Qué tengo en el calendario?"
+Tú: "Vamos a revisar tu calendario. [NAVIGATE:/calendar]"
+`;
+
+export const aiService = {
+  async processAudio(audioBlob: Blob): Promise<{ text: string }> {
+    if (DEMO_MODE) {
+      await new Promise(r => setTimeout(r, 2000));
+      return { 
+        text: "Este es un texto de prueba transcrito de tu audio. En una app real, aquí se conectaría a la API de Whisper o Gemini 1.5 Pro." 
+      };
     }
+    throw new Error("API Connection not implemented yet");
+  },
 
-    if (this.DEMO_MODE) {
-      return this.demoChat(message, onChunk);
+  async summarizeNotes(text: string): Promise<string> {
+    if (DEMO_MODE) {
+      await new Promise(r => setTimeout(r, 1500));
+      return `[RESUMEN GENERADO POR IA]\n\nPuntos Principales:\n- ${text.substring(0, 50)}...\n\nAcciones Sugeridas:\n- Revisar el tema\n- Preparar preguntas para la próxima clase`;
     }
+    throw new Error("API Connection not implemented yet");
+  },
 
-    try {
-      const token = await authService.getValidToken();
-      if (!token) {
-        throw new Error('No hay token de autenticación');
-      }
-
-      const formData = new FormData();
-      formData.append('message', message);
-
-      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.CHAT_URL}/message`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error('Error en la respuesta del servidor');
-      }
-
-      const data = await response.json();
-      return data.response || 'Sin respuesta';
-    } catch (error) {
-      console.error('Error en chat:', error);
-      return 'Error al conectar con el servidor.';
-    }
-  }
-
-  private async demoChat(message: string, onChunk?: (text: string) => void): Promise<string> {
-    const responses = [
-      'Entiendo tu pregunta. En modo demo, puedo ayudarte con información básica.',
-      'Esa es una buena pregunta. Cuando conectes el backend, tendré acceso a IA avanzada.',
-      'Estoy en modo demo. Conecta el backend para respuestas completas con DeepSeek.',
-      'Puedo ayudarte con eso. Actualmente estoy en modo demostración.',
-      'Interesante pregunta. El modo completo estará disponible al conectar el backend.'
-    ];
-
-    const response = responses[Math.floor(Math.random() * responses.length)] + 
-                    ` Tu mensaje fue: "${message}"`;
-
-    if (onChunk) {
-      let currentText = '';
-      const words = response.split(' ');
+  async chat(message: string, onToken?: (token: string) => void): Promise<string> {
+    if (DEMO_MODE) {
+      const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
+      const msgLower = message.toLowerCase();
       
-      for (let i = 0; i < words.length; i++) {
-        if (this.shouldStop) {
-          return currentText + ' [Detenido]';
-        }
-        
-        currentText += (i > 0 ? ' ' : '') + words[i];
-        onChunk(currentText);
-        await this.delay(50);
+      let response = "Interesante pregunta sobre tu clase. ¿Te gustaría que profundicemos más sobre este tema específico o prefieres repasar los apuntes anteriores?";
+      
+      if (msgLower.includes("perfil") || msgLower.includes("profile")) {
+        response = `¡Claro! Te llevo a tu perfil ahora mismo.\n\n[NAVIGATE:/profile]`;
+      } else if (msgLower.includes("calendario") || msgLower.includes("calendar")) {
+        response = `Vamos a revisar tu calendario para ver las próximas fechas.\n\n[NAVIGATE:/calendar]`;
+      } else if (msgLower.includes("inicio") || msgLower.includes("dashboard")) {
+        response = `Volvamos al inicio.\n\n[NAVIGATE:/dashboard]`;
+      } else if (msgLower.includes("nota")) {
+        response = `Te abro tus notas guardadas.\n\n[NAVIGATE:/notes]`;
+      } else if (msgLower.includes("tarea") || msgLower.includes("examen")) {
+         response = `Claro, te recomiendo revisar el calendario para ver las fechas exactas.\n\n[NAVIGATE:/calendar]`;
       }
+
+      if (onToken) {
+        const words = response.split(" ");
+        for (const word of words) {
+          await wait(50 + Math.random() * 50);
+          onToken(word + " ");
+        }
+      } else {
+        await wait(1500);
+      }
+      return response;
     }
-
-    return response;
+    
+    throw new Error("API Connection not implemented yet");
   }
-
-  stopGeneration(): void {
-    this.shouldStop = true;
-  }
-
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-}
-
-export const aiService = new AIService();
+};

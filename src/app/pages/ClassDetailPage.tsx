@@ -20,7 +20,7 @@ export default function ClassDetailPage() {
 
   // Chat state
   const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "ai"; text: string }>>([
-    { role: "ai", text: "Hi! Ask me anything about this class." },
+    { role: "ai", text: "¡Hola! Pregúntame cualquier cosa sobre esta clase." },
   ]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
@@ -35,9 +35,9 @@ export default function ClassDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500 mb-4">Class not found</p>
+          <p className="text-gray-500 mb-4">Clase no encontrada</p>
           <Link to="/dashboard" className="text-indigo-600 font-medium">
-            Back to Dashboard
+            Volver a Inicio
           </Link>
         </div>
       </div>
@@ -48,10 +48,10 @@ export default function ClassDetailPage() {
   const classExams = EXAMS.filter((e) => e.classId === id);
 
   const tabs = [
-    { id: "overview" as TabType, label: "Overview", icon: FileText },
-    { id: "topics" as TabType, label: "Topics", icon: Tag },
-    { id: "tasks" as TabType, label: "Tasks", icon: CheckSquare },
-    { id: "notes" as TabType, label: "Notes", icon: BookOpen },
+    { id: "overview" as TabType, label: "Resumen", icon: FileText },
+    { id: "topics" as TabType, label: "Temas", icon: Tag },
+    { id: "tasks" as TabType, label: "Tareas", icon: CheckSquare },
+    { id: "notes" as TabType, label: "Notas", icon: BookOpen },
     { id: "chat" as TabType, label: "Chat", icon: MessageSquare },
   ];
 
@@ -69,7 +69,7 @@ export default function ClassDetailPage() {
     } catch {
       setChatMessages((prev) => [
         ...prev,
-        { role: "ai", text: "Sorry, I couldn't process that. Try again." },
+        { role: "ai", text: "Lo siento, no pude procesar eso. Intenta de nuevo." },
       ]);
     } finally {
       setChatLoading(false);
@@ -84,7 +84,7 @@ export default function ClassDetailPage() {
         setIsProcessing(true);
         await new Promise((r) => setTimeout(r, 1500));
         setNoteText(
-          `Notes from ${cls.name} session:\n\n📝 Key concepts reviewed:\n- ${cls.importantTopics.slice(0, 3).join("\n- ")}\n\n✅ Action items:\n- Review chapter notes\n- Complete practice problems`
+          `Notas de la sesión de ${cls.name}:\n\n📝 Conceptos clave revisados:\n- ${cls.importantTopics.slice(0, 3).join("\n- ")}\n\n✅ Acciones:\n- Revisar notas del capítulo\n- Completar problemas de práctica`
         );
         setIsProcessing(false);
       } catch {
@@ -93,7 +93,10 @@ export default function ClassDetailPage() {
       }
     } else {
       const ok = await audioService.requestPermissions();
-      if (!ok) return;
+      if (!ok) {
+        alert("Se necesitan permisos de micrófono");
+        return;
+      }
       try {
         await audioService.startAudioRecording();
         setIsRecording(true);
@@ -135,19 +138,21 @@ export default function ClassDetailPage() {
           </div>
 
           {/* Important Topics (always visible) */}
-          <div className="flex items-center gap-1.5 mb-3">
-            <Star size={12} className="text-amber-500 fill-amber-500 shrink-0" />
-            <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
-              {cls.importantTopics.map((topic) => (
-                <span
-                  key={topic}
-                  className="text-[10px] font-medium px-2 py-1 bg-amber-50 text-amber-700 rounded-full whitespace-nowrap border border-amber-100"
-                >
-                  {topic}
-                </span>
-              ))}
+          {cls.importantTopics.length > 0 && (
+            <div className="flex items-center gap-1.5 mb-3">
+              <Star size={12} className="text-amber-500 fill-amber-500 shrink-0" />
+              <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+                {cls.importantTopics.map((topic) => (
+                  <span
+                    key={topic}
+                    className="text-[10px] font-medium px-2 py-1 bg-amber-50 text-amber-700 rounded-full whitespace-nowrap border border-amber-100"
+                  >
+                    {topic}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Tabs */}
@@ -188,22 +193,22 @@ export default function ClassDetailPage() {
               {/* Class Info Card */}
               <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                 <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                  Class Info
+                  Información de Clase
                 </h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <Clock size={16} className="text-gray-400" />
                     <div>
-                      <p className="text-xs text-gray-500">Schedule</p>
+                      <p className="text-xs text-gray-500">Horario</p>
                       <p className="text-sm font-medium text-gray-900">{cls.time}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <User size={16} className="text-gray-400" />
                     <div>
-                      <p className="text-xs text-gray-500">Professor</p>
+                      <p className="text-xs text-gray-500">Profesor</p>
                       <p className="text-sm font-medium text-gray-900">{cls.professor}</p>
-                      <p className="text-[11px] text-gray-500">{cls.email}</p>
+                      {cls.email && <p className="text-[11px] text-gray-500">{cls.email}</p>}
                     </div>
                   </div>
                 </div>
@@ -213,7 +218,7 @@ export default function ClassDetailPage() {
               {(classTasks.length > 0 || classExams.length > 0) && (
                 <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                    Upcoming
+                    Próximos
                   </h3>
                   <div className="space-y-2.5">
                     {classExams.map((exam) => (
@@ -227,7 +232,7 @@ export default function ClassDetailPage() {
                             {exam.title}
                           </p>
                           <p className="text-[10px] text-red-600">
-                            {new Date(exam.date + "T12:00:00").toLocaleDateString("en-US", {
+                            {new Date(exam.date + "T12:00:00").toLocaleDateString("es-ES", {
                               month: "short",
                               day: "numeric",
                             })}
@@ -248,7 +253,7 @@ export default function ClassDetailPage() {
                               {task.title}
                             </p>
                             <p className="text-[10px] text-gray-500">
-                              {new Date(task.date + "T12:00:00").toLocaleDateString("en-US", {
+                              {new Date(task.date + "T12:00:00").toLocaleDateString("es-ES", {
                                 month: "short",
                                 day: "numeric",
                               })}
@@ -273,24 +278,28 @@ export default function ClassDetailPage() {
             >
               <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
                 <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-                  Important Topics
+                  Temas Importantes
                 </h3>
-                <div className="space-y-3">
-                  {cls.importantTopics.map((topic, i) => (
-                    <motion.div
-                      key={topic}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      className="flex items-center gap-3 p-3 bg-amber-50 rounded-xl border border-amber-100"
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-amber-100 flex items-center justify-center">
-                        <Star size={12} className="text-amber-600 fill-amber-600" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-900">{topic}</span>
-                    </motion.div>
-                  ))}
-                </div>
+                {cls.importantTopics.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-4">No hay temas todavía</p>
+                ) : (
+                  <div className="space-y-3">
+                    {cls.importantTopics.map((topic, i) => (
+                      <motion.div
+                        key={topic}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        className="flex items-center gap-3 p-3 bg-amber-50 rounded-xl border border-amber-100"
+                      >
+                        <div className="w-7 h-7 rounded-lg bg-amber-100 flex items-center justify-center">
+                          <Star size={12} className="text-amber-600 fill-amber-600" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-900">{topic}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
@@ -306,12 +315,12 @@ export default function ClassDetailPage() {
             >
               <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
                 <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-                  Tasks & Exams
+                  Tareas y Exámenes
                 </h3>
                 {classTasks.length === 0 && classExams.length === 0 ? (
                   <div className="text-center py-8">
                     <CheckSquare size={28} className="mx-auto text-gray-300 mb-2" />
-                    <p className="text-sm text-gray-400">No tasks yet</p>
+                    <p className="text-sm text-gray-400">Sin tareas pendientes</p>
                   </div>
                 ) : (
                   <div className="space-y-2.5">
@@ -325,7 +334,7 @@ export default function ClassDetailPage() {
                           <p className="text-sm font-semibold text-red-900">{exam.title}</p>
                           <p className="text-[11px] text-red-600 flex items-center gap-1 mt-0.5">
                             <Calendar size={10} />
-                            {new Date(exam.date + "T12:00:00").toLocaleDateString("en-US", {
+                            {new Date(exam.date + "T12:00:00").toLocaleDateString("es-ES", {
                               weekday: "short",
                               month: "short",
                               day: "numeric",
@@ -363,7 +372,7 @@ export default function ClassDetailPage() {
                           </p>
                           <p className="text-[11px] text-gray-500 flex items-center gap-1 mt-0.5">
                             <Calendar size={10} />
-                            {new Date(task.date + "T12:00:00").toLocaleDateString("en-US", {
+                            {new Date(task.date + "T12:00:00").toLocaleDateString("es-ES", {
                               weekday: "short",
                               month: "short",
                               day: "numeric",
@@ -390,7 +399,7 @@ export default function ClassDetailPage() {
               {/* Recording */}
               <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
                 <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-                  Record Notes
+                  Grabar Clase
                 </h3>
                 <div className="flex flex-col items-center gap-3">
                   <motion.button
@@ -416,10 +425,10 @@ export default function ClassDetailPage() {
                   </motion.button>
                   <p className="text-xs text-gray-500">
                     {isRecording
-                      ? `Recording ${formatTime(recordingTime)}...`
+                      ? `Grabando ${formatTime(recordingTime)}...`
                       : isProcessing
-                      ? "AI processing..."
-                      : "Tap to record"}
+                      ? "IA Procesando..."
+                      : "Toca para grabar"}
                   </p>
                 </div>
               </div>
@@ -432,7 +441,7 @@ export default function ClassDetailPage() {
                   className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm"
                 >
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                    Generated Notes
+                    Notas Generadas
                   </h3>
                   <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
                     {noteText}
@@ -444,7 +453,7 @@ export default function ClassDetailPage() {
                 <div className="text-center py-8">
                   <BookOpen size={28} className="mx-auto text-gray-300 mb-2" />
                   <p className="text-sm text-gray-400">
-                    Record a class to generate notes
+                    Graba una clase para generar notas
                   </p>
                 </div>
               )}
@@ -502,7 +511,7 @@ export default function ClassDetailPage() {
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleSendChat()}
-                      placeholder="Ask about this class..."
+                      placeholder="Pregunta sobre esta clase..."
                       className="flex-1 bg-gray-50 rounded-full py-2.5 px-4 text-sm border-0 focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all"
                     />
                     <button

@@ -1,130 +1,137 @@
-
-import { User, Mail, Phone, Settings, Bell, Moon, LogOut, ChevronRight, HelpCircle, BookOpen, Award, CheckSquare } from "lucide-react";
-import { USER, CLASSES, TASKS } from "../data/mock";
+import { LogOut, Settings, User as UserIcon, Bell, Moon, ChevronRight, Mail, Phone, Book } from "lucide-react";
 import { Link } from "react-router";
+import { USER, CLASSES } from "../data/mock";
 import { motion } from "motion/react";
+import { clsx } from "clsx";
 
-export default function ProfilePage() {
-  const completedTasks = TASKS.filter(t => t.completed).length;
-  const totalTasks = TASKS.length;
+export default function Profile() {
+  const stats = [
+    { label: "Cursos", value: CLASSES.length.toString(), icon: Book, color: "text-indigo-600", bg: "bg-indigo-50" },
+    { label: "Promedio", value: "A", icon: Star, color: "text-amber-600", bg: "bg-amber-50" },
+    { label: "Asist.", value: "98%", icon: UserIcon, color: "text-emerald-600", bg: "bg-emerald-50" },
+  ];
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-4">
-      {/* Profile Header */}
-      <div className="bg-white px-5 pt-8 pb-6 border-b border-gray-100/60">
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="flex flex-col items-center"
-        >
-          <div className="relative mb-4">
-            <div className="w-20 h-20 rounded-2xl border-3 border-indigo-100 shadow-sm overflow-hidden">
-              <img src={USER.avatar} alt={USER.name} className="w-full h-full object-cover" />
-            </div>
-            <button className="absolute -bottom-1 -right-1 w-8 h-8 bg-indigo-600 rounded-xl border-2 border-white flex items-center justify-center text-white shadow-md active:bg-indigo-700">
-              <Settings size={13} />
-            </button>
+    <div className="min-h-screen bg-gray-50 pb-4">
+      {/* Header Profile Cover */}
+      <div className="bg-white px-5 pt-8 pb-6 border-b border-gray-100/60 sticky top-0 z-10 flex flex-col items-center">
+        <div className="relative mb-4">
+          <div className="w-20 h-20 rounded-full border-4 border-white shadow-xl overflow-hidden bg-gray-100">
+            <img 
+              src={USER.avatar} 
+              alt={USER.name} 
+              className="w-full h-full object-cover"
+            />
           </div>
-
-          <h2 className="text-lg font-bold text-gray-900">{USER.name}</h2>
-          <p className="text-xs text-gray-500 mt-0.5">Computer Science Student</p>
-        </motion.div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-2.5 mt-5">
-          <div className="bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center gap-0.5 border border-gray-100">
-            <Award size={14} className="text-indigo-500 mb-0.5" />
-            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">GPA</span>
-            <span className="text-lg font-bold text-gray-900">3.8</span>
-          </div>
-          <div className="bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center gap-0.5 border border-gray-100">
-            <CheckSquare size={14} className="text-emerald-500 mb-0.5" />
-            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">Tasks</span>
-            <span className="text-lg font-bold text-gray-900">{completedTasks}/{totalTasks}</span>
-          </div>
-          <div className="bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center gap-0.5 border border-gray-100">
-            <BookOpen size={14} className="text-blue-500 mb-0.5" />
-            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">Classes</span>
-            <span className="text-lg font-bold text-gray-900">{CLASSES.length}</span>
+          <div className="absolute bottom-0 right-0 w-6 h-6 bg-emerald-500 border-2 border-white rounded-full flex items-center justify-center">
+            <div className="w-2 h-2 bg-white rounded-full"></div>
           </div>
         </div>
+        
+        <h1 className="text-xl font-bold text-gray-900 leading-tight">{USER.name}</h1>
+        <p className="text-sm text-gray-500 font-medium">Estudiante Universitario</p>
       </div>
 
-      <div className="px-5 pt-5 space-y-5">
+      <div className="px-5 pt-5 space-y-6">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-3">
+          {stats.map((s, i) => (
+            <motion.div
+              key={i}
+              whileTap={{ scale: 0.95 }}
+              className="bg-white p-4 rounded-2xl flex flex-col items-center justify-center border border-gray-100 shadow-sm"
+            >
+              <div className={clsx("w-8 h-8 rounded-xl flex items-center justify-center mb-2", s.bg, s.color)}>
+                <s.icon size={16} />
+              </div>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">{s.label}</span>
+              <span className="text-lg font-bold text-gray-900 leading-none">{s.value}</span>
+            </motion.div>
+          ))}
+        </div>
+
         {/* Contact Info */}
-        <section>
-          <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2.5 px-1">
-            Contact Info
-          </h3>
-          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
-            <div className="p-4 flex items-center gap-3.5 border-b border-gray-50">
-              <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                <Mail size={14} />
-              </div>
-              <div className="flex-1 overflow-hidden">
-                <p className="text-[10px] text-gray-400 font-medium">Email</p>
-                <p className="text-sm font-medium text-gray-900 truncate">{USER.email}</p>
-              </div>
+        <div className="bg-white rounded-2xl p-2 border border-gray-100 shadow-sm">
+          <div className="flex items-center gap-3 p-3">
+            <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400">
+              <Mail size={18} />
             </div>
-            <div className="p-4 flex items-center gap-3.5">
-              <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                <Phone size={14} />
-              </div>
-              <div className="flex-1">
-                <p className="text-[10px] text-gray-400 font-medium">Phone</p>
-                <p className="text-sm font-medium text-gray-900">{USER.phone}</p>
-              </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Correo</p>
+              <p className="text-sm font-medium text-gray-900 truncate">{USER.email}</p>
             </div>
           </div>
-        </section>
+          <div className="h-px bg-gray-50 mx-4" />
+          <div className="flex items-center gap-3 p-3">
+            <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400">
+              <Phone size={18} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Teléfono</p>
+              <p className="text-sm font-medium text-gray-900 truncate">{USER.phone}</p>
+            </div>
+          </div>
+        </div>
 
         {/* Settings */}
-        <section>
-          <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2.5 px-1">
-            Settings
-          </h3>
-          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm divide-y divide-gray-50">
-            {[
-              { icon: Bell, label: "Notifications", toggleState: true },
-              { icon: Moon, label: "Dark Mode", toggleState: false },
-              { icon: HelpCircle, label: "Help & Support" },
-            ].map((item, i) => (
-              <button
-                key={i}
-                className="w-full min-h-[52px] p-4 flex items-center justify-between hover:bg-gray-50 transition-colors active:bg-gray-100"
-              >
-                <div className="flex items-center gap-3">
-                  <item.icon size={16} className="text-gray-500" />
-                  <span className="text-sm font-medium text-gray-900">{item.label}</span>
-                </div>
-                {"toggleState" in item ? (
-                  <div
-                    className={`w-10 h-[22px] rounded-full relative transition-colors ${
-                      item.toggleState ? "bg-indigo-600" : "bg-gray-200"
-                    }`}
-                  >
-                    <div
-                      className={`absolute top-[3px] w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${
-                        item.toggleState ? "translate-x-[22px]" : "translate-x-[3px]"
-                      }`}
-                    />
-                  </div>
-                ) : (
-                  <ChevronRight size={16} className="text-gray-300" />
-                )}
-              </button>
-            ))}
-
-            <Link
-              to="/"
-              className="w-full min-h-[52px] p-4 flex items-center gap-3 hover:bg-red-50 transition-colors text-red-500 active:bg-red-100"
-            >
-              <LogOut size={16} />
-              <span className="text-sm font-medium">Sign Out</span>
-            </Link>
+        <div className="bg-white rounded-2xl p-2 border border-gray-100 shadow-sm">
+          <Link to="/settings/account" className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors group">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+                <Settings size={18} />
+              </div>
+              <span className="text-sm font-medium text-gray-900">Configuración de Cuenta</span>
+            </div>
+            <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-400 transition-colors" />
+          </Link>
+          
+          <div className="h-px bg-gray-50 mx-4" />
+          
+          <div className="flex items-center justify-between p-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+                <Bell size={18} />
+              </div>
+              <span className="text-sm font-medium text-gray-900">Notificaciones Push</span>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+            </label>
           </div>
-        </section>
+
+          <div className="h-px bg-gray-50 mx-4" />
+
+          <div className="flex items-center justify-between p-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center">
+                <Moon size={18} />
+              </div>
+              <span className="text-sm font-medium text-gray-900">Modo Oscuro</span>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" value="" className="sr-only peer" />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-800"></div>
+            </label>
+          </div>
+        </div>
+
+        {/* Logout */}
+        <Link 
+          to="/login"
+          className="w-full bg-white border border-red-100 p-4 rounded-2xl flex items-center justify-center gap-2 text-red-600 font-semibold shadow-sm hover:bg-red-50 hover:border-red-200 transition-colors active:scale-[0.98]"
+        >
+          <LogOut size={18} strokeWidth={2.5} />
+          <span>Cerrar Sesión</span>
+        </Link>
+        
+        <p className="text-center text-[10px] font-semibold text-gray-400 tracking-widest uppercase mt-8 mb-4">
+          Notdeer App v1.0.0
+        </p>
       </div>
     </div>
   );
 }
+
+// Need to import Star from lucide-react if not already
+import { Star } from "lucide-react";

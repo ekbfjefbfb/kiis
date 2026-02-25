@@ -16,7 +16,7 @@ export default function CalendarPage() {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const prevMonthDays = new Date(year, month, 0).getDate();
 
-  const monthName = currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const monthName = currentDate.toLocaleDateString("es-ES", { month: "long", year: "numeric" }).replace(/^\w/, (c) => c.toUpperCase());
 
   const goToPrev = () => setCurrentDate(new Date(year, month - 1, 1));
   const goToNext = () => setCurrentDate(new Date(year, month + 1, 1));
@@ -84,9 +84,9 @@ export default function CalendarPage() {
 
   const eventLabel = (type: string) => {
     switch (type) {
-      case "task": return "Task";
-      case "exam": return "Exam";
-      case "important": return "Important";
+      case "task": return "Tarea";
+      case "exam": return "Examen";
+      case "important": return "Importante";
       default: return "";
     }
   };
@@ -143,7 +143,7 @@ export default function CalendarPage() {
           >
             <ArrowLeft size={18} />
           </Link>
-          <h1 className="text-lg font-bold text-gray-900">Calendar</h1>
+          <h1 className="text-lg font-bold text-gray-900">Calendario</h1>
         </div>
 
         {/* Month nav */}
@@ -167,7 +167,7 @@ export default function CalendarPage() {
       <div className="px-5 pt-4">
         {/* Day labels */}
         <div className="grid grid-cols-7 mb-2">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+          {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((d) => (
             <div
               key={d}
               className="text-center text-[10px] font-semibold text-gray-400 uppercase tracking-wider py-1"
@@ -228,15 +228,15 @@ export default function CalendarPage() {
         <div className="flex items-center justify-center gap-5 mt-3 mb-4">
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-[10px] text-gray-500 font-medium">Tasks</span>
+            <span className="text-[10px] text-gray-500 font-medium">Tareas</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-red-500" />
-            <span className="text-[10px] text-gray-500 font-medium">Exams</span>
+            <span className="text-[10px] text-gray-500 font-medium">Exámenes</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-purple-500" />
-            <span className="text-[10px] text-gray-500 font-medium">Important</span>
+            <span className="text-[10px] text-gray-500 font-medium">Importante</span>
           </div>
         </div>
 
@@ -251,7 +251,7 @@ export default function CalendarPage() {
               className="space-y-2.5"
             >
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                {new Date(selectedDate + "T12:00:00").toLocaleDateString("en-US", {
+                {new Date(selectedDate + "T12:00:00").toLocaleDateString("es-ES", {
                   weekday: "long",
                   month: "long",
                   day: "numeric",
@@ -261,7 +261,7 @@ export default function CalendarPage() {
               {selectedEvents.length === 0 ? (
                 <div className="text-center py-8">
                   <CalendarIcon size={32} className="mx-auto text-gray-300 mb-2" />
-                  <p className="text-sm text-gray-400">No events this day</p>
+                  <p className="text-sm text-gray-400">Sin eventos este día</p>
                 </div>
               ) : (
                 selectedEvents.map((ev, i) => {
@@ -288,7 +288,7 @@ export default function CalendarPage() {
                             </span>
                             {ev.completed && (
                               <span className="text-[9px] bg-emerald-100 text-emerald-700 rounded-full px-1.5 py-0.5 font-medium">
-                                Done
+                                Hecho
                               </span>
                             )}
                           </div>
@@ -319,7 +319,7 @@ export default function CalendarPage() {
         {!selectedDate && (
           <div>
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-              Upcoming Events
+              Próximos Eventos
             </h3>
             <div className="space-y-2.5">
               {allEvents
@@ -340,7 +340,7 @@ export default function CalendarPage() {
                     >
                       <div className="flex flex-col items-center justify-center w-11 h-11 bg-gray-50 rounded-xl">
                         <span className="text-[10px] font-bold text-gray-500 uppercase leading-none">
-                          {new Date(ev.date + "T12:00:00").toLocaleDateString("en-US", { month: "short" })}
+                          {new Date(ev.date + "T12:00:00").toLocaleDateString("es-ES", { month: "short" })}
                         </span>
                         <span className="text-base font-bold text-gray-900 leading-none">
                           {new Date(ev.date + "T12:00:00").getDate()}

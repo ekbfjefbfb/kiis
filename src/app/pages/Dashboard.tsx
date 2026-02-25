@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import {
   Mic, Square, Loader2, Calendar, ChevronRight, Bookmark,
-  Clock, Sparkles, Star, BookOpen
+  Clock, Sparkles, Star, BookOpen, Plus, X
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { Link } from "react-router";
-import { CLASSES, TASKS, AI_SUMMARIES, USER } from "../data/mock";
+import { CLASSES, TASKS, AI_SUMMARIES, USER, addClass } from "../data/mock";
 import { audioService } from "../../services/audio.service";
 import { notesService } from "../../services/notes.service";
 import { databaseService } from "../../services/database.service";
@@ -17,7 +17,14 @@ export default function Dashboard() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [recentNotes, setRecentNotes] = useState<any[]>([]);
 
-  const today = new Date().toLocaleDateString("en-US", {
+  // Add class state
+  const [isAddingClass, setIsAddingClass] = useState(false);
+  const [newClassName, setNewClassName] = useState("");
+  const [newClassProfessor, setNewClassProfessor] = useState("");
+  const [newClassTime, setNewClassTime] = useState("");
+  const [newClassRoom, setNewClassRoom] = useState("");
+
+  const today = new Date().toLocaleDateString("es-ES", {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -52,20 +59,20 @@ export default function Dashboard() {
         setIsProcessing(true);
         await new Promise((r) => setTimeout(r, 2000));
         const now = new Date();
-        const timestamp = now.toLocaleString("en-US", {
+        const timestamp = now.toLocaleString("es-ES", {
           month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
         });
         const analysis = {
-          subject: "Mathematics",
-          important: ["Exam on Friday about derivatives"],
-          summary: ["Basic derivatives", "Chain rule", "Composite functions"],
-          tasks: ["Do exercises 1-10 page 45"],
+          subject: "Matemáticas",
+          important: ["Examen el viernes sobre derivadas"],
+          summary: ["Derivadas básicas", "Regla de la cadena", "Funciones compuestas"],
+          tasks: ["Hacer ejercicios 1-10 página 45"],
         };
         const note = await notesService.createNote(
           `${analysis.subject} - ${timestamp}`,
           analysis.subject,
-          { name: "Auto-detected", phone: "", email: "" },
-          `Recording from ${timestamp}\n\n⭐ Important:\n${analysis.important.join("\n")}\n\n📝 Summary:\n${analysis.summary.join("\n")}\n\n✏️ Tasks:\n${analysis.tasks.join("\n")}`,
+          { name: "Detectado auto", phone: "", email: "" },
+          `Grabación del ${timestamp}\n\n⭐ Importante:\n${analysis.important.join("\n")}\n\n📝 Resumen:\n${analysis.summary.join("\n")}\n\n✏️ Tareas:\n${analysis.tasks.join("\n")}`,
           "importante"
         );
         const audioId = note.id + "_audio";
@@ -81,7 +88,7 @@ export default function Dashboard() {
     } else {
       const hasPermission = await audioService.requestPermissions();
       if (!hasPermission) {
-        alert("Microphone permission needed");
+        alert("Se necesitan permisos de micrófono");
         return;
       }
       try {
@@ -93,6 +100,26 @@ export default function Dashboard() {
     }
   };
 
+  const handleCreateClass = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newClassName.trim() || !newClassProfessor.trim()) return;
+    addClass({
+      name: newClassName,
+      professor: newClassProfessor,
+      time: newClassTime || "Horario por definir",
+      room: newClassRoom || "Aula por definir",
+      email: "",
+      phone: "",
+      nextTask: "",
+      taskDate: ""
+    });
+    setIsAddingClass(false);
+    setNewClassName("");
+    setNewClassProfessor("");
+    setNewClassTime("");
+    setNewClassRoom("");
+  };
+
   const formatTime = (s: number) =>
     `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
@@ -100,22 +127,22 @@ export default function Dashboard() {
     const diff = Date.now() - ts;
     const h = Math.floor(diff / 3600000);
     const d = Math.floor(diff / 86400000);
-    if (d > 0) return `${d}d ago`;
-    if (h > 0) return `${h}h ago`;
-    return "Just now";
+    if (d > 0) return `Hace ${d}d`;
+    if (h > 0) return `Hace ${h}h`;
+    return "Justo ahora";
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-4">
+    <div className="min-h-screen bg-gray-50 pb-4 relative">
       {/* Header */}
       <div className="bg-white px-5 pt-6 pb-5 border-b border-gray-100/60">
         <div className="flex justify-between items-start mb-1">
           <div>
-            <p className="text-xs text-gray-400 font-medium uppercase tracking-widest mb-0.5">
+            <p className="text-xs text-gray-400 font-medium uppercase tracking-widest mb-0.5 capitalize">
               {today}
             </p>
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-              Hello, {USER.name.split(" ")[0]} 👋
+              Hola, {USER.name.split(" ")[0]} 👋
             </h1>
           </div>
           <Link
@@ -140,14 +167,14 @@ export default function Dashboard() {
           <div className="relative flex items-center justify-between">
             <div className="flex-1 mr-4">
               <h3 className="font-semibold text-lg mb-1">
-                {isRecording ? "Recording..." : isProcessing ? "Processing..." : "Quick Record"}
+                {isRecording ? "Grabando..." : isProcessing ? "Procesando..." : "Grabación Rápida"}
               </h3>
               <p className="text-indigo-200 text-sm">
                 {isRecording
                   ? formatTime(recordingTime)
                   : isProcessing
-                  ? "AI is organizing your note"
-                  : "Tap to record your class"}
+                  ? "La IA organiza tu nota..."
+                  : "Toca para grabar tu clase"}
               </p>
             </div>
 
@@ -179,18 +206,22 @@ export default function Dashboard() {
         <section>
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-              Upcoming
+              Próximos
             </h3>
             <Link
               to="/calendar"
               className="text-xs font-medium text-indigo-600 hover:underline"
             >
-              See All
+              Ver Todo
             </Link>
           </div>
 
           <div className="overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide flex gap-3">
-            {upcomingTasks.map((task, i) => {
+            {upcomingTasks.length === 0 ? (
+              <div className="w-full text-center py-4 bg-white rounded-2xl border border-gray-100">
+                <p className="text-sm text-gray-400">No hay tareas próximas</p>
+              </div>
+            ) : upcomingTasks.map((task, i) => {
               const cls = CLASSES.find((c) => c.id === task.classId);
               return (
                 <motion.div
@@ -204,7 +235,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2 mb-2">
                     <Clock size={12} className="text-gray-400" />
                     <span className="text-[11px] font-medium text-gray-500">
-                      {new Date(task.date).toLocaleDateString("en-US", {
+                      {new Date(task.date).toLocaleDateString("es-ES", {
                         month: "short",
                         day: "numeric",
                       })}
@@ -227,9 +258,18 @@ export default function Dashboard() {
 
         {/* My Classes */}
         <section>
-          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
-            My Classes
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+              Mis Clases
+            </h3>
+            <button
+              onClick={() => setIsAddingClass(true)}
+              className="w-7 h-7 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 hover:bg-indigo-100 transition-colors"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+          
           <div className="space-y-2.5">
             {CLASSES.map((cls, i) => (
               <motion.div
@@ -254,9 +294,9 @@ export default function Dashboard() {
                           {cls.name}
                         </h4>
                         <p className="text-[11px] text-gray-500 mt-0.5 flex items-center gap-1.5">
-                          <span>{cls.time}</span>
-                          <span className="w-0.5 h-0.5 bg-gray-300 rounded-full" />
-                          <span>{cls.room}</span>
+                          <span className="truncate max-w-[80px]">{cls.time}</span>
+                          <span className="w-0.5 h-0.5 bg-gray-300 rounded-full shrink-0" />
+                          <span className="truncate">{cls.professor}</span>
                         </p>
                         {/* Important Topics Preview */}
                         <div className="flex flex-wrap gap-1 mt-1.5">
@@ -265,8 +305,8 @@ export default function Dashboard() {
                               key={topic}
                               className="text-[9px] font-medium px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-full flex items-center gap-0.5"
                             >
-                              <Star size={7} className="fill-amber-400 text-amber-400" />
-                              {topic}
+                              <Star size={7} className="fill-amber-400 text-amber-400 shrink-0" />
+                              <span className="truncate max-w-[100px]">{topic}</span>
                             </span>
                           ))}
                           {cls.importantTopics.length > 2 && (
@@ -278,7 +318,7 @@ export default function Dashboard() {
                       </div>
                       <ChevronRight
                         size={18}
-                        className="text-gray-300 group-hover:text-indigo-500 transition-colors shrink-0"
+                        className="text-gray-300 group-hover:text-indigo-500 transition-colors shrink-0 pl-1"
                       />
                     </div>
                   </div>
@@ -293,7 +333,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-2 mb-3">
             <Sparkles size={14} className="text-indigo-500" />
             <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-              AI Summaries
+              Resúmenes IA
             </h3>
           </div>
           <div className="space-y-2.5">
@@ -320,7 +360,7 @@ export default function Dashboard() {
                       {cls?.name}
                     </span>
                     <span className="text-[10px] text-gray-400 ml-auto">
-                      {new Date(s.date).toLocaleDateString("en-US", {
+                      {new Date(s.date).toLocaleDateString("es-ES", {
                         month: "short",
                         day: "numeric",
                       })}
@@ -340,18 +380,18 @@ export default function Dashboard() {
           <section>
             <div className="flex justify-between items-center mb-3">
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                Recent Notes
+                Notas Recientes
               </h3>
               <Link
                 to="/notes"
                 className="text-xs font-medium text-indigo-600 hover:underline"
               >
-                All Notes
+                Todas
               </Link>
             </div>
             <div className="space-y-2.5">
               {recentNotes.map((note) => (
-                <Link key={note.id} to={`/note/${note.id}`}>
+                <Link key={note.id} to={`/note/${note.id}`} className="block">
                   <motion.div
                     whileTap={{ scale: 0.98 }}
                     className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all"
@@ -370,7 +410,7 @@ export default function Dashboard() {
                     {note.hasAudio && (
                       <div className="mt-2 flex items-center gap-1 text-[10px] text-indigo-600">
                         <Mic size={10} />
-                        <span>Audio recording</span>
+                        <span>Grabación de audio</span>
                       </div>
                     )}
                   </motion.div>
@@ -380,6 +420,92 @@ export default function Dashboard() {
           </section>
         )}
       </div>
+
+      {/* Add Class Modal Overlay */}
+      <AnimatePresence>
+        {isAddingClass && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+              onClick={() => setIsAddingClass(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 p-6 shadow-2xl safe-bottom max-w-md mx-auto"
+            >
+              <div className="flex justify-between items-center mb-5">
+                <h2 className="text-lg font-bold text-gray-900">Añadir Nueva Clase</h2>
+                <button
+                  onClick={() => setIsAddingClass(false)}
+                  className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-200"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateClass} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase">Nombre de Materia</label>
+                  <input
+                    type="text"
+                    required
+                    value={newClassName}
+                    onChange={(e) => setNewClassName(e.target.value)}
+                    placeholder="Ej. Programación Avanzada"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase">Profesor</label>
+                  <input
+                    type="text"
+                    required
+                    value={newClassProfessor}
+                    onChange={(e) => setNewClassProfessor(e.target.value)}
+                    placeholder="Nombre del Profesor"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase">Horario</label>
+                    <input
+                      type="text"
+                      value={newClassTime}
+                      onChange={(e) => setNewClassTime(e.target.value)}
+                      placeholder="Ej. Mar, Jue 10:00 AM"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase">Aula</label>
+                    <input
+                      type="text"
+                      value={newClassRoom}
+                      onChange={(e) => setNewClassRoom(e.target.value)}
+                      placeholder="Ej. Lab 2"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={!newClassName.trim() || !newClassProfessor.trim()}
+                  className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold mt-2 disabled:opacity-50 active:bg-indigo-700 transition-colors"
+                >
+                  Guardar Clase
+                </button>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

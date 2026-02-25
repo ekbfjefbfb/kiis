@@ -1,6 +1,6 @@
 
 import { createBrowserRouter, Navigate } from "react-router";
-import { Layout } from "./components/Layout";
+import Layout from "./components/Layout";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import Dashboard from "./pages/Dashboard";

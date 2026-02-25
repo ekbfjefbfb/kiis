@@ -55,7 +55,7 @@ export default function NoteDetail() {
 
   const handleDelete = async () => {
     if (!note) return;
-    if (confirm("Delete this note?")) {
+    if (confirm("¿Eliminar esta nota?")) {
       await notesService.deleteNote(note.id);
       navigate("/notes");
     }
@@ -69,7 +69,7 @@ export default function NoteDetail() {
     );
   }
 
-  // Parse AI analysis
+  // Parse AI analysis (ahora busca en español, porque la IA ahora genera en español)
   const parseContent = (content: string) => {
     const sections = {
       important: [] as string[],
@@ -81,14 +81,14 @@ export default function NoteDetail() {
     const lines = content.split("\n");
     let current = "";
     for (const line of lines) {
-      if (line.includes("⭐ Important:")) current = "important";
-      else if (line.includes("📝 Summary:")) current = "summary";
-      else if (line.includes("✏️ Tasks:")) current = "tasks";
-      else if (line.includes("📅 Exams:")) current = "exams";
-      else if (line.includes("💡 Key Points:")) current = "keyPoints";
+      if (line.includes("⭐ Importante:") || line.includes("⭐ Important:")) current = "important";
+      else if (line.includes("📝 Resumen:") || line.includes("📝 Summary:")) current = "summary";
+      else if (line.includes("✏️ Tareas:") || line.includes("✏️ Tasks:")) current = "tasks";
+      else if (line.includes("📅 Exámenes:") || line.includes("📅 Exams:")) current = "exams";
+      else if (line.includes("💡 Puntos Clave:") || line.includes("💡 Key Points:")) current = "keyPoints";
       else if (line.trim() && current) {
         const cleaned = line.trim();
-        if (cleaned && !cleaned.includes("Recording from")) {
+        if (cleaned && !cleaned.includes("Grabación del") && !cleaned.includes("Recording from")) {
           sections[current as keyof typeof sections].push(cleaned);
         }
       }
@@ -100,7 +100,7 @@ export default function NoteDetail() {
   const hasAnalysis = Object.values(analysis).some((a) => a.length > 0);
 
   const formatDate = (ts: number) =>
-    new Date(ts).toLocaleDateString("en-US", {
+    new Date(ts).toLocaleDateString("es-ES", {
       weekday: "short",
       month: "long",
       day: "numeric",
@@ -109,11 +109,11 @@ export default function NoteDetail() {
     });
 
   const sectionConfig = [
-    { key: "important", data: analysis.important, emoji: "⭐", label: "Important", bg: "bg-red-50", border: "border-red-200", title: "text-red-900", text: "text-red-800", bullet: "text-red-300" },
-    { key: "summary", data: analysis.summary, emoji: "📝", label: "Summary", bg: "bg-blue-50", border: "border-blue-200", title: "text-blue-900", text: "text-blue-800", bullet: "text-blue-300" },
-    { key: "tasks", data: analysis.tasks, emoji: "✏️", label: "Tasks", bg: "bg-amber-50", border: "border-amber-200", title: "text-amber-900", text: "text-amber-800", bullet: "text-amber-300" },
-    { key: "exams", data: analysis.exams, emoji: "📅", label: "Exams", bg: "bg-purple-50", border: "border-purple-200", title: "text-purple-900", text: "text-purple-800", bullet: "text-purple-300" },
-    { key: "keyPoints", data: analysis.keyPoints, emoji: "💡", label: "Key Points", bg: "bg-emerald-50", border: "border-emerald-200", title: "text-emerald-900", text: "text-emerald-800", bullet: "text-emerald-300" },
+    { key: "important", data: analysis.important, emoji: "⭐", label: "Importante", bg: "bg-red-50", border: "border-red-200", title: "text-red-900", text: "text-red-800", bullet: "text-red-300" },
+    { key: "summary", data: analysis.summary, emoji: "📝", label: "Resumen", bg: "bg-blue-50", border: "border-blue-200", title: "text-blue-900", text: "text-blue-800", bullet: "text-blue-300" },
+    { key: "tasks", data: analysis.tasks, emoji: "✏️", label: "Tareas", bg: "bg-amber-50", border: "border-amber-200", title: "text-amber-900", text: "text-amber-800", bullet: "text-amber-300" },
+    { key: "exams", data: analysis.exams, emoji: "📅", label: "Exámenes", bg: "bg-purple-50", border: "border-purple-200", title: "text-purple-900", text: "text-purple-800", bullet: "text-purple-300" },
+    { key: "keyPoints", data: analysis.keyPoints, emoji: "💡", label: "Puntos Clave", bg: "bg-emerald-50", border: "border-emerald-200", title: "text-emerald-900", text: "text-emerald-800", bullet: "text-emerald-300" },
   ];
 
   return (
@@ -138,13 +138,13 @@ export default function NoteDetail() {
         <h1 className="text-lg font-bold text-gray-900 mb-1">{note.className}</h1>
         <div className="flex items-center gap-1.5 text-xs text-gray-500">
           <Calendar size={12} />
-          <span>{formatDate(note.createdAt)}</span>
+          <span className="capitalize">{formatDate(note.createdAt)}</span>
         </div>
 
         {hasAnalysis && (
           <div className="flex items-center gap-1.5 mt-2">
             <Sparkles size={12} className="text-indigo-500" />
-            <span className="text-[10px] font-medium text-indigo-600">AI-Generated Summary</span>
+            <span className="text-[10px] font-medium text-indigo-600">Resumen generado por IA</span>
           </div>
         )}
       </div>
@@ -158,7 +158,7 @@ export default function NoteDetail() {
           >
             {isPlaying ? <Pause size={18} /> : <Play size={18} />}
             <span className="text-sm font-medium">
-              {isPlaying ? "Pause Recording" : "Play Recording"}
+              {isPlaying ? "Pausar Grabación" : "Reproducir Grabación"}
             </span>
           </button>
         </div>
@@ -214,7 +214,7 @@ export default function NoteDetail() {
         {note.professor && note.professor.name && (
           <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
             <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2.5">
-              Professor
+              Profesor
             </h3>
             <p className="text-sm font-medium text-gray-900">{note.professor.name}</p>
             {note.professor.email && (
