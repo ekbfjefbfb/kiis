@@ -43,6 +43,12 @@ export default function ChatPage() {
     const userMessage = input.trim();
     setInput("");
     
+    // Convert current messages state to the format aiService expects
+    const historyForAi = messages.map(m => ({
+      role: m.role as "user" | "ai" | "system",
+      content: m.content
+    }));
+
     const newMsg: ChatMessage = {
       id: Date.now().toString(),
       role: "user",
@@ -62,7 +68,7 @@ export default function ChatPage() {
         { id: aiResponseId, role: "ai", content: "", timestamp: Date.now() }
       ]);
 
-      await aiService.chat(userMessage, (token) => {
+      await aiService.chat(userMessage, historyForAi, (token) => {
         finalResponse += token;
         setMessages((prev) => 
           prev.map((m) => m.id === aiResponseId ? { ...m, content: finalResponse } : m)
@@ -98,13 +104,22 @@ export default function ChatPage() {
         const audioBlob = await audioService.stopAudioRecording();
         setIsRecording(false);
         setIsProcessing(true);
+        
+        // Transcripción real con Groq Whisper Large V3 Turbo
         const { text } = await aiService.processAudio(audioBlob);
         setInput(text);
         setIsProcessing(false);
-      } catch (error) {
-        console.error(error);
+      } catch (error: any) {
+        console.error("Transcription error:", error);
         setIsRecording(false);
         setIsProcessing(false);
+        // Mostrar error al usuario en lugar de fallar silenciosamente
+        setMessages(prev => [...prev, {
+          id: Date.now().toString(),
+          role: "ai",
+          content: `⚠️ Error al transcribir: ${error.message || "Intenta de nuevo."}`,
+          timestamp: Date.now()
+        }]);
       }
     } else {
       const ok = await audioService.requestPermissions();
@@ -140,17 +155,17 @@ export default function ChatPage() {
   ];
 
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen bg-surface transition-colors duration-300">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-gray-100/80 px-4 pt-5 pb-3 sticky top-0 z-10 flex items-center shadow-sm">
+      <div className="glass border-b border-themed px-4 pt-5 pb-3 sticky top-0 z-10 flex items-center shadow-sm">
         <div className="flex-1" />
         <div className="flex flex-col items-center">
-          <div className="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center mb-1 relative shadow-inner">
-            <Bot size={22} className="text-indigo-600" />
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-1 relative shadow-inner" style={{ background: "var(--primary-light)" }}>
+            <Bot size={22} style={{ color: "var(--primary)" }} />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 rounded-full" style={{ borderColor: "var(--bg-primary)" }} />
           </div>
-          <h1 className="text-sm font-bold text-gray-900 leading-none">Asistente IA</h1>
-          <p className="text-[10px] text-gray-400 font-medium">Siempre activo</p>
+          <h1 className="text-sm font-bold leading-none text-themed">Asistente IA</h1>
+          <p className="text-[10px] font-medium text-themed-tertiary">Siempre activo</p>
         </div>
         <div className="flex-1 flex justify-end">
           {isRecording && (
@@ -166,11 +181,11 @@ export default function ChatPage() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-32">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center pt-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-3xl flex items-center justify-center mb-5 shadow-inner">
-              <Bot size={32} className="text-indigo-600" />
+            <div className="w-16 h-16 rounded-3xl flex items-center justify-center mb-5 shadow-inner" style={{ background: "var(--primary-light)" }}>
+              <Bot size={32} style={{ color: "var(--primary)" }} />
             </div>
-            <h2 className="text-lg font-bold text-gray-900 mb-2">¡Hola! Soy tu asistente</h2>
-            <p className="text-sm text-gray-500 text-center max-w-[240px] leading-relaxed mb-8">
+            <h2 className="text-lg font-bold mb-2 text-themed">¡Hola! Soy tu asistente</h2>
+            <p className="text-sm text-center max-w-[240px] leading-relaxed mb-8 text-themed-secondary">
               Puedo organizar tus tareas, resumir tus clases, y moverme por la app si me lo pides.
             </p>
             
@@ -203,7 +218,7 @@ export default function ChatPage() {
                   "max-w-[85%] p-3.5 shadow-sm leading-relaxed",
                   msg.role === "user"
                     ? "bg-indigo-600 text-white rounded-2xl rounded-tr-[4px]"
-                    : "bg-gray-100 text-gray-800 rounded-2xl rounded-tl-[4px]"
+                    : "bg-card text-themed rounded-2xl rounded-tl-[4px] border border-themed"
                 )}
               >
                 <p className="text-sm">{msg.content}</p>
@@ -245,7 +260,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input Area */}
-      <div className="fixed bottom-0 w-full max-w-md bg-white/95 backdrop-blur-xl border-t border-gray-100/80 p-3 pt-4 pb-5 safe-bottom z-20" style={{ paddingBottom: "max(env(safe-area-inset-bottom, 20px), 80px)" }}>
+      <div className="fixed bottom-0 w-full max-w-md glass border-t border-themed p-3 pt-4 pb-5 safe-bottom z-20" style={{ paddingBottom: "max(env(safe-area-inset-bottom, 20px), 80px)" }}>
         <div className="flex items-center gap-2">
           <button
             onClick={toggleVoiceRecording}
@@ -276,7 +291,7 @@ export default function ChatPage() {
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
               placeholder={isRecording ? "Grabando..." : "Escribe tu duda o dile dónde ir..."}
               disabled={isRecording || isProcessing}
-              className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all shadow-sm"
+              className="w-full bg-input-themed border border-themed rounded-2xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:bg-surface text-themed transition-all shadow-sm placeholder:text-themed-tertiary"
             />
             <AnimatePresence>
               {input.trim() && (

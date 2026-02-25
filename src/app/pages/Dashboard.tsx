@@ -6,16 +6,16 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { Link } from "react-router";
-import { CLASSES, TASKS, AI_SUMMARIES, USER, addClass } from "../data/mock";
+import { CLASSES, TASKS, AI_SUMMARIES, addClass } from "../data/mock";
 import { audioService } from "../../services/audio.service";
-import { notesService } from "../../services/notes.service";
-import { databaseService } from "../../services/database.service";
+import { notesService, BackendNote } from "../../services/notes.service";
+import { authService } from "../../services/auth.service";
 
 export default function Dashboard() {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [recentNotes, setRecentNotes] = useState<any[]>([]);
+  const [recentNotes, setRecentNotes] = useState<BackendNote[]>([]);
 
   // Add class state
   const [isAddingClass, setIsAddingClass] = useState(false);
@@ -47,38 +47,43 @@ export default function Dashboard() {
   }, [isRecording]);
 
   const loadRecentNotes = async () => {
-    await notesService.loadNotes();
-    setRecentNotes(notesService.getNotes().slice(0, 3));
+    try {
+       const backendNotes = await notesService.listNotes(3, 0);
+       setRecentNotes(backendNotes);
+    } catch (e) {
+       console.error("Error loading notes", e);
+    }
   };
+
+  const [liveTranscript, setLiveTranscript] = useState("");
 
   const handleRecord = async () => {
     if (isRecording) {
       try {
+        if ((window as any).__dbRecordInterval) {
+          clearInterval((window as any).__dbRecordInterval);
+        }
+
+        if (audioService.getIsRecording()) {
+          audioService.stopRecording();
+        }
+
         const audioBlob = await audioService.stopAudioRecording();
         setIsRecording(false);
         setIsProcessing(true);
-        await new Promise((r) => setTimeout(r, 2000));
-        const now = new Date();
-        const timestamp = now.toLocaleString("es-ES", {
-          month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
-        });
-        const analysis = {
-          subject: "Matemáticas",
-          important: ["Examen el viernes sobre derivadas"],
-          summary: ["Derivadas básicas", "Regla de la cadena", "Funciones compuestas"],
-          tasks: ["Hacer ejercicios 1-10 página 45"],
-        };
-        const note = await notesService.createNote(
-          `${analysis.subject} - ${timestamp}`,
-          analysis.subject,
-          { name: "Detectado auto", phone: "", email: "" },
-          `Grabación del ${timestamp}\n\n⭐ Importante:\n${analysis.important.join("\n")}\n\n📝 Resumen:\n${analysis.summary.join("\n")}\n\n✏️ Tareas:\n${analysis.tasks.join("\n")}`,
-          "importante"
+        
+        // Use live transcript if available, otherwise a default string (fallback if speech recognition failed)
+        const finalTranscript = liveTranscript.trim() || "Transcripción no disponible (audio guardado).";
+
+        // Send transcript to backend directly
+        await notesService.createFromTranscript(
+            finalTranscript,
+            "Grabación Rápida",
+            true
         );
-        const audioId = note.id + "_audio";
-        await databaseService.saveAudio(audioId, audioBlob);
-        await notesService.updateNote(note.id, { hasAudio: true, audioId });
+
         setIsProcessing(false);
+        setLiveTranscript("");
         await loadRecentNotes();
       } catch (error) {
         console.error("Error:", error);
@@ -94,8 +99,19 @@ export default function Dashboard() {
       try {
         await audioService.startAudioRecording();
         setIsRecording(true);
+        setRecordingTime(0);
+        setLiveTranscript("Escuchando...");
+
+        if (audioService.isSupported()) {
+          audioService.startRecording((txt) => {
+             setLiveTranscript(txt);
+          });
+        }
+
+        const interval = setInterval(() => setRecordingTime((p) => p + 1), 1000);
+        (window as any).__dbRecordInterval = interval;
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error al iniciar:", error);
       }
     }
   };
@@ -123,8 +139,9 @@ export default function Dashboard() {
   const formatTime = (s: number) =>
     `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
-  const getTimeAgo = (ts: number) => {
-    const diff = Date.now() - ts;
+  const getTimeAgo = (isoDate: string | null) => {
+    if (!isoDate) return "Reciente";
+    const diff = Date.now() - new Date(isoDate).getTime();
     const h = Math.floor(diff / 3600000);
     const d = Math.floor(diff / 86400000);
     if (d > 0) return `Hace ${d}d`;
@@ -133,21 +150,22 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-4 relative">
+    <div className="min-h-screen pb-4 relative" style={{ background: "var(--bg-secondary)" }}>
       {/* Header */}
-      <div className="bg-white px-5 pt-6 pb-5 border-b border-gray-100/60">
+      <div className="px-5 pt-6 pb-5" style={{ background: "var(--bg-primary)", borderBottom: "1px solid var(--border-primary)" }}>
         <div className="flex justify-between items-start mb-1">
           <div>
-            <p className="text-xs text-gray-400 font-medium uppercase tracking-widest mb-0.5 capitalize">
+            <p className="text-xs font-medium uppercase tracking-widest mb-0.5 capitalize" style={{ color: "var(--text-tertiary)" }}>
               {today}
             </p>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-              Hola, {USER.name.split(" ")[0]} 👋
+            <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
+              Hola, {(() => { try { const p = JSON.parse(localStorage.getItem('user_profile') || '{}'); return p.name?.split(' ')[0] || authService.getCurrentUser()?.displayName?.split(' ')[0] || 'Estudiante'; } catch { return 'Estudiante'; } })()} 👋
             </h1>
           </div>
           <Link
             to="/calendar"
-            className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 hover:bg-indigo-100 transition-colors"
+            className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
+            style={{ background: "var(--primary-light)", color: "var(--primary)" }}
           >
             <Calendar size={20} />
           </Link>
@@ -159,7 +177,7 @@ export default function Dashboard() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-700 p-5 text-white shadow-lg shadow-indigo-200/50"
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-700 p-5 text-white shadow-xl shadow-indigo-300/30"
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10" />
           <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/5 rounded-full -ml-6 -mb-6" />
@@ -173,8 +191,8 @@ export default function Dashboard() {
                 {isRecording
                   ? formatTime(recordingTime)
                   : isProcessing
-                  ? "La IA organiza tu nota..."
-                  : "Toca para grabar tu clase"}
+                  ? "La IA procesa tu clase en backend"
+                  : "Toca para grabar tu clase al instante"}
               </p>
             </div>
 
@@ -230,7 +248,7 @@ export default function Dashboard() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.08 }}
                   whileTap={{ scale: 0.97 }}
-                  className="flex-shrink-0 w-52 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm"
+                  className="flex-shrink-0 w-52 bg-white p-4 rounded-2xl border border-gray-100/80 shadow-sm card-premium"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <Clock size={12} className="text-gray-400" />
@@ -279,7 +297,7 @@ export default function Dashboard() {
                 transition={{ delay: i * 0.06 }}
               >
                 <Link to={`/class/${cls.id}`} className="block group">
-                  <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
+                  <div className="bg-white p-4 rounded-2xl border border-gray-100/80 shadow-sm card-premium">
                     <div className="flex items-center gap-3.5">
                       <div
                         className={clsx(
@@ -328,53 +346,6 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* AI Summaries */}
-        <section>
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles size={14} className="text-indigo-500" />
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-              Resúmenes IA
-            </h3>
-          </div>
-          <div className="space-y-2.5">
-            {AI_SUMMARIES.map((s, i) => {
-              const cls = CLASSES.find((c) => c.id === s.classId);
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + i * 0.05 }}
-                  className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <div
-                      className={clsx(
-                        "w-6 h-6 rounded-lg flex items-center justify-center",
-                        cls?.color
-                      )}
-                    >
-                      {cls && <cls.icon size={12} />}
-                    </div>
-                    <span className="text-xs font-semibold text-gray-700">
-                      {cls?.name}
-                    </span>
-                    <span className="text-[10px] text-gray-400 ml-auto">
-                      {new Date(s.date).toLocaleDateString("es-ES", {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-600 leading-relaxed line-clamp-3">
-                    {s.summary}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </section>
-
         {/* Recent Notes */}
         {recentNotes.length > 0 && (
           <section>
@@ -394,25 +365,19 @@ export default function Dashboard() {
                 <Link key={note.id} to={`/note/${note.id}`} className="block">
                   <motion.div
                     whileTap={{ scale: 0.98 }}
-                    className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all"
+                    className="bg-white p-4 rounded-2xl border border-gray-100/80 shadow-sm card-premium"
                   >
                     <div className="flex justify-between items-start mb-1">
                       <h4 className="font-semibold text-gray-900 text-sm truncate flex-1">
-                        {note.className}
+                        {note.title || "Apunte Sin Título"}
                       </h4>
                       <span className="text-[10px] text-gray-400 ml-2 whitespace-nowrap">
-                        {getTimeAgo(note.createdAt)}
+                        {getTimeAgo(note.created_at)}
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 line-clamp-2">
-                      {note.content}
+                       {note.summary || note.transcript || "Procesando contenido..."}
                     </p>
-                    {note.hasAudio && (
-                      <div className="mt-2 flex items-center gap-1 text-[10px] text-indigo-600">
-                        <Mic size={10} />
-                        <span>Grabación de audio</span>
-                      </div>
-                    )}
                   </motion.div>
                 </Link>
               ))}
@@ -437,13 +402,15 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 p-6 shadow-2xl safe-bottom max-w-md mx-auto"
+              className="fixed bottom-0 left-0 right-0 rounded-t-3xl z-50 p-6 shadow-2xl safe-bottom max-w-md mx-auto"
+              style={{ background: "var(--bg-primary)" }}
             >
               <div className="flex justify-between items-center mb-5">
-                <h2 className="text-lg font-bold text-gray-900">Añadir Nueva Clase</h2>
+                <h2 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>Añadir Nueva Clase</h2>
                 <button
                   onClick={() => setIsAddingClass(false)}
-                  className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-200"
+                  className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                  style={{ background: "var(--bg-tertiary)", color: "var(--text-secondary)" }}
                 >
                   <X size={18} />
                 </button>

@@ -1,10 +1,10 @@
 // Backend API Configuration - Auto-connect
 export const API_CONFIG = {
-  BASE_URL: 'https://kiis-backend.onrender.com',
-  AUTH_URL: '/api/auth',
-  CHAT_URL: '/api/unified-chat',
-  SEARCH_URL: '/api/search',
-  WS_URL: 'wss://kiis-backend.onrender.com'
+  BASE_URL: (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000',
+  AUTH_URL: '',
+  CHAT_URL: '',
+  SEARCH_URL: '',
+  WS_URL: ((import.meta as any).env?.VITE_API_URL || 'http://localhost:8000').replace(/^http/, 'ws')
 };
 
 export const OAUTH_CONFIG = {

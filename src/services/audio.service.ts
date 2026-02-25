@@ -16,8 +16,8 @@ export class AudioService {
     
     if (SpeechRecognition) {
       this.recognition = new SpeechRecognition();
-      this.recognition.continuous = false;
-      this.recognition.interimResults = false;
+      this.recognition.continuous = true;
+      this.recognition.interimResults = true;
       this.recognition.lang = 'es-ES';
     }
   }
@@ -44,16 +44,25 @@ export class AudioService {
 
     this.isRecording = true;
 
+    let finalTranscript = '';
+
     this.recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      onResult(transcript);
-      this.isRecording = false;
+      let interimTranscript = '';
+      
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript + ' ';
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+      
+      onResult(finalTranscript + interimTranscript);
     };
 
     this.recognition.onerror = (event: any) => {
       console.error('Error en reconocimiento de voz:', event.error);
       onError?.(event.error);
-      this.isRecording = false;
     };
 
     this.recognition.onend = () => {
@@ -75,6 +84,63 @@ export class AudioService {
     }
   }
 
+  /**
+   * Obtiene todas las voces disponibles en español en el dispositivo.
+   * Retorna un array con el nombre y el lang de cada voz.
+   */
+  getAvailableVoices(): { name: string; lang: string; voiceURI: string }[] {
+    const voices = this.synthesis.getVoices();
+    // Filtrar voces en español y agregar algunas en inglés como referencia
+    const filtered = voices.filter(v => 
+      v.lang.startsWith('es') || v.lang.startsWith('en')
+    );
+
+    // Si no hay voces filtradas, retornar todas
+    const result = filtered.length > 0 ? filtered : voices;
+
+    return result.map(v => ({
+      name: v.name,
+      lang: v.lang,
+      voiceURI: v.voiceURI,
+    }));
+  }
+
+  /**
+   * Habla texto usando una voz específica seleccionada por nombre.
+   */
+  speakWithVoice(text: string, voiceName: string | null, rate: number = 1.0, onEnd?: () => void): void {
+    this.synthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    if (voiceName) {
+      const voices = this.synthesis.getVoices();
+      const selected = voices.find(v => v.name === voiceName);
+      if (selected) {
+        utterance.voice = selected;
+        utterance.lang = selected.lang;
+      } else {
+        utterance.lang = 'es-ES';
+      }
+    } else {
+      utterance.lang = 'es-ES';
+    }
+
+    utterance.rate = rate;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    if (onEnd) {
+      utterance.onend = onEnd;
+    }
+
+    utterance.onerror = () => {
+      onEnd?.();
+    };
+
+    this.synthesis.speak(utterance);
+  }
+
   speak(text: string, onEnd?: () => void): void {
     this.synthesis.cancel();
 
@@ -93,6 +159,10 @@ export class AudioService {
 
   stopSpeaking(): void {
     this.synthesis.cancel();
+  }
+
+  isSpeaking(): boolean {
+    return this.synthesis.speaking;
   }
 
   getIsRecording(): boolean {

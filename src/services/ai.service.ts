@@ -1,10 +1,16 @@
-/* 
- * Servicio AI Simulado
- * Soporta modo DEMO para desarrollo si no hay API Key real
- */
+import { apiService } from './api.service';
+import { groqService } from './groq.service';
 
-const DEMO_MODE = true; // Set to false to use real Gemini API
-const GEMINI_API_KEY = "tu_api_key_aqui";
+interface ChatMessage {
+  role: "user" | "ai" | "system";
+  content: string;
+}
+
+interface ChatResponse {
+  success?: boolean;
+  response?: string;
+  message?: string;
+}
 
 // Instrucción de sistema para controlar el frontend
 const SYSTEM_PROMPT = `
@@ -21,6 +27,8 @@ Las rutas válidas son:
 - /calendar (Calendario)
 - /notes (Mis Notas)
 - /profile (Mi Perfil)
+- /voice (Chat de Voz)
+- /search (Búsqueda Web)
 
 Por ejemplo:
 Usuario: "Llévame a mi perfil"
@@ -31,55 +39,45 @@ Tú: "Vamos a revisar tu calendario. [NAVIGATE:/calendar]"
 `;
 
 export const aiService = {
+  /**
+   * Procesa audio usando Groq Whisper Large V3 Turbo para transcripción real.
+   * @param audioBlob - El blob de audio capturado por MediaRecorder
+   * @returns El texto transcrito por Whisper
+   */
   async processAudio(audioBlob: Blob): Promise<{ text: string }> {
-    if (DEMO_MODE) {
-      await new Promise(r => setTimeout(r, 2000));
-      return { 
-        text: "Este es un texto de prueba transcrito de tu audio. En una app real, aquí se conectaría a la API de Whisper o Gemini 1.5 Pro." 
-      };
-    }
-    throw new Error("API Connection not implemented yet");
+    const text = await groqService.transcribe(audioBlob, 'es');
+    return { text };
   },
 
-  async summarizeNotes(text: string): Promise<string> {
-    if (DEMO_MODE) {
-      await new Promise(r => setTimeout(r, 1500));
-      return `[RESUMEN GENERADO POR IA]\n\nPuntos Principales:\n- ${text.substring(0, 50)}...\n\nAcciones Sugeridas:\n- Revisar el tema\n- Preparar preguntas para la próxima clase`;
+  async summarizeNotes(text: string, onToken?: (token: string) => void): Promise<string> {
+    if (onToken) {
+      onToken("La funcionalidad de resumen local fue deprecada en favor del backend.");
     }
-    throw new Error("API Connection not implemented yet");
+    return "La funcionalidad de resumen local fue deprecada en favor del backend.";
   },
 
-  async chat(message: string, onToken?: (token: string) => void): Promise<string> {
-    if (DEMO_MODE) {
-      const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
-      const msgLower = message.toLowerCase();
-      
-      let response = "Interesante pregunta sobre tu clase. ¿Te gustaría que profundicemos más sobre este tema específico o prefieres repasar los apuntes anteriores?";
-      
-      if (msgLower.includes("perfil") || msgLower.includes("profile")) {
-        response = `¡Claro! Te llevo a tu perfil ahora mismo.\n\n[NAVIGATE:/profile]`;
-      } else if (msgLower.includes("calendario") || msgLower.includes("calendar")) {
-        response = `Vamos a revisar tu calendario para ver las próximas fechas.\n\n[NAVIGATE:/calendar]`;
-      } else if (msgLower.includes("inicio") || msgLower.includes("dashboard")) {
-        response = `Volvamos al inicio.\n\n[NAVIGATE:/dashboard]`;
-      } else if (msgLower.includes("nota")) {
-        response = `Te abro tus notas guardadas.\n\n[NAVIGATE:/notes]`;
-      } else if (msgLower.includes("tarea") || msgLower.includes("examen")) {
-         response = `Claro, te recomiendo revisar el calendario para ver las fechas exactas.\n\n[NAVIGATE:/calendar]`;
-      }
+  async chat(message: string, history: ChatMessage[] = [], onToken?: (token: string) => void): Promise<string> {
+    try {
+      const response = await apiService.post<ChatResponse>('/unified-chat/message', {
+        message,
+      });
 
+      const finalMsg =
+        response?.response ||
+        response?.message ||
+        "Lo siento, no pude procesar la respuesta.";
+      
       if (onToken) {
-        const words = response.split(" ");
+        const words = finalMsg.split(" ");
         for (const word of words) {
-          await wait(50 + Math.random() * 50);
+          await new Promise(r => setTimeout(r, 30));
           onToken(word + " ");
         }
-      } else {
-        await wait(1500);
       }
-      return response;
+      return finalMsg;
+    } catch (e) {
+      console.error("AI Chat Error:", e);
+      throw new Error("Hubo un error al conectar con el asistente.");
     }
-    
-    throw new Error("API Connection not implemented yet");
   }
 };

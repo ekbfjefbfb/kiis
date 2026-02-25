@@ -1,87 +1,95 @@
-import { databaseService, Note } from './database.service';
+import { apiService } from './api.service';
+
+export interface BackendTask {
+  id?: string;
+  text: string;
+  due_date: string | null;
+  done: boolean;
+  priority: number;
+}
+
+export interface BackendNote {
+  id?: string;
+  title: string;
+  transcript: string;
+  summary: string;
+  topics: string[];
+  key_points: string[];
+  tasks: BackendTask[];
+  created_at: string | null;
+}
+
+export interface ListNotesResponse {
+  notes: BackendNote[];
+}
+
+export interface ListTasksResponse {
+  tasks: BackendTask[];
+}
 
 export class NotesService {
-  private notes: Note[] = [];
-
-  async init(): Promise<void> {
-    await databaseService.init();
-    await this.loadNotes();
+  /**
+   * Envía la transcripción final al backend para ser procesada por IA.
+   * Retorna los datos estructurados y guarda en DB si save=true.
+   */
+  async createFromTranscript(transcript: string, titleHint?: string, save: boolean = true): Promise<BackendNote> {
+    return await apiService.post<BackendNote>('/api/class-notes/from-transcript', {
+      transcript,
+      title_hint: titleHint,
+      save
+    });
   }
 
-  async loadNotes(): Promise<void> {
-    this.notes = await databaseService.getAllNotes();
+  /**
+   * Obtiene una nota específica por ID.
+   */
+  async getNoteById(noteId: string): Promise<BackendNote> {
+    return await apiService.get<BackendNote>(`/api/class-notes/${noteId}`);
   }
 
-  async createNote(
-    title: string,
-    className: string,
-    professor: { name: string; phone: string; email: string },
-    content: string,
-    category: 'resumen' | 'tarea' | 'importante' | 'general' = 'general'
-  ): Promise<Note> {
-    const note: Note = {
-      id: Date.now().toString(),
-      title,
-      className,
-      professor,
-      content,
-      category,
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    };
-
-    await databaseService.saveNote(note);
-    this.notes.unshift(note);
-    return note;
+  /**
+   * Lista historial de notas creadas.
+   */
+  async listNotes(limit: number = 20, offset: number = 0): Promise<BackendNote[]> {
+    const response = await apiService.get<ListNotesResponse>('/api/class-notes', {
+      limit,
+      offset
+    });
+    return response?.notes || [];
   }
 
-  async updateNote(id: string, updates: Partial<Note>): Promise<boolean> {
-    const index = this.notes.findIndex(n => n.id === id);
-    if (index === -1) return false;
-
-    this.notes[index] = {
-      ...this.notes[index],
-      ...updates,
-      updatedAt: Date.now()
-    };
-    
-    await databaseService.saveNote(this.notes[index]);
-    return true;
+  /**
+   * Obtiene las tareas extraídas.
+   */
+  async listTasks(onlyPending: boolean = true, onlyWithDueDate: boolean = false, limit: number = 50): Promise<BackendTask[]> {
+    const response = await apiService.get<ListTasksResponse>('/api/class-notes/tasks', {
+      only_pending: onlyPending,
+      only_with_due_date: onlyWithDueDate,
+      limit
+    });
+    return response?.tasks || [];
   }
 
-  async deleteNote(id: string): Promise<boolean> {
-    const index = this.notes.findIndex(n => n.id === id);
-    if (index === -1) return false;
-
-    await databaseService.deleteNote(id);
-    
-    if (this.notes[index].hasAudio && this.notes[index].audioId) {
-      await databaseService.deleteAudio(this.notes[index].audioId!);
-    }
-
-    this.notes.splice(index, 1);
-    return true;
-  }
-
-  getNotes(): Note[] {
-    return this.notes;
-  }
-
-  getNoteById(id: string): Note | undefined {
-    return this.notes.find(n => n.id === id);
-  }
-
-  getNotesByClass(className: string): Note[] {
-    return this.notes.filter(n => n.className === className);
-  }
-
-  getNotesByCategory(category: string): Note[] {
-    return this.notes.filter(n => n.category === category);
-  }
-
-  getClasses(): string[] {
-    const classes = new Set(this.notes.map(n => n.className));
-    return Array.from(classes);
+  /**
+   * Exporta a documento APA 7
+   */
+  async generateApa7Pdf(payload: {
+    title: string;
+    author: string;
+    paragraphs: string[];
+    due_date?: string;
+  }): Promise<Blob> {
+    return await apiService.request<Blob>('/api/documents/apa7/pdf', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/pdf',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+         ...payload,
+         filename: "resumen_clase.pdf"
+      })
+    });
   }
 }
 

@@ -1,4 +1,3 @@
-
 import { createBrowserRouter, Navigate } from "react-router";
 import Layout from "./components/Layout";
 import LoginPage from "./pages/LoginPage";
@@ -10,6 +9,8 @@ import ChatPage from "./pages/Chat";
 import ProfilePage from "./pages/Profile";
 import CalendarPage from "./pages/CalendarPage";
 import ClassDetailPage from "./pages/ClassDetailPage";
+import SearchPage from "./pages/SearchPage";
+import VoiceChatPage from "./pages/VoiceChatPage";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,8 @@ export const router = createBrowserRouter([
       { path: "profile", Component: ProfilePage },
       { path: "calendar", Component: CalendarPage },
       { path: "class/:id", Component: ClassDetailPage },
+      { path: "search", Component: SearchPage },
+      { path: "voice", Component: VoiceChatPage },
     ],
   },
   {

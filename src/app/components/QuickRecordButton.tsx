@@ -5,13 +5,14 @@ import { clsx } from "clsx";
 import { useNavigate } from "react-router";
 import { audioService } from "../../services/audio.service";
 import { notesService } from "../../services/notes.service";
-import { databaseService } from "../../services/database.service";
 
 export function QuickRecordButton() {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
+
+  const [liveTranscript, setLiveTranscript] = useState("");
 
   const startRecording = async () => {
     try {
@@ -23,6 +24,14 @@ export function QuickRecordButton() {
 
       await audioService.startAudioRecording();
       setIsRecording(true);
+      setRecordingTime(0);
+      setLiveTranscript("Escuchando...");
+
+      if (audioService.isSupported()) {
+        audioService.startRecording((txt) => {
+           setLiveTranscript(txt);
+        });
+      }
       
       // Timer
       const interval = setInterval(() => {
@@ -45,38 +54,30 @@ export function QuickRecordButton() {
         (window as any).recordingInterval = null;
       }
 
+      if (audioService.getIsRecording()) {
+         audioService.stopRecording();
+      }
+
       const audioBlob = await audioService.stopAudioRecording();
+      
+      const finalTranscript = liveTranscript.trim() || "Transcripción no disponible (audio guardado).";
+
       setIsRecording(false);
       setRecordingTime(0);
 
-      // Crear nota con audio
-      const now = new Date();
-      const timestamp = now.toLocaleString("es-ES", { 
-        day: "2-digit", 
-        month: "2-digit", 
-        year: "numeric",
-        hour: "2-digit", 
-        minute: "2-digit" 
-      });
-
-      const note = await notesService.createNote(
-        `Grabación ${timestamp}`,
-        "Sin asignar",
-        { name: "Sin asignar", phone: "", email: "" },
-        "Grabación de audio - Edita para agregar detalles",
-        "general"
+      // Crear nota usando el endpoint real (envía transcripción)
+      await notesService.createFromTranscript(
+         finalTranscript,
+         "Clase Rápida",
+         true
       );
-
-      // Guardar audio
-      const audioId = note.id + "_audio";
-      await databaseService.saveAudio(audioId, audioBlob);
-      await notesService.updateNote(note.id, { hasAudio: true, audioId });
 
       // Mostrar éxito
       setShowSuccess(true);
       setTimeout(() => {
         setShowSuccess(false);
-        // Navegar a notas para editar
+        setLiveTranscript("");
+        // Navegar a notas
         navigate("/notes");
       }, 1500);
 

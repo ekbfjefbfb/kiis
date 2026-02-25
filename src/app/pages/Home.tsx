@@ -2,18 +2,17 @@ import { useState, useEffect } from "react";
 import { Mic, Square, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { audioService } from "../../services/audio.service";
-import { aiService } from "../../services/ai.service";
-import { notesService } from "../../services/notes.service";
-import { databaseService } from "../../services/database.service";
+import { notesService, BackendNote } from "../../services/notes.service";
 
 export default function Home() {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [transcription, setTranscription] = useState("");
-  const [recentNotes, setRecentNotes] = useState<any[]>([]);
+  const [recentNotes, setRecentNotes] = useState<BackendNote[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadRecentNotes();
@@ -32,78 +31,70 @@ export default function Home() {
   }, [isRecording]);
 
   const loadRecentNotes = async () => {
-    await notesService.loadNotes();
-    const notes = notesService.getNotes().slice(0, 5);
-    setRecentNotes(notes);
+    try {
+      const backendNotes = await notesService.listNotes(5, 0);
+      setRecentNotes(backendNotes);
+    } catch (e) {
+      console.error("Error loading notes", e);
+    }
   };
 
   const handleRecord = async () => {
     if (isRecording) {
-      // Stop recording
       try {
+        if ((window as any).__homeRecordInterval) {
+          clearInterval((window as any).__homeRecordInterval);
+        }
+
+        if (audioService.getIsRecording()) {
+          audioService.stopRecording();
+        }
+
         const audioBlob = await audioService.stopAudioRecording();
         setIsRecording(false);
         setIsProcessing(true);
 
-        // Simulate AI processing
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        const finalTranscript = transcription.trim() || "Transcripción no disponible (audio guardado).";
 
-        // Create note with AI analysis
-        const now = new Date();
-        const timestamp = now.toLocaleString("en-US", { 
-          month: "short",
-          day: "numeric",
-          hour: "2-digit", 
-          minute: "2-digit" 
-        });
-
-        // Simulate AI analysis
-        const analysis = {
-          subject: "Mathematics",
-          important: ["Exam on Friday about derivatives"],
-          summary: ["Basic derivatives", "Chain rule", "Composite functions"],
-          tasks: ["Do exercises 1-10 page 45"],
-          exams: [{ date: "Friday", topic: "Derivatives" }],
-          keyPoints: ["Derivative measures rate of change"]
-        };
-
-        const note = await notesService.createNote(
-          `${analysis.subject} - ${timestamp}`,
-          analysis.subject,
-          { name: "Auto-detected", phone: "", email: "" },
-          `Recording from ${timestamp}\n\n⭐ Important:\n${analysis.important.join('\n')}\n\n📝 Summary:\n${analysis.summary.join('\n')}\n\n✏️ Tasks:\n${analysis.tasks.join('\n')}`,
-          "importante"
+        await notesService.createFromTranscript(
+            finalTranscript,
+            "Grabación Rápida",
+            true
         );
 
-        // Save audio
-        const audioId = note.id + "_audio";
-        await databaseService.saveAudio(audioId, audioBlob);
-        await notesService.updateNote(note.id, { hasAudio: true, audioId });
-
         setIsProcessing(false);
-        await loadRecentNotes();
         setTranscription("");
+        navigate("/notes"); // Send user to notes directly after recording for them to see what just got processed
       } catch (error) {
         console.error("Error:", error);
         setIsRecording(false);
         setIsProcessing(false);
-        alert("Error saving recording");
+        alert("Error al guardar la grabación");
       }
     } else {
-      // Start recording
       const hasPermission = await audioService.requestPermissions();
       if (!hasPermission) {
-        alert("Microphone permission needed");
+        alert("Se necesitan permisos de micrófono");
         return;
       }
 
       try {
         await audioService.startAudioRecording();
         setIsRecording(true);
-        setTranscription("Listening...");
+        setRecordingTime(0);
+        setTranscription("Escuchando...");
+
+        if (audioService.isSupported()) {
+          audioService.startRecording((txt) => {
+             setTranscription(txt);
+          });
+        }
+
+        const interval = setInterval(() => setRecordingTime((p) => p + 1), 1000);
+        (window as any).__homeRecordInterval = interval;
       } catch (error) {
         console.error("Error:", error);
-        alert("Error starting recording");
+        alert("Error al iniciar grabación");
       }
     }
   };
@@ -114,15 +105,15 @@ export default function Home() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const getTimeAgo = (timestamp: number) => {
-    const now = Date.now();
-    const diff = now - timestamp;
+  const getTimeAgo = (isoDate: string | null) => {
+    if (!isoDate) return "Justo ahora";
+    const diff = Date.now() - new Date(isoDate).getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     
-    if (days > 0) return `${days}d ago`;
-    if (hours > 0) return `${hours}h ago`;
-    return "Just now";
+    if (days > 0) return `Hace ${days}d`;
+    if (hours > 0) return `Hace ${hours}h`;
+    return "Justo ahora";
   };
 
   return (
@@ -130,9 +121,9 @@ export default function Home() {
       {/* Header */}
       <header className="mb-8">
         <h2 className="text-gray-500 text-sm font-medium uppercase tracking-wide mb-1">
-          {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+          {new Date().toLocaleDateString("es-ES", { weekday: "long", month: "long", day: "numeric" })}
         </h2>
-        <h1 className="text-2xl font-bold text-gray-900">Quick Record</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Grabación Veloz</h1>
       </header>
 
       {/* Recording Button */}
@@ -149,8 +140,8 @@ export default function Home() {
               <div className="w-32 h-32 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
                 <Loader2 size={48} className="text-indigo-600 animate-spin" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Analyzing...</h3>
-              <p className="text-sm text-gray-500">AI is organizing your note</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Analizando...</h3>
+              <p className="text-sm text-gray-500">IA organizando tu nota</p>
             </motion.div>
           ) : (
             <motion.button
@@ -174,19 +165,19 @@ export default function Home() {
         </AnimatePresence>
 
         {!isProcessing && (
-          <div className="text-center">
+          <div className="text-center mt-2">
             {isRecording ? (
               <>
-                <h3 className="text-lg font-semibold text-red-600 mb-1">RECORDING</h3>
+                <h3 className="text-lg font-semibold text-red-600 mb-1">GRABANDO</h3>
                 <p className="text-2xl font-mono font-bold text-gray-900">{formatTime(recordingTime)}</p>
-                {transcription && (
-                  <p className="text-sm text-gray-500 mt-2 italic">{transcription}</p>
-                )}
+                <div className="mt-4 pt-4 border-t border-gray-200 w-full">
+                   <p className="text-sm text-gray-400 italic font-mono">{transcription || "Escuchando..."}</p>
+                </div>
               </>
             ) : (
               <>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">TAP TO RECORD</h3>
-                <p className="text-sm text-gray-500">Start recording your class notes</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">TOCA PARA GRABAR</h3>
+                <p className="text-sm text-gray-500">Inicia grabación de apuntes</p>
               </>
             )}
           </div>
@@ -196,7 +187,7 @@ export default function Home() {
       {/* Recent Notes */}
       {!isRecording && !isProcessing && recentNotes.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Notes</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Notas Recientes</h3>
           <div className="space-y-3">
             {recentNotes.map((note) => (
               <Link
@@ -209,16 +200,12 @@ export default function Home() {
                   className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all"
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-semibold text-gray-900">{note.className}</h4>
-                    <span className="text-xs text-gray-500">{getTimeAgo(note.createdAt)}</span>
+                    <h4 className="font-semibold text-gray-900 flex-1 truncate">{note.title || "Apunte Sin Título"}</h4>
+                    <span className="text-[10px] text-gray-500 ml-2 whitespace-nowrap">{getTimeAgo(note.created_at)}</span>
                   </div>
-                  <p className="text-sm text-gray-600 line-clamp-2">{note.content}</p>
-                  {note.hasAudio && (
-                    <div className="mt-2 flex items-center gap-1 text-xs text-indigo-600">
-                      <Mic size={12} />
-                      <span>Audio recording</span>
-                    </div>
-                  )}
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                     {note.summary || note.transcript || "Procesando contenido..."}
+                  </p>
                 </motion.div>
               </Link>
             ))}
@@ -232,8 +219,8 @@ export default function Home() {
           <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Mic size={32} className="text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No notes yet</h3>
-          <p className="text-sm text-gray-500">Tap the button above to start recording</p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Aún no hay notas</h3>
+          <p className="text-sm text-gray-500">Toca el botón arriba para grabar algo</p>
         </div>
       )}
     </div>

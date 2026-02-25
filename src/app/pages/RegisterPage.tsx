@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { UserPlus, Mail, Lock, BookOpen, AlertCircle, Phone, Camera, Upload } from "lucide-react";
+import { UserPlus, Mail, Lock, BookOpen, AlertCircle, Phone, Camera } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { authService } from "../../services/auth.service";
-import { updateUser } from "../data/mock";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -51,13 +50,16 @@ export default function RegisterPage() {
     try {
       await authService.register(email, password, name);
       
-      // Update local mock user state
-      updateUser({
+      // Guardar perfil completo en localStorage para que Profile.tsx lo lea
+      const profileData = {
         name,
         email,
         phone,
-        ...(avatarPreview && { avatar: avatarPreview })
-      });
+        avatar: avatarPreview,
+      };
+      localStorage.setItem('user_profile', JSON.stringify(profileData));
+      if (avatarPreview) localStorage.setItem('user_avatar', avatarPreview);
+      if (phone) localStorage.setItem('user_phone', phone);
 
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
@@ -68,10 +70,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
+    <div className="min-h-[100dvh] bg-surface flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans transition-colors duration-300">
       {/* Background decorations */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -mr-20 -mt-20 opacity-50" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-50 rounded-full blur-3xl -ml-20 -mb-20 opacity-50" />
+      <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -mr-20 -mt-20 opacity-50" style={{ background: "var(--primary-light)" }} />
+      <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl -ml-20 -mb-20 opacity-40" style={{ background: "var(--success-light)" }} />
 
       <div className="w-full max-w-sm relative z-10 flex flex-col items-center">
         {/* Brand/Logo */}
@@ -84,10 +86,10 @@ export default function RegisterPage() {
             <BookOpen size={32} className="text-white" />
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight text-center">
+          <h1 className="text-2xl font-bold tracking-tight text-center text-themed">
             Únete a Notdeer
           </h1>
-          <p className="text-sm text-gray-500 mt-2 text-center max-w-[280px]">
+          <p className="text-sm mt-2 text-center max-w-[280px] text-themed-secondary">
             Organiza tus clases y genera resúmenes con Inteligencia Artificial.
           </p>
         </motion.div>
@@ -97,7 +99,7 @@ export default function RegisterPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="w-full bg-white rounded-3xl border border-gray-100/80 shadow-xl shadow-gray-200/40 p-6 md:p-8 relative overflow-hidden"
+          className="w-full card-premium rounded-3xl p-6 md:p-8 relative overflow-hidden"
         >
           {/* Subtle inner top glow */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent" />
@@ -157,7 +159,7 @@ export default function RegisterPage() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200/80 rounded-2xl py-3.5 pl-11 pr-4 text-[15px] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all text-gray-900 placeholder:text-gray-400"
+                  className="w-full bg-input-themed border border-themed rounded-2xl py-3.5 pl-11 pr-4 text-[15px] focus:outline-none focus:bg-surface transition-all text-themed placeholder:text-themed-tertiary"
                   placeholder="Ej. Ana García"
                 />
               </div>
@@ -174,7 +176,7 @@ export default function RegisterPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200/80 rounded-2xl py-3.5 pl-11 pr-4 text-[15px] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all text-gray-900 placeholder:text-gray-400"
+                  className="w-full bg-input-themed border border-themed rounded-2xl py-3.5 pl-11 pr-4 text-[15px] focus:outline-none focus:bg-surface transition-all text-themed placeholder:text-themed-tertiary"
                   placeholder="tu@correo.edu"
                 />
               </div>
@@ -191,7 +193,7 @@ export default function RegisterPage() {
                   required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200/80 rounded-2xl py-3.5 pl-11 pr-4 text-[15px] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all text-gray-900 placeholder:text-gray-400"
+                  className="w-full bg-input-themed border border-themed rounded-2xl py-3.5 pl-11 pr-4 text-[15px] focus:outline-none focus:bg-surface transition-all text-themed placeholder:text-themed-tertiary"
                   placeholder="+52 555 123-4567"
                 />
               </div>
@@ -208,7 +210,7 @@ export default function RegisterPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200/80 rounded-2xl py-3.5 pl-11 pr-4 text-[15px] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all text-gray-900 placeholder:text-gray-400"
+                  className="w-full bg-input-themed border border-themed rounded-2xl py-3.5 pl-11 pr-4 text-[15px] focus:outline-none focus:bg-surface transition-all text-themed placeholder:text-themed-tertiary"
                   placeholder="Mínimo 6 caracteres"
                 />
               </div>
@@ -225,7 +227,7 @@ export default function RegisterPage() {
           </form>
 
           <div className="mt-8 text-center text-sm">
-            <span className="text-gray-500">¿Ya tienes una cuenta? </span>
+            <span className="text-themed-secondary">¿Ya tienes una cuenta? </span>
             <Link
               to="/login"
               className="text-indigo-600 font-semibold hover:text-indigo-700 hover:underline underline-offset-4 transition-all"

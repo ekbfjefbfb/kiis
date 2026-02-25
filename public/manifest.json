@@ -4,7 +4,7 @@
   "description": "App para estudiantes con chat IA, notas y audio",
   "lang": "es",
   "start_url": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#ffffff",
   "theme_color": "#4f46e5",
   "orientation": "portrait-primary",
@@ -22,6 +22,9 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["education", "productivity"],
+  "categories": [
+    "education",
+    "productivity"
+  ],
   "screenshots": []
 }

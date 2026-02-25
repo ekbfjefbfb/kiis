@@ -1,12 +1,13 @@
 import { Outlet, Link, useLocation } from "react-router";
-import { LayoutDashboard, MessageCircle, User, Download } from "lucide-react";
+import { LayoutDashboard, MessageCircle, User, Download, AudioLines } from "lucide-react";
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 
 export default function Layout() {
   const location = useLocation();
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(true);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -23,83 +24,93 @@ export default function Layout() {
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") {
       setDeferredPrompt(null);
+      setShowInstallBanner(false);
     }
   };
 
   const navItems = [
     { icon: LayoutDashboard, label: "Inicio", path: "/dashboard" },
-    { icon: MessageCircle, label: "Chat IA", path: "/chat" },
+    { icon: MessageCircle, label: "Chat", path: "/chat" },
+    { icon: AudioLines, label: "Voz IA", path: "/voice" },
     { icon: User, label: "Perfil", path: "/profile" },
   ];
 
-  const hideNavOn = ["/login", "/register"];
-  const shouldHideNav = hideNavOn.includes(location.pathname);
+  const isAuthPage = 
+    location.pathname.includes("/login") || 
+    location.pathname.includes("/register") || 
+    location.pathname === "/";
+  const shouldHideNav = isAuthPage;
 
   return (
-    <div className="mx-auto max-w-md bg-white min-h-screen relative shadow-2xl overflow-hidden font-sans">
-      {deferredPrompt && !shouldHideNav && (
-        <div className="bg-indigo-600 text-white px-4 py-3 flex justify-between items-center text-sm safe-top">
-          <span className="font-medium">Instala Notdeer en tu móvil</span>
-          <button
-            onClick={handleInstall}
-            className="flex items-center gap-1.5 bg-white text-indigo-600 px-3 py-1.5 rounded-full font-bold text-xs shadow-sm active:scale-95 transition-transform"
+    <div className="mx-auto max-w-md min-h-[100dvh] relative shadow-2xl overflow-hidden font-sans" style={{ background: "var(--bg-primary)" }}>
+      {/* PWA Install Banner */}
+      <AnimatePresence>
+        {deferredPrompt && !shouldHideNav && showInstallBanner && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
           >
-            <Download size={14} strokeWidth={2.5} />
-            Instalar
-          </button>
-        </div>
-      )}
+            <div className="gradient-animated text-white px-4 py-3 flex justify-between items-center text-sm safe-top">
+              <span className="font-medium text-[13px]">📱 Instala Notdeer</span>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleInstall}
+                  className="flex items-center gap-1.5 bg-white text-indigo-600 px-3.5 py-1.5 rounded-full font-bold text-xs shadow-sm btn-premium"
+                >
+                  <Download size={13} strokeWidth={2.5} />
+                  Instalar
+                </button>
+                <button onClick={() => setShowInstallBanner(false)} className="text-white/60 hover:text-white text-xs px-1">✕</button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <main className={clsx("h-full", !shouldHideNav && "pb-24")}>
+      <main className={clsx("h-full", !shouldHideNav && "pb-[88px]")}>
         <Outlet />
       </main>
 
+      {/* Bottom Nav */}
       {!shouldHideNav && (
         <nav 
-          className={clsx(
-            "fixed bottom-0 w-full max-w-md bg-white/95 backdrop-blur-xl border-t border-gray-100/80 flex justify-around items-center pt-2 pb-2 safe-bottom px-4 z-50 transition-transform duration-300"
-          )}
-          style={{ paddingBottom: "max(window.safe-area-inset-bottom, 16px)" }}
+          className="fixed bottom-0 w-full max-w-md glass flex justify-around items-center pt-2.5 pb-2.5 safe-bottom px-3 z-50"
+          style={{ 
+            paddingBottom: "max(env(safe-area-inset-bottom, 12px), 12px)",
+            borderTop: "1px solid var(--border-primary)"
+          }}
         >
           {navItems.map((item) => {
-            // Activar Inicio si estamos en dashboard o index
             const isActive = 
               location.pathname === item.path || 
-              (item.path === "/dashboard" && location.pathname === "/");
+              (item.path === "/dashboard" && (location.pathname === "/" || location.pathname === "/home"));
               
             return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={clsx(
-                  "flex flex-col items-center gap-0.5 transition-all duration-200 min-w-[64px] min-h-[44px] justify-center relative touch-manipulation"
-                )}
-                style={{ WebkitTapHighlightColor: "transparent" }}
-              >
+              <Link key={item.path} to={item.path} className="flex flex-col items-center gap-0.5 min-w-[56px] min-h-[44px] justify-center relative group">
                 <motion.div 
-                  whileTap={{ scale: 0.85 }}
-                  className="flex flex-col items-center gap-0.5"
+                  whileTap={{ scale: 0.8 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                  className="flex flex-col items-center gap-0.5 relative"
                 >
                   {isActive && (
                     <motion.div
-                      layoutId="nav-indicator"
-                      className="absolute -top-2 w-5 h-1 bg-indigo-600 rounded-full"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      layoutId="nav-pill"
+                      className="absolute -top-1.5 w-8 h-1 rounded-full"
+                      style={{ background: "var(--primary)", boxShadow: `0 2px 8px var(--primary-shadow)` }}
+                      transition={{ type: "spring", stiffness: 500, damping: 35 }}
                     />
                   )}
                   <item.icon
-                    size={22}
-                    strokeWidth={isActive ? 2.5 : 1.8}
-                    className={clsx(
-                      "transition-colors duration-200",
-                      isActive ? "text-indigo-600" : "text-gray-400"
-                    )}
+                    size={21}
+                    strokeWidth={isActive ? 2.5 : 1.6}
+                    style={{ color: isActive ? "var(--primary)" : "var(--text-tertiary)" }}
+                    className="transition-all duration-300"
                   />
                   <span
-                    className={clsx(
-                      "text-[10px] font-medium transition-colors duration-200",
-                      isActive ? "text-indigo-600" : "text-gray-400"
-                    )}
+                    style={{ color: isActive ? "var(--primary)" : "var(--text-tertiary)" }}
+                    className="text-[10px] font-semibold transition-all duration-300"
                   >
                     {item.label}
                   </span>

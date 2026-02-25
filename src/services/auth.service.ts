@@ -1,7 +1,16 @@
+import { apiService } from './api.service';
+
 interface UserData {
   email: string;
   displayName?: string;
   photoURL?: string;
+}
+
+interface AuthResponse {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  user: UserData;
 }
 
 export class AuthService {
@@ -11,7 +20,6 @@ export class AuthService {
   private readonly ACCESS_TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly USER_KEY = 'current_user';
-  private readonly DEMO_MODE = true;
 
   constructor() {
     this.loadFromStorage();
@@ -22,42 +30,74 @@ export class AuthService {
     this.refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
     const userStr = localStorage.getItem(this.USER_KEY);
     if (userStr) {
-      this.currentUser = JSON.parse(userStr);
+      try {
+        this.currentUser = JSON.parse(userStr);
+      } catch {
+        this.currentUser = null;
+      }
     }
   }
 
-  private saveToStorage(user: UserData): void {
-    this.accessToken = 'demo_token_' + Date.now();
-    this.refreshToken = 'demo_refresh_' + Date.now();
-    this.currentUser = user;
+  private saveToStorage(authData: AuthResponse): void {
+    this.accessToken = authData.access_token;
+    this.refreshToken = authData.refresh_token;
+    this.currentUser = authData.user;
 
     localStorage.setItem(this.ACCESS_TOKEN_KEY, this.accessToken);
     localStorage.setItem(this.REFRESH_TOKEN_KEY, this.refreshToken);
     localStorage.setItem(this.USER_KEY, JSON.stringify(this.currentUser));
   }
 
-  async login(email: string, password: string): Promise<boolean> {
-    if (this.DEMO_MODE) {
-      const demoUser: UserData = {
-        email: email,
-        displayName: email.split('@')[0]
-      };
-      this.saveToStorage(demoUser);
-      return true;
+  async loginOAuth(provider: 'google' | 'apple', idToken: string, name?: string): Promise<boolean> {
+    try {
+      const response = await apiService.post<AuthResponse>('/auth/oauth', {
+        provider,
+        id_token: idToken,
+        name
+      });
+      
+      if (response && response.access_token) {
+        this.saveToStorage(response);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('OAuth Login failed:', error);
+      return false;
     }
-    return false;
   }
 
-  async register(email: string, password: string, displayName?: string): Promise<boolean> {
-    if (this.DEMO_MODE) {
-      const demoUser: UserData = {
-        email: email,
-        displayName: displayName || email.split('@')[0]
-      };
-      this.saveToStorage(demoUser);
-      return true;
+  async refreshAccessToken(): Promise<boolean> {
+    if (!this.refreshToken) return false;
+    
+    try {
+      const response = await apiService.post<{ access_token: string; token_type: string }>('/auth/refresh', {
+        refresh_token: this.refreshToken
+      });
+      
+      if (response && response.access_token) {
+        this.accessToken = response.access_token;
+        localStorage.setItem(this.ACCESS_TOKEN_KEY, this.accessToken);
+        return true;
+      }
+      return false;
+    } catch (error) {
+       console.error('Token refresh failed:', error);
+       this.logout(); // Enforce logout if refresh fails securely
+       return false;
     }
-    return false;
+  }
+
+  // Deprecated legacy mode (fallback dev to not break UI immediately if forms are used instead of OAuth)
+  async login(email: string, password?: string): Promise<boolean> {
+      // Create a mock jwt idToken for dev test if there is no real oauth client yet
+      const mockIdToken = btoa(JSON.stringify({ email }));
+      return this.loginOAuth('google', mockIdToken);
+  }
+
+  async register(email: string, password?: string, displayName?: string): Promise<boolean> {
+      const mockIdToken = btoa(JSON.stringify({ email }));
+      return this.loginOAuth('google', mockIdToken, displayName);
   }
 
   async logout(): Promise<void> {
@@ -70,7 +110,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.currentUser;
+    return !!this.currentUser && !!this.accessToken;
   }
 
   getCurrentUser(): UserData | null {
@@ -78,10 +118,6 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
-    return this.accessToken;
-  }
-
-  async getValidToken(): Promise<string | null> {
     return this.accessToken;
   }
 }
