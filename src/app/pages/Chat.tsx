@@ -37,25 +37,21 @@ export default function ChatPage() {
     setIsTyping(true);
 
     try {
-      const aiMsg: Message = { 
-        id: Date.now() + 1, 
-        sender: "ai", 
-        text: "" 
-      };
+      const aiMsg: Message = { id: Date.now() + 1, sender: "ai", text: "" };
       setMessages((prev) => [...prev, aiMsg]);
 
       const response = await aiService.chat(input, (partialText) => {
         setMessages((prev) => {
-          const newMessages = [...prev];
-          newMessages[newMessages.length - 1].text = partialText;
-          return newMessages;
+          const updated = [...prev];
+          updated[updated.length - 1].text = partialText;
+          return updated;
         });
       });
 
       setMessages((prev) => {
-        const newMessages = [...prev];
-        newMessages[newMessages.length - 1].text = response;
-        return newMessages;
+        const updated = [...prev];
+        updated[updated.length - 1].text = response;
+        return updated;
       });
     } catch (error) {
       console.error("Error:", error);
@@ -73,7 +69,7 @@ export default function ChatPage() {
 
     const hasPermission = await audioService.requestPermissions();
     if (!hasPermission) {
-      alert("Necesitas dar permiso al micrófono");
+      alert("Microphone permission needed");
       return;
     }
 
@@ -91,50 +87,67 @@ export default function ChatPage() {
   };
 
   const handleSpeak = () => {
-    const lastAiMessage = messages.filter(m => m.sender === "ai").pop();
-    if (lastAiMessage) {
-      audioService.speak(lastAiMessage.text);
-    }
+    const lastAi = messages.filter((m) => m.sender === "ai").pop();
+    if (lastAi) audioService.speak(lastAi.text);
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 pb-32">
-      <header className="bg-white/80 backdrop-blur-md sticky top-0 z-10 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white/95 backdrop-blur-xl sticky top-0 z-10 px-5 py-3.5 border-b border-gray-100/60 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 shadow-sm">
+          <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
             <Bot size={20} />
           </div>
           <div>
             <h1 className="font-bold text-gray-900 text-sm">Study Assistant</h1>
             <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-[10px] text-green-600 font-medium">Online</span>
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+              <span className="text-[10px] text-emerald-600 font-medium">Online</span>
             </div>
           </div>
         </div>
-        <button 
-          onClick={() => setMessages([])} 
-          className="text-gray-400 hover:text-indigo-600 transition-colors p-2 rounded-full hover:bg-gray-100"
+        <button
+          onClick={() => setMessages([])}
+          className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-indigo-600 transition-colors rounded-xl hover:bg-gray-100"
           title="Clear Chat"
         >
-          <RefreshCcw size={18} />
+          <RefreshCcw size={16} />
         </button>
       </header>
 
-      <div className="flex-1 p-4 space-y-4">
+      {/* Messages */}
+      <div className="flex-1 p-4 space-y-3 pb-36">
         {messages.length === 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-12 px-6"
+            className="text-center py-16 px-6"
           >
-            <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Bot size={32} className="text-indigo-600" />
+            <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Bot size={28} className="text-indigo-600" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900 mb-2">How can I help you today?</h2>
-            <p className="text-sm text-gray-500">
+            <h2 className="text-lg font-bold text-gray-900 mb-1.5">
+              How can I help you today?
+            </h2>
+            <p className="text-sm text-gray-400">
               Ask me anything about your studies
             </p>
+
+            {/* Suggestion chips */}
+            <div className="flex flex-wrap gap-2 justify-center mt-6">
+              {["Summarize my notes", "Help with calculus", "Study tips", "Explain derivatives"].map(
+                (s) => (
+                  <button
+                    key={s}
+                    onClick={() => setInput(s)}
+                    className="text-xs px-3.5 py-2 bg-white border border-gray-200 rounded-full text-gray-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 transition-all"
+                  >
+                    {s}
+                  </button>
+                )
+              )}
+            </div>
           </motion.div>
         )}
 
@@ -142,7 +155,7 @@ export default function ChatPage() {
           {messages.map((msg) => (
             <motion.div
               key={msg.id}
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              initial={{ opacity: 0, y: 8, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.2 }}
               className={clsx(
@@ -163,14 +176,14 @@ export default function ChatPage() {
             </motion.div>
           ))}
         </AnimatePresence>
-        
+
         {isTyping && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="flex justify-start w-full"
           >
-            <div className="bg-white border border-gray-100 p-4 rounded-2xl rounded-tl-sm shadow-sm flex gap-1 items-center h-10 w-16 justify-center">
+            <div className="bg-white border border-gray-100 p-3.5 rounded-2xl rounded-tl-sm shadow-sm flex gap-1 items-center h-10 w-16 justify-center">
               <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
               <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
               <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" />
@@ -180,50 +193,49 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="fixed bottom-[70px] w-full max-w-md bg-white border-t border-gray-100 p-4 z-20">
+      {/* Input Bar */}
+      <div className="fixed bottom-[56px] safe-bottom w-full max-w-md bg-white/95 backdrop-blur-xl border-t border-gray-100/60 p-3 z-20">
         <form onSubmit={handleSend} className="flex items-center gap-2">
-          <button
+          <motion.button
+            whileTap={{ scale: 0.85 }}
             type="button"
             onClick={handleVoiceInput}
             className={clsx(
-              "w-10 h-10 rounded-full flex items-center justify-center transition-all flex-shrink-0 shadow-sm",
-              isRecording 
-                ? "bg-red-500 text-white animate-pulse scale-105" 
-                : "bg-indigo-100 text-indigo-600 hover:bg-indigo-200"
+              "w-10 h-10 rounded-full flex items-center justify-center transition-all flex-shrink-0",
+              isRecording
+                ? "bg-red-500 text-white animate-pulse"
+                : "bg-indigo-50 text-indigo-600 hover:bg-indigo-100"
             )}
-            title={isRecording ? "Stop recording" : "Voice input"}
           >
             <Mic size={18} />
-          </button>
-          
+          </motion.button>
+
           <div className="flex-1 relative">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask me anything..."
-              className="w-full bg-gray-100 border-0 rounded-full py-3.5 pl-5 pr-14 text-sm text-gray-900 focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all shadow-inner placeholder:text-gray-400"
+              className="w-full bg-gray-50 border-0 rounded-full py-3 pl-4 pr-12 text-sm text-gray-900 focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all placeholder:text-gray-400"
             />
-            
             <button
               type="submit"
               disabled={!input.trim()}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700 transition-colors"
-              title="Send message"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-700 transition-colors"
             >
               <Send size={14} className="ml-0.5" />
             </button>
           </div>
 
-          <button
+          <motion.button
+            whileTap={{ scale: 0.85 }}
             type="button"
             onClick={handleSpeak}
-            disabled={messages.filter(m => m.sender === "ai").length === 0}
-            className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 hover:bg-indigo-200 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 shadow-sm"
-            title="Listen to last message"
+            disabled={messages.filter((m) => m.sender === "ai").length === 0}
+            className="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 hover:bg-indigo-100 transition-all disabled:opacity-30 flex-shrink-0"
           >
             <Volume2 size={18} />
-          </button>
+          </motion.button>
         </form>
       </div>
     </div>

@@ -18,7 +18,7 @@ export default function LoginPage() {
     try {
       const success = await authService.login(email, password);
       if (success) {
-        navigate("/home");
+        navigate("/dashboard");
       } else {
         alert("Error signing in");
       }

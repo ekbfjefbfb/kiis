@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Filter, Mic, Play, ChevronRight } from "lucide-react";
+import { Search, Mic, ChevronRight } from "lucide-react";
 import { motion } from "motion/react";
 import { clsx } from "clsx";
 import { Link } from "react-router";
@@ -20,18 +20,17 @@ export default function NotesPage() {
     setNotes(notesService.getNotes());
   };
 
-  const filteredNotes = notes.filter(note => {
-    const matchesSearch = note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         note.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         note.className.toLowerCase().includes(searchQuery.toLowerCase());
-    
+  const filteredNotes = notes.filter((note) => {
+    const matchesSearch =
+      note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      note.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      note.className.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = filterType === "all" || note.category === filterType;
-    
     return matchesSearch && matchesFilter;
   });
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
+  const getCategoryIcon = (cat: string) => {
+    switch (cat) {
       case "importante": return "⭐";
       case "resumen": return "📝";
       case "tarea": return "✏️";
@@ -39,116 +38,119 @@ export default function NotesPage() {
     }
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
+  const getCategoryColor = (cat: string) => {
+    switch (cat) {
       case "importante": return "bg-red-50 text-red-700 border-red-200";
       case "resumen": return "bg-blue-50 text-blue-700 border-blue-200";
-      case "tarea": return "bg-yellow-50 text-yellow-700 border-yellow-200";
-      default: return "bg-gray-50 text-gray-700 border-gray-200";
+      case "tarea": return "bg-amber-50 text-amber-700 border-amber-200";
+      default: return "bg-gray-50 text-gray-600 border-gray-200";
     }
   };
 
-  const getTimeAgo = (timestamp: number) => {
-    const now = Date.now();
-    const diff = now - timestamp;
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
-    if (days > 0) return `${days}d ago`;
-    if (hours > 0) return `${hours}h ago`;
+  const getTimeAgo = (ts: number) => {
+    const diff = Date.now() - ts;
+    const h = Math.floor(diff / 3600000);
+    const d = Math.floor(diff / 86400000);
+    if (d > 0) return `${d}d ago`;
+    if (h > 0) return `${h}h ago`;
     return "Just now";
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50 pb-4">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 p-6 sticky top-0 z-10">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">My Notes</h1>
-        
+      <div className="bg-white border-b border-gray-100/60 px-5 pt-5 pb-3 sticky top-0 z-10">
+        <h1 className="text-xl font-bold text-gray-900 mb-3">My Notes</h1>
+
         {/* Search */}
-        <div className="relative mb-4">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <div className="relative mb-3">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type="text"
             placeholder="Search notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all"
+            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all"
           />
         </div>
 
         {/* Filters */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
           {[
             { id: "all", label: "All", icon: "📚" },
             { id: "importante", label: "Important", icon: "⭐" },
             { id: "resumen", label: "Summary", icon: "📝" },
             { id: "tarea", label: "Tasks", icon: "✏️" },
-          ].map((filter) => (
+          ].map((f) => (
             <button
-              key={filter.id}
-              onClick={() => setFilterType(filter.id)}
+              key={f.id}
+              onClick={() => setFilterType(f.id)}
               className={clsx(
-                "flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all flex-shrink-0 text-sm font-medium",
-                filterType === filter.id
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all flex-shrink-0 text-xs font-medium min-h-[32px]",
+                filterType === f.id
                   ? "bg-indigo-600 text-white border-indigo-600"
                   : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
               )}
             >
-              <span>{filter.icon}</span>
-              <span>{filter.label}</span>
+              <span className="text-[11px]">{f.icon}</span>
+              <span>{f.label}</span>
             </button>
           ))}
         </div>
       </div>
 
       {/* Notes List */}
-      <div className="p-6">
+      <div className="px-5 pt-4">
         {filteredNotes.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mic size={32} className="text-gray-400" />
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <Mic size={24} className="text-gray-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No notes found</h3>
-            <p className="text-sm text-gray-500">
+            <h3 className="text-base font-semibold text-gray-900 mb-1">No notes found</h3>
+            <p className="text-sm text-gray-400">
               {searchQuery ? "Try a different search" : "Start recording to create notes"}
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {filteredNotes.map((note, index) => (
-              <Link
-                key={note.id}
-                to={`/note/${note.id}`}
-              >
+          <div className="space-y-2.5">
+            {filteredNotes.map((note, i) => (
+              <Link key={note.id} to={`/note/${note.id}`}>
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
+                  transition={{ delay: i * 0.04 }}
                   whileTap={{ scale: 0.98 }}
-                  className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all"
+                  className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all"
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex-1">
+                  <div className="flex justify-between items-start mb-1.5">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className={clsx(
-                          "text-xs px-2 py-1 rounded-full font-medium border",
-                          getCategoryColor(note.category)
-                        )}>
+                        <span
+                          className={clsx(
+                            "text-[10px] px-2 py-0.5 rounded-full font-medium border",
+                            getCategoryColor(note.category)
+                          )}
+                        >
                           {getCategoryIcon(note.category)} {note.category}
                         </span>
-                        <span className="text-xs text-gray-500">{getTimeAgo(note.createdAt)}</span>
+                        <span className="text-[10px] text-gray-400">
+                          {getTimeAgo(note.createdAt)}
+                        </span>
                       </div>
-                      <h4 className="font-semibold text-gray-900">{note.className}</h4>
+                      <h4 className="font-semibold text-sm text-gray-900 truncate">
+                        {note.className}
+                      </h4>
                     </div>
-                    <ChevronRight className="text-gray-300 flex-shrink-0" size={20} />
+                    <ChevronRight className="text-gray-300 flex-shrink-0 ml-2" size={16} />
                   </div>
-                  
-                  <p className="text-sm text-gray-600 line-clamp-2 mb-2">{note.content}</p>
-                  
+
+                  <p className="text-xs text-gray-500 line-clamp-2 mb-1.5">
+                    {note.content}
+                  </p>
+
                   {note.hasAudio && (
-                    <div className="flex items-center gap-1 text-xs text-indigo-600">
-                      <Mic size={12} />
+                    <div className="flex items-center gap-1 text-[10px] text-indigo-600">
+                      <Mic size={10} />
                       <span>Audio recording</span>
                     </div>
                   )}

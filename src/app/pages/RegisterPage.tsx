@@ -30,7 +30,7 @@ export default function RegisterPage() {
     try {
       const success = await authService.register(email, password, name);
       if (success) {
-        navigate("/home");
+        navigate("/dashboard");
       } else {
         alert("Error creating account");
       }

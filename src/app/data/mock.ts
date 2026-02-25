@@ -21,6 +21,7 @@ export const CLASSES = [
     icon: Calculator,
     nextTask: "Calculus Quiz",
     taskDate: "Tomorrow",
+    importantTopics: ["Derivatives", "Integrals", "Chain Rule", "Limits"],
   },
   {
     id: "2",
@@ -34,6 +35,7 @@ export const CLASSES = [
     icon: History,
     nextTask: "Essay: Industrial Revolution",
     taskDate: "Fri, 12th",
+    importantTopics: ["Industrial Revolution", "World War I", "Cold War"],
   },
   {
     id: "3",
@@ -47,6 +49,7 @@ export const CLASSES = [
     icon: FlaskConical,
     nextTask: "Lab Report",
     taskDate: "Next Mon",
+    importantTopics: ["Newton's Laws", "Kinematics", "Energy Conservation"],
   },
   {
     id: "4",
@@ -60,14 +63,49 @@ export const CLASSES = [
     icon: BookOpen,
     nextTask: "Read Chapter 4-5",
     taskDate: "Wed, 10th",
+    importantTopics: ["Shakespeare", "Modernism", "Literary Analysis"],
   },
 ];
 
 export const TASKS = [
-  { id: 1, title: "Calculus Quiz", classId: "1", date: "Tomorrow", completed: false },
-  { id: 2, title: "Read Chapter 4-5", classId: "4", date: "Wed, 10th", completed: true },
-  { id: 3, title: "Lab Report", classId: "3", date: "Next Mon", completed: false },
-  { id: 4, title: "Essay: Industrial Revolution", classId: "2", date: "Fri, 12th", completed: false },
+  { id: 1, title: "Calculus Quiz", classId: "1", date: "2026-02-26", completed: false },
+  { id: 2, title: "Read Chapter 4-5", classId: "4", date: "2026-03-10", completed: true },
+  { id: 3, title: "Lab Report", classId: "3", date: "2026-03-03", completed: false },
+  { id: 4, title: "Essay: Industrial Revolution", classId: "2", date: "2026-03-12", completed: false },
+  { id: 5, title: "Homework Set 7", classId: "1", date: "2026-03-05", completed: false },
+  { id: 6, title: "Reading Response", classId: "4", date: "2026-03-15", completed: false },
+];
+
+export const EXAMS = [
+  { id: 1, title: "Midterm - Derivatives & Integrals", classId: "1", date: "2026-03-07", type: "exam" as const },
+  { id: 2, title: "History Essay Exam", classId: "2", date: "2026-03-14", type: "exam" as const },
+  { id: 3, title: "Physics Lab Final", classId: "3", date: "2026-03-20", type: "exam" as const },
+  { id: 4, title: "Literature Analysis Exam", classId: "4", date: "2026-03-25", type: "exam" as const },
+];
+
+export const IMPORTANT_DATES = [
+  { id: 1, title: "Registration Deadline", date: "2026-03-01", category: "academic" as const },
+  { id: 2, title: "Spring Break Starts", date: "2026-03-16", category: "holiday" as const },
+  { id: 3, title: "Project Proposals Due", date: "2026-03-08", category: "deadline" as const },
+  { id: 4, title: "Guest Speaker: AI in Education", date: "2026-03-04", category: "event" as const },
+];
+
+export const AI_SUMMARIES = [
+  {
+    classId: "1",
+    summary: "Today's class covered the chain rule for derivatives of composite functions. Key formula: d/dx[f(g(x))] = f'(g(x)) · g'(x). Practice problems assigned from Chapter 5.",
+    date: "2026-02-25",
+  },
+  {
+    classId: "2",
+    summary: "Discussed the socioeconomic impacts of the Industrial Revolution including urbanization, labor movements, and technological innovation. Essay due Friday on the topic.",
+    date: "2026-02-24",
+  },
+  {
+    classId: "3",
+    summary: "Lab session on Newton's Second Law. Measured acceleration with different masses on an air track. Results showed F=ma within 5% error margin.",
+    date: "2026-02-24",
+  },
 ];
 
 export const CHAT_HISTORY = [
