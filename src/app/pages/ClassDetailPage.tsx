@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ArrowLeft, FileText, Lightbulb, CheckSquare, Calendar,
   BookOpen, Tag, MessageSquare, Star, Mic, Square, Loader2,
-  Clock, User
+  Clock, User, Trash2, Plus, X
 } from "lucide-react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
-import { CLASSES, TASKS, EXAMS } from "../data/mock";
+import { CLASSES, TASKS, EXAMS, removeClass, addExam, removeExam } from "../data/mock";
 import { aiService } from "../../services/ai.service";
 import { audioService } from "../../services/audio.service";
 
@@ -15,8 +15,18 @@ type TabType = "overview" | "topics" | "tasks" | "notes" | "chat";
 
 export default function ClassDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const cls = CLASSES.find((c) => c.id === id);
+  const navigate = useNavigate();
+  // We use local state to trigger re-renders properly if modified
+  const [cls, setCls] = useState(CLASSES.find((c) => c.id === id));
   const [activeTab, setActiveTab] = useState<TabType>("overview");
+
+  // New Exam Modal
+  const [isAddingExam, setIsAddingExam] = useState(false);
+  const [newExamTitle, setNewExamTitle] = useState("");
+  const [newExamDate, setNewExamDate] = useState("");
+  
+  // Forces a re-render from the arrays
+  const [updateTrigger, setUpdateTrigger] = useState(Date.now());
 
   // Chat state
   const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "ai"; text: string }>>([
@@ -30,6 +40,31 @@ export default function ClassDetailPage() {
   const [recordingTime, setRecordingTime] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [noteText, setNoteText] = useState("");
+  const [liveTranscript, setLiveTranscript] = useState("");
+
+  const handleDeleteClass = () => {
+    if (confirm("¿Seguro que deseas eliminar esta materia permanentemente?")) {
+      removeClass(id!);
+      navigate("/dashboard", { replace: true });
+    }
+  };
+
+  const handleCreateExam = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!id || !newExamTitle.trim() || !newExamDate) return;
+    addExam({ title: newExamTitle, classId: id, date: newExamDate });
+    setIsAddingExam(false);
+    setNewExamTitle("");
+    setNewExamDate("");
+    setUpdateTrigger(Date.now());
+  };
+
+  const handleDeleteExam = (examId: number) => {
+    if (confirm("¿Eliminar este examen?")) {
+      removeExam(examId);
+      setUpdateTrigger(Date.now());
+    }
+  };
 
   if (!cls) {
     return (
@@ -76,38 +111,54 @@ export default function ClassDetailPage() {
     }
   };
 
-  const handleRecord = async () => {
-    if (isRecording) {
-      try {
-        await audioService.stopAudioRecording();
-        setIsRecording(false);
-        setIsProcessing(true);
-        await new Promise((r) => setTimeout(r, 1500));
-        setNoteText(
-          `Notas de la sesión de ${cls.name}:\n\n📝 Conceptos clave revisados:\n- ${cls.importantTopics.slice(0, 3).join("\n- ")}\n\n✅ Acciones:\n- Revisar notas del capítulo\n- Completar problemas de práctica`
-        );
-        setIsProcessing(false);
-      } catch {
-        setIsRecording(false);
-        setIsProcessing(false);
+  const startRecording = async () => {
+    const ok = await audioService.requestPermissions();
+    if (!ok) return;
+    try {
+      await audioService.startAudioRecording();
+      setIsRecording(true);
+      setRecordingTime(0);
+      setLiveTranscript("...");
+      
+      // Start live transcription implicitly if supported
+      if (audioService.isSupported()) {
+        audioService.startRecording((txt) => {
+          setLiveTranscript(txt);
+        });
       }
-    } else {
-      const ok = await audioService.requestPermissions();
-      if (!ok) {
-        alert("Se necesitan permisos de micrófono");
-        return;
-      }
-      try {
-        await audioService.startAudioRecording();
-        setIsRecording(true);
-        setRecordingTime(0);
-        const interval = setInterval(() => {
-          setRecordingTime((p) => p + 1);
-        }, 1000);
-        (window as any).__recordInterval = interval;
-      } catch {
-        setIsRecording(false);
-      }
+
+      const interval = setInterval(() => {
+        setRecordingTime((p) => p + 1);
+      }, 1000);
+      (window as any).__recordInterval = interval;
+    } catch (error) {
+       console.error(error);
+       setIsRecording(false);
+    }
+  };
+
+  const stopRecording = async () => {
+    setIsRecording(false);
+    setIsProcessing(true);
+    setLiveTranscript("");
+    
+    if ((window as any).__recordInterval) {
+      clearInterval((window as any).__recordInterval);
+    }
+
+    // Stop live recognition
+    if (audioService.getIsRecording()) {
+      audioService.stopRecording();
+    }
+    
+    try {
+      const audioBlob = await audioService.stopAudioRecording();
+      const { text } = await aiService.processAudio(audioBlob);
+      setNoteText(text);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -117,15 +168,24 @@ export default function ClassDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50 pb-4">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100/60 sticky top-0 z-10">
-        <div className="px-5 pt-5 pb-3">
+      <div className="bg-white px-5 pt-6 pb-4 border-b border-gray-100/60 sticky top-0 z-10 transition-shadow">
+        <div className="flex items-center justify-between mb-4">
+          <Link
+            to="/dashboard"
+            className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </Link>
+          <button 
+            onClick={handleDeleteClass}
+            className="w-10 h-10 flex items-center justify-center rounded-2xl text-red-500 hover:bg-red-50 transition-colors"
+          >
+            <Trash2 size={20} />
+          </button>
+        </div>
+        
+        <div>
           <div className="flex items-center gap-3 mb-3">
-            <Link
-              to="/dashboard"
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-            >
-              <ArrowLeft size={18} />
-            </Link>
             <div className="flex-1 min-w-0">
               <h1 className="text-lg font-bold text-gray-900 truncate">{cls.name}</h1>
               <div className="flex items-center gap-2 mt-0.5">
@@ -190,27 +250,62 @@ export default function ClassDetailPage() {
               exit={{ opacity: 0 }}
               className="space-y-4"
             >
-              {/* Class Info Card */}
               <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                 <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                   Información de Clase
                 </h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <Clock size={16} className="text-gray-400" />
+                    <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center">
+                      <Clock size={16} className="text-gray-500" />
+                    </div>
                     <div>
-                      <p className="text-xs text-gray-500">Horario</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Horario</p>
                       <p className="text-sm font-medium text-gray-900">{cls.time}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <User size={16} className="text-gray-400" />
+                    <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center">
+                      <User size={16} className="text-gray-500" />
+                    </div>
                     <div>
-                      <p className="text-xs text-gray-500">Profesor</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Profesor</p>
                       <p className="text-sm font-medium text-gray-900">{cls.professor}</p>
-                      {cls.email && <p className="text-[11px] text-gray-500">{cls.email}</p>}
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Exams Section */}
+              <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Exámenes
+                  </h3>
+                  <button 
+                    onClick={() => setIsAddingExam(true)}
+                    className="text-indigo-600 flex items-center gap-1 text-xs font-bold bg-indigo-50 px-2.5 py-1.5 rounded-lg active:scale-95 transition-transform"
+                  >
+                    <Plus size={14} /> Añadir
+                  </button>
+                </div>
+                
+                <div className="space-y-2.5">
+                  {EXAMS.filter(e => e.classId === id).length === 0 ? (
+                     <p className="text-xs text-gray-500 italic text-center py-2">No hay exámenes programados</p>
+                  ) : (
+                    EXAMS.filter(e => e.classId === id).map(exam => (
+                      <div key={exam.id} className="flex items-center justify-between p-3 rounded-xl border border-purple-100 bg-purple-50/50">
+                        <div>
+                          <p className="text-sm font-semibold text-purple-900">{exam.title}</p>
+                          <p className="text-xs text-purple-600 flex items-center gap-1 mt-0.5"><Calendar size={12}/> {exam.date}</p>
+                        </div>
+                        <button onClick={() => handleDeleteExam(exam.id)} className="text-purple-300 hover:text-purple-500 transition-colors p-2">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -387,53 +482,52 @@ export default function ClassDetailPage() {
             </motion.div>
           )}
 
-          {/* NOTES */}
+          {/* NOTES TAB */}
           {activeTab === "notes" && (
             <motion.div
               key="notes"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="space-y-4"
+              className="space-y-4 pb-24"
             >
-              {/* Recording */}
-              <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-                  Grabar Clase
-                </h3>
-                <div className="flex flex-col items-center gap-3">
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={handleRecord}
-                    disabled={isProcessing}
-                    className={clsx(
-                      "w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-all",
-                      isRecording
-                        ? "bg-red-500 animate-pulse"
-                        : isProcessing
-                        ? "bg-gray-200"
-                        : "bg-indigo-600 hover:bg-indigo-700"
-                    )}
-                  >
-                    {isProcessing ? (
-                      <Loader2 size={24} className="text-gray-500 animate-spin" />
-                    ) : isRecording ? (
-                      <Square size={20} className="text-white fill-white" />
-                    ) : (
-                      <Mic size={24} className="text-white" />
-                    )}
-                  </motion.button>
-                  <p className="text-xs text-gray-500">
-                    {isRecording
-                      ? `Grabando ${formatTime(recordingTime)}...`
-                      : isProcessing
-                      ? "IA Procesando..."
-                      : "Toca para grabar"}
-                  </p>
-                </div>
-              </div>
+              {isRecording ? (
+                 <div className="bg-indigo-600 text-white rounded-3xl p-6 shadow-xl shadow-indigo-600/20 mb-4 animate-in slide-in-from-bottom flex flex-col items-center">
+                   <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-4 relative">
+                     <span className="absolute inset-0 rounded-full border-2 border-white/20 animate-ping"></span>
+                     <Mic size={28} className="text-white" />
+                   </div>
+                   <h3 className="text-lg font-bold mb-1">Escuchando...</h3>
+                   <div className="text-3xl font-mono opacity-90 tracking-wider mb-6">
+                     {formatTime(recordingTime)}
+                   </div>
+                   {liveTranscript && (
+                     <p className="text-base text-white/80 italic mb-6 text-center max-w-xs">{liveTranscript}</p>
+                   )}
+                   <button
+                     onClick={stopRecording}
+                     disabled={isProcessing}
+                     className="bg-white text-indigo-600 px-8 py-3.5 rounded-2xl font-bold flex items-center gap-2 shadow-lg active:scale-95 transition-transform"
+                   >
+                     {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <Square size={18} className="fill-current" />}
+                     {isProcessing ? "Procesando IA..." : "Guardar Nota"}
+                   </button>
+                 </div>
+               ) : (
+                 <div className="grid grid-cols-2 gap-3 mb-6">
+                   <button
+                     onClick={startRecording}
+                     className="col-span-2 bg-indigo-600 text-white p-4 rounded-3xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-600/20 active:scale-[0.98] transition-all"
+                   >
+                     <div className="bg-white/20 p-2 rounded-xl">
+                       <Mic size={24} />
+                     </div>
+                     <span className="font-bold text-lg">Grabar Nueva Nota</span>
+                   </button>
+                 </div>
+               )}
 
-              {/* Note content */}
+              {/* Note content generated */}
               {noteText && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -528,6 +622,69 @@ export default function ClassDetailPage() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Add Exam Modal */}
+      <AnimatePresence>
+        {isAddingExam && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl"
+            >
+              <div className="flex justify-between items-center mb-5">
+                <h3 className="text-lg font-bold text-gray-900">Añadir Examen</h3>
+                <button
+                  onClick={() => setIsAddingExam(false)}
+                  className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateExam} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                    Título del Examen
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newExamTitle}
+                    onChange={(e) => setNewExamTitle(e.target.value)}
+                    placeholder="Ej. Parcial 1"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                    Fecha
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={newExamDate}
+                    onChange={(e) => setNewExamDate(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
+                >
+                  Guardar Examen
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

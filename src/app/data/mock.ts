@@ -1,10 +1,14 @@
 import { BookOpen, Calculator, FlaskConical, History, Languages } from "lucide-react";
 
-export const USER = {
+export let USER = {
   name: "Alex Morgan",
   email: "alex.morgan@estudiante.edu",
   phone: "+52 555 123-4567",
   avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop",
+};
+
+export const updateUser = (data: Partial<typeof USER>) => {
+  USER = { ...USER, ...data };
 };
 
 // Lo hacemos let para poder modificarlo dinámicamente en esta sesión (hasta refrescar)
@@ -74,6 +78,13 @@ export const addClass = (newClass: Omit<typeof CLASSES[0], "id" | "color" | "ico
   CLASSES.push({ ...newClass, id, color, icon: BookOpen, importantTopics });
 };
 
+export const removeClass = (id: string) => {
+  const index = CLASSES.findIndex(c => c.id === id);
+  if (index !== -1) {
+    CLASSES.splice(index, 1);
+  }
+};
+
 export const TASKS = [
   { id: 1, title: "Cuestionario de Cálculo", classId: "1", date: "2026-02-26", completed: false },
   { id: 2, title: "Leer Capítulos 4-5", classId: "4", date: "2026-03-10", completed: true },
@@ -87,6 +98,17 @@ export const EXAMS = [
   { id: 2, title: "Examen de Ensayo de Historia", classId: "2", date: "2026-03-14", type: "exam" as const },
   { id: 3, title: "Examen Final Práctico Física", classId: "3", date: "2026-03-20", type: "exam" as const },
 ];
+
+export const addExam = (exam: { title: string; classId: string; date: string }) => {
+  EXAMS.push({ id: Date.now(), ...exam, type: "exam" });
+};
+
+export const removeExam = (id: number) => {
+  const index = EXAMS.findIndex(e => e.id === id);
+  if (index !== -1) {
+    EXAMS.splice(index, 1);
+  }
+};
 
 export const IMPORTANT_DATES = [
   { id: 1, title: "Límite de Inscripción", date: "2026-03-01", category: "academic" as const },

@@ -1,29 +1,51 @@
-import { LogOut, Settings, User as UserIcon, Bell, Moon, ChevronRight, Mail, Phone, Book } from "lucide-react";
+import { LogOut, Settings, User as UserIcon, Bell, Moon, ChevronRight, Mail, Phone, Book, Camera } from "lucide-react";
 import { Link } from "react-router";
-import { USER, CLASSES } from "../data/mock";
+import { USER, CLASSES, updateUser } from "../data/mock";
 import { motion } from "motion/react";
 import { clsx } from "clsx";
+import { useState } from "react";
 
 export default function Profile() {
+  const [avatar, setAvatar] = useState(USER.avatar);
+
   const stats = [
     { label: "Cursos", value: CLASSES.length.toString(), icon: Book, color: "text-indigo-600", bg: "bg-indigo-50" },
     { label: "Promedio", value: "A", icon: Star, color: "text-amber-600", bg: "bg-amber-50" },
     { label: "Asist.", value: "98%", icon: UserIcon, color: "text-emerald-600", bg: "bg-emerald-50" },
   ];
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) return alert("Imagen demasiado grande (máx 5MB)");
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setAvatar(result);
+        updateUser({ avatar: result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-4">
       {/* Header Profile Cover */}
       <div className="bg-white px-5 pt-8 pb-6 border-b border-gray-100/60 sticky top-0 z-10 flex flex-col items-center">
         <div className="relative mb-4">
-          <div className="w-20 h-20 rounded-full border-4 border-white shadow-xl overflow-hidden bg-gray-100">
-            <img 
-              src={USER.avatar} 
-              alt={USER.name} 
-              className="w-full h-full object-cover"
-            />
+          <div className="w-24 h-24 rounded-full border-4 border-white shadow-xl overflow-hidden bg-gray-100 relative group">
+            {avatar ? (
+              <img src={avatar} alt={USER.name} className="w-full h-full object-cover" />
+            ) : (
+              <UserIcon size={40} className="text-gray-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            )}
+            <label className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+              <Camera size={24} className="text-white mb-1" />
+              <span className="text-[10px] text-white font-medium">Cambiar</span>
+              <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+            </label>
           </div>
-          <div className="absolute bottom-0 right-0 w-6 h-6 bg-emerald-500 border-2 border-white rounded-full flex items-center justify-center">
+          <div className="absolute bottom-1 right-1 w-6 h-6 bg-emerald-500 border-2 border-white rounded-full flex items-center justify-center">
             <div className="w-2 h-2 bg-white rounded-full"></div>
           </div>
         </div>
@@ -68,7 +90,7 @@ export default function Profile() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Teléfono</p>
-              <p className="text-sm font-medium text-gray-900 truncate">{USER.phone}</p>
+              <p className="text-sm font-medium text-gray-900 truncate">{USER.phone || "No especificado"}</p>
             </div>
           </div>
         </div>
@@ -133,5 +155,4 @@ export default function Profile() {
   );
 }
 
-// Need to import Star from lucide-react if not already
 import { Star } from "lucide-react";
