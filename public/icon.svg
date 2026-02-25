@@ -1,0 +1,12 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="115" fill="#4F46E5"/>
+  
+  <!-- Letter N -->
+  <path d="M140 140 L140 372 L180 372 L180 220 L332 372 L372 372 L372 140 L332 140 L332 292 L180 140 Z" fill="white"/>
+  
+  <!-- Microphone icon (small) -->
+  <circle cx="420" cy="180" r="45" fill="#EF4444"/>
+  <rect x="410" y="165" width="20" height="30" rx="10" fill="white"/>
+  <path d="M405 195 Q420 205 435 195" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>
