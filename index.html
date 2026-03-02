@@ -16,7 +16,7 @@
     
     <!-- iOS Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Notdeer" />
     <meta name="format-detection" content="telephone=no" />
     
@@ -109,12 +109,22 @@
         overscroll-behavior: none;
       }
       
-      /* Safe area para notch */
+      /* Safe area para notch - respeta barra de estado del sistema */
       body {
         margin: 0;
         padding: 0;
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
         overscroll-behavior: none;
         -webkit-overflow-scrolling: touch;
+      }
+      
+      /* Asegurar que el root también respete safe-area */
+      #root {
+        min-height: 100vh;
+        min-height: 100dvh;
       }
       
       /* Prevenir pull-to-refresh en Chrome Android */
