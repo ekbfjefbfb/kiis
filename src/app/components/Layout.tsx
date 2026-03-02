@@ -1,32 +1,10 @@
 import { Outlet, Link, useLocation } from "react-router";
-import { LayoutDashboard, MessageCircle, User, Download, AudioLines } from "lucide-react";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { LayoutDashboard, MessageCircle, User, AudioLines } from "lucide-react";
 import { clsx } from "clsx";
+import PWAInstallPrompt from "./PWAInstallPrompt";
 
 export default function Layout() {
   const location = useLocation();
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showInstallBanner, setShowInstallBanner] = useState(true);
-
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-  }, []);
-
-  const handleInstall = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      setDeferredPrompt(null);
-      setShowInstallBanner(false);
-    }
-  };
 
   const navItems = [
     { icon: LayoutDashboard, label: "Inicio", path: "/dashboard" },
@@ -43,11 +21,8 @@ export default function Layout() {
 
   return (
     <div className="mx-auto max-w-md min-h-[100dvh] relative overflow-hidden font-sans bg-background text-foreground">
-      {/* PWA Install Banner */}
-      <AnimatePresence>
-        {deferredPrompt && !shouldHideNav && showInstallBanner && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
+      {/* PWA Install Prompt */}
+      {!shouldHideNav && <PWAInstallPrompt />}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"

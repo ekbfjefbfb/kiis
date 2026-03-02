@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Download, X } from "lucide-react";
+import { X, Download, Share } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -7,24 +7,44 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-export function PWAInstallPrompt() {
+export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    const handler = (e: Event) => {
+    // Check if already installed
+    const standalone = window.matchMedia('(display-mode: standalone)').matches ||
+                      (window.navigator as any).standalone ||
+                      document.referrer.includes('android-app://');
+    
+    setIsStandalone(standalone);
+
+    // Check if iOS
+    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    setIsIOS(ios);
+
+    // Listen for install prompt (Android/Desktop)
+    const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
+      
+      // Don't show immediately, wait for user interaction
+      setTimeout(() => {
+        const dismissed = localStorage.getItem('pwa-install-dismissed');
+        if (!dismissed && !standalone) {
+          setShowPrompt(true);
+        }
+      }, 3000); // Show after 3 seconds
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    window.addEventListener('pwa-installable', () => setShowPrompt(true));
 
-    // Detectar si ya está instalado
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setShowPrompt(false);
-    }
-
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+    };
   }, []);
 
   const handleInstall = async () => {
@@ -34,76 +54,71 @@ export function PWAInstallPrompt() {
     const { outcome } = await deferredPrompt.userChoice;
     
     if (outcome === 'accepted') {
-      setDeferredPrompt(null);
-      setShowPrompt(false);
+      console.log('✅ Usuario aceptó instalar');
     }
+    
+    setDeferredPrompt(null);
+    setShowPrompt(false);
   };
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    // No mostrar de nuevo en esta sesión
-    sessionStorage.setItem('pwa-prompt-dismissed', 'true');
+    localStorage.setItem('pwa-install-dismissed', 'true');
   };
 
-  // No mostrar si ya fue descartado en esta sesión
-  if (sessionStorage.getItem('pwa-prompt-dismissed')) {
-    return null;
-  }
-
-  // No mostrar si ya está instalado
-  if (window.matchMedia('(display-mode: standalone)').matches) {
-    return null;
-  }
+  // Don't show if already installed
+  if (isStandalone) return null;
 
   return (
     <AnimatePresence>
-      {deferredPrompt && !showPrompt && (
-        <motion.button
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 30, opacity: 0 }}
-          onClick={() => setShowPrompt(true)}
-          className="fixed bottom-24 right-4 z-50 bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg"
-        >
-          Instalar
-        </motion.button>
-      )}
-
-      {showPrompt && deferredPrompt && (
+      {showPrompt && (
         <motion.div
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          className="fixed bottom-20 left-4 right-4 max-w-md mx-auto z-50"
+          className="fixed bottom-20 left-4 right-4 z-50 max-w-md mx-auto"
         >
-          <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-4">
-            <div className="flex items-start gap-3">
-              <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+          <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-5 shadow-2xl border border-white/20">
+            <button
+              onClick={handleDismiss}
+              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+            >
+              <X size={16} className="text-white" />
+            </button>
+
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
                 <Download size={24} className="text-white" />
               </div>
-
+              
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-1">
-                  Install Notdeer
+                <h3 className="text-white font-semibold text-lg mb-1">
+                  Instalar Notdeer
                 </h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  Install the app for quick access and offline use
+                <p className="text-white/80 text-sm mb-4">
+                  {isIOS 
+                    ? 'Toca el botón de compartir y luego "Añadir a pantalla de inicio"'
+                    : 'Instala la app para acceso rápido y funciones offline'
+                  }
                 </p>
 
-                <div className="flex gap-2">
+                {!isIOS && deferredPrompt && (
                   <button
                     onClick={handleInstall}
-                    className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+                    className="w-full bg-white text-indigo-600 font-semibold py-3 px-4 rounded-xl hover:bg-white/90 transition-colors flex items-center justify-center gap-2"
                   >
-                    Install
+                    <Download size={18} />
+                    Instalar Ahora
                   </button>
-                  <button
-                    onClick={handleDismiss}
-                    className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
+                )}
+
+                {isIOS && (
+                  <div className="flex items-center gap-2 text-white/90 text-sm">
+                    <span>1. Toca</span>
+                    <Share size={16} />
+                    <span>2. "Añadir a inicio"</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
