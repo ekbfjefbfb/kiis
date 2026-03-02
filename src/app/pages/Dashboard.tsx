@@ -176,17 +176,14 @@ export default function Dashboard() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl bg-primary p-5 text-primary-foreground shadow-sm"
+          className="relative overflow-hidden rounded-2xl bg-foreground p-5 text-background"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary-foreground/5 rounded-full -mr-10 -mt-10" />
-          <div className="absolute bottom-0 left-0 w-20 h-20 bg-primary-foreground/5 rounded-full -ml-6 -mb-6" />
-
           <div className="relative flex items-center justify-between">
             <div className="flex-1 mr-4">
-              <h3 className="font-semibold text-lg mb-1">
+              <h3 className="font-semibold text-lg tracking-tight mb-1">
                 {isRecording ? "Grabando..." : isProcessing ? "Procesando..." : "Grabación Rápida"}
               </h3>
-              <p className="text-primary-foreground/70 text-sm">
+              <p className="text-background/60 text-sm">
                 {isRecording
                   ? formatTime(recordingTime)
                   : isProcessing
@@ -200,12 +197,12 @@ export default function Dashboard() {
               onClick={handleRecord}
               disabled={isProcessing}
               className={clsx(
-                "w-14 h-14 rounded-full flex items-center justify-center shadow-sm transition-all",
+                "w-14 h-14 rounded-full flex items-center justify-center transition-all",
                 isRecording
                   ? "bg-destructive text-destructive-foreground animate-pulse"
                   : isProcessing
-                  ? "bg-primary-foreground/10 text-primary-foreground/50"
-                  : "bg-primary-foreground text-primary hover:bg-primary-foreground/90 active:bg-primary-foreground/80"
+                  ? "bg-background/10 text-background/50"
+                  : "bg-background text-foreground hover:bg-background/90"
               )}
             >
               {isProcessing ? (
@@ -247,9 +244,10 @@ export default function Dashboard() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.08 }}
                   whileTap={{ scale: 0.97 }}
-                  className="flex-shrink-0 w-52 bg-card p-4 rounded-2xl border border-border shadow-sm"
+                  className="flex-shrink-0 w-52 bg-card p-4 rounded-2xl border border-border"
                 >
                   <div className="flex items-center gap-2 mb-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
                     <Clock size={12} className="text-muted-foreground" />
                     <span className="text-[11px] font-medium text-muted-foreground">
                       {new Date(task.date).toLocaleDateString("es-ES", {
@@ -458,7 +456,7 @@ export default function Dashboard() {
                 <button
                   type="submit"
                   disabled={!newClassName.trim() || !newClassProfessor.trim()}
-                  className="w-full bg-primary text-primary-foreground rounded-xl py-4 font-semibold mt-2 disabled:opacity-50 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center h-14"
+                  className="w-full bg-foreground text-background rounded-xl py-4 font-bold mt-2 disabled:opacity-50 hover:bg-foreground/90 active:scale-[0.98] transition-all flex items-center justify-center h-14"
                 >
                   Guardar Clase
                 </button>
