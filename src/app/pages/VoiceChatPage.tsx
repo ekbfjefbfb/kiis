@@ -229,28 +229,25 @@ export default function VoiceChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="flex flex-col h-[100dvh] bg-background text-foreground">
       {/* Header */}
-      <div className="bg-white/90 backdrop-blur-xl border-b border-gray-100/80 px-4 pt-5 pb-3 sticky top-0 z-10">
+      <div className="bg-background/80 backdrop-blur-xl border-b border-border/50 px-6 pt-12 pb-6 sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <Link
             to="/chat"
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-gray-600"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-muted text-foreground hover:bg-muted/80 transition-colors"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={20} strokeWidth={1.5} />
           </Link>
           <div className="flex flex-col items-center">
-            <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-1 shadow-lg shadow-indigo-200">
-              <AudioLines size={22} className="text-white" />
-            </div>
-            <h1 className="text-sm font-bold text-gray-900">Chat de Voz</h1>
-            <p className="text-[10px] text-gray-400 font-medium">Whisper V3 Turbo + IA</p>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">Asistente de Voz</h1>
+            <p className="text-[10px] text-muted-foreground font-bold tracking-[0.2em] uppercase mt-1">Whisper V3 Turbo</p>
           </div>
           <button
             onClick={() => setShowVoiceSelector(!showVoiceSelector)}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-muted text-foreground hover:bg-muted/80 transition-colors"
           >
-            <Settings2 size={18} />
+            <Settings2 size={18} strokeWidth={1.5} />
           </button>
         </div>
       </div>
@@ -262,18 +259,18 @@ export default function VoiceChatPage() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="bg-white border-b border-gray-100 overflow-hidden"
+            className="bg-background border-b border-border/50 overflow-hidden"
           >
-            <div className="px-4 py-3 space-y-3">
+            <div className="px-6 py-6 space-y-6">
               <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1.5">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] block mb-3">
                   Voz del Asistente
                 </label>
                 <div className="relative">
                   <select
                     value={selectedVoice || ""}
                     onChange={(e) => setSelectedVoice(e.target.value || null)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-200 pr-8"
+                    className="w-full bg-muted text-foreground border border-border/50 rounded-xl px-4 py-3 text-[15px] appearance-none focus:outline-none focus:ring-1 focus:ring-foreground pr-10"
                   >
                     <option value="">Voz por defecto</option>
                     {availableVoices.map((v) => (
@@ -282,12 +279,12 @@ export default function VoiceChatPage() {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1.5">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] block mb-3">
                   Velocidad: {speechRate.toFixed(1)}x
                 </label>
                 <input
@@ -297,41 +294,29 @@ export default function VoiceChatPage() {
                   step="0.1"
                   value={speechRate}
                   onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
-                  className="w-full accent-indigo-600"
+                  className="w-full accent-foreground"
                 />
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-600 font-medium">Lectura automática</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={autoSpeak}
-                    onChange={(e) => setAutoSpeak(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all" />
-                </label>
+                <span className="text-[15px] text-foreground font-medium">Lectura automática</span>
+                <div className={clsx("w-12 h-6 rounded-full transition-colors flex items-center px-1 border border-border cursor-pointer", autoSpeak ? "bg-foreground" : "bg-muted")} onClick={() => setAutoSpeak(!autoSpeak)}>
+                   <motion.div animate={{ x: autoSpeak ? 24 : 0 }} className={clsx("w-4 h-4 rounded-full", autoSpeak ? "bg-background" : "bg-foreground")} />
+                </div>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-600 font-medium">Modo continuo (manos libres)</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={continuousMode}
-                    onChange={(e) => setContinuousMode(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-emerald-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all" />
-                </label>
+                <span className="text-[15px] text-foreground font-medium">Modo continuo</span>
+                <div className={clsx("w-12 h-6 rounded-full transition-colors flex items-center px-1 border border-border cursor-pointer", continuousMode ? "bg-foreground" : "bg-muted")} onClick={() => setContinuousMode(!continuousMode)}>
+                   <motion.div animate={{ x: continuousMode ? 24 : 0 }} className={clsx("w-4 h-4 rounded-full", continuousMode ? "bg-background" : "bg-foreground")} />
+                </div>
               </div>
 
               <button
                 onClick={() => {
                   audioService.speakWithVoice("Hola, soy tu asistente. Así sueno con esta voz.", selectedVoice, speechRate);
                 }}
-                className="w-full bg-indigo-50 text-indigo-600 py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-100 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-foreground text-background py-4 rounded-xl text-[13px] font-bold tracking-widest uppercase hover:bg-foreground/90 transition-colors flex items-center justify-center gap-2 mt-4"
               >
                 <Volume2 size={16} />
                 Probar voz
@@ -342,27 +327,16 @@ export default function VoiceChatPage() {
       </AnimatePresence>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-48">
+      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6 pb-48">
         {messages.length === 0 && !isRecording && !isTranscribing && (
-          <div className="h-full flex flex-col items-center justify-center pt-8">
-            <div className="w-20 h-20 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-3xl flex items-center justify-center mb-5 shadow-inner">
-              <AudioLines size={40} className="text-indigo-500" />
+          <div className="h-full flex flex-col items-center justify-center -mt-10">
+            <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-6 border border-border">
+              <AudioLines size={40} className="text-foreground/40" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900 mb-2">Chat de Voz IA</h2>
-            <p className="text-sm text-gray-500 text-center max-w-[260px] leading-relaxed mb-4">
-              Mantén presionado el botón de micrófono para hablar. Tu voz será transcrita por <strong>Whisper</strong> y la IA te responderá.
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground mb-3">Empieza a hablar</h2>
+            <p className="text-[15px] text-muted-foreground text-center max-w-[280px] leading-relaxed mb-8">
+              Mantén pulsado para hablar con la IA en tiempo real utilizando procesamiento de voz.
             </p>
-            <div className="flex gap-2 flex-wrap justify-center">
-              <span className="text-[10px] bg-violet-50 text-violet-600 px-2.5 py-1 rounded-full font-medium">
-                Whisper V3 Turbo
-              </span>
-              <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full font-medium">
-                {availableVoices.length} voces disponibles
-              </span>
-              <span className="text-[10px] bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full font-medium">
-                Español
-              </span>
-            </div>
           </div>
         )}
 
@@ -378,25 +352,25 @@ export default function VoiceChatPage() {
           >
             <div
               className={clsx(
-                "max-w-[85%] p-3.5 shadow-sm leading-relaxed",
+                "max-w-[85%] p-4 text-[15px] leading-relaxed",
                 msg.role === "user"
-                  ? "bg-indigo-600 text-white rounded-2xl rounded-tr-[4px]"
-                  : "bg-white text-gray-800 rounded-2xl rounded-tl-[4px] border border-gray-100"
+                  ? "bg-foreground text-background rounded-[24px] rounded-br-md"
+                  : "bg-muted/50 text-foreground border border-border/50 rounded-[24px] rounded-bl-md"
               )}
             >
               {msg.role === "user" && (
-                <div className="flex items-center gap-1 mb-1 opacity-70">
+                <div className="flex items-center gap-1 mb-2 opacity-50">
                   <Mic size={10} />
-                  <span className="text-[10px]">Voz</span>
+                  <span className="text-[10px] font-bold tracking-widest uppercase">Tú</span>
                 </div>
               )}
-              <p className="text-sm">{msg.text}</p>
+              <p>{msg.text}</p>
               {msg.role === "ai" && msg.text && (
                 <button
                   onClick={() => replaySpeech(msg.text)}
-                  className="mt-2 text-indigo-500 hover:text-indigo-700 w-7 h-7 bg-indigo-50 rounded-full flex items-center justify-center"
+                  className="mt-3 text-muted-foreground hover:text-foreground w-8 h-8 rounded-full border border-border/50 bg-background flex items-center justify-center transition-colors"
                 >
-                  <Repeat size={12} />
+                  <Repeat size={14} />
                 </button>
               )}
             </div>
@@ -410,7 +384,7 @@ export default function VoiceChatPage() {
             animate={{ opacity: 1 }}
             className="flex justify-end"
           >
-            <div className="max-w-[85%] p-3 bg-indigo-100 text-indigo-800 rounded-2xl rounded-tr-[4px] text-sm italic">
+            <div className="max-w-[85%] p-4 bg-muted text-muted-foreground/80 rounded-[24px] rounded-br-md text-[15px] italic border border-border/50">
               {currentTranscript}
             </div>
           </motion.div>
@@ -419,21 +393,21 @@ export default function VoiceChatPage() {
         {/* Typing indicator */}
         {isThinking && (
           <div className="flex justify-start">
-            <div className="bg-white p-4 rounded-2xl rounded-tl-[4px] flex items-center gap-1.5 shadow-sm border border-gray-100">
+            <div className="bg-muted p-4 py-5 rounded-[24px] rounded-bl-md flex items-center gap-2 border border-border/50">
               <motion.div
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ repeat: Infinity, duration: 0.8 }}
-                className="w-1.5 h-1.5 bg-indigo-400 rounded-full"
+                className="w-2 h-2 bg-foreground/40 rounded-full"
               />
               <motion.div
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ repeat: Infinity, duration: 0.8, delay: 0.2 }}
-                className="w-1.5 h-1.5 bg-indigo-400 rounded-full"
+                className="w-2 h-2 bg-foreground/40 rounded-full"
               />
               <motion.div
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ repeat: Infinity, duration: 0.8, delay: 0.4 }}
-                className="w-1.5 h-1.5 bg-indigo-400 rounded-full"
+                className="w-2 h-2 bg-foreground/40 rounded-full"
               />
             </div>
           </div>
@@ -449,71 +423,71 @@ export default function VoiceChatPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-52 left-4 right-4 max-w-md mx-auto bg-red-50 border border-red-200 text-red-700 text-sm p-3 rounded-2xl z-30"
+            className="fixed bottom-48 left-6 right-6 mx-auto bg-destructive text-destructive-foreground text-[13px] font-medium tracking-wide p-4 rounded-xl z-30 flex justify-between items-center"
           >
-            {error}
-            <button onClick={() => setError(null)} className="float-right font-bold text-red-400">✕</button>
+            <span>{error}</span>
+            <button onClick={() => setError(null)} className="font-bold opacity-70 hover:opacity-100 uppercase tracking-widest text-[10px]">Cerrar</button>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Bottom Recording Area */}
-      <div className="fixed bottom-0 w-full max-w-md bg-white/95 backdrop-blur-xl border-t border-gray-100/80 z-20 safe-bottom" style={{ paddingBottom: "max(env(safe-area-inset-bottom, 20px), 80px)" }}>
+      <div className="fixed bottom-0 w-full max-w-md bg-background/90 backdrop-blur-2xl border-t border-border/40 z-20 safe-bottom pb-8 pt-4">
         {/* Status */}
-        <div className="text-center pt-3 pb-2">
-          <p className={clsx("text-xs font-medium transition-colors", getStatusColor())}>
-            {getStatusLabel()}
-          </p>
+        <div className="text-center mb-6">
+           <AnimatePresence mode="wait">
+             <motion.p 
+               key={getStatusLabel()}
+               initial={{ opacity: 0, y: 5 }}
+               animate={{ opacity: 1, y: 0 }}
+               exit={{ opacity: 0, y: -5 }}
+               className={clsx("text-[11px] font-bold tracking-[0.2em] uppercase transition-colors", 
+                 isRecording ? "text-destructive" : getStatusColor()
+               )}
+             >
+               {getStatusLabel()}
+             </motion.p>
+           </AnimatePresence>
         </div>
 
         {/* Waveform & Button */}
-        <div className="flex flex-col items-center pb-4">
+        <div className="flex flex-col items-center">
           {/* Animated waveform during recording */}
           {isRecording && (
-            <div className="flex items-end gap-1 h-10 mb-3">
-              {Array.from({ length: 20 }).map((_, i) => (
+            <div className="flex items-center gap-[3px] h-12 mb-6 absolute bottom-28">
+              {Array.from({ length: 30 }).map((_, i) => (
                 <motion.div
                   key={i}
                   animate={{
-                    height: [4, Math.max(4, audioLevel * 20 + Math.random() * 16), 4],
+                    height: [4, Math.max(4, audioLevel * 30 + Math.random() * 20), 4],
                   }}
                   transition={{
                     repeat: Infinity,
                     duration: 0.4 + Math.random() * 0.3,
                     delay: i * 0.02,
                   }}
-                  className="w-1 bg-gradient-to-t from-red-500 to-red-300 rounded-full"
+                  className="w-1 bg-destructive rounded-full"
                   style={{ minHeight: 4 }}
                 />
               ))}
             </div>
           )}
 
-          {/* Processing indicator */}
-          {(isTranscribing || isThinking) && (
-            <div className="mb-3 flex items-center gap-2">
-              <Loader2 size={18} className={clsx("animate-spin", isTranscribing ? "text-amber-500" : "text-indigo-500")} />
-              <span className="text-xs text-gray-500 font-medium">
-                {isTranscribing ? "Transcribiendo..." : "Procesando..."}
-              </span>
-            </div>
-          )}
-
           {/* Speaking indicator */}
           {isSpeaking && (
-            <div className="flex items-end gap-0.5 h-8 mb-3">
-              {Array.from({ length: 12 }).map((_, i) => (
+            <div className="flex items-center gap-[3px] h-10 mb-6 absolute bottom-28">
+              {Array.from({ length: 20 }).map((_, i) => (
                 <motion.div
                   key={i}
                   animate={{
-                    height: [3, 12 + Math.random() * 10, 3],
+                    height: [3, 15 + Math.random() * 15, 3],
                   }}
                   transition={{
                     repeat: Infinity,
                     duration: 0.5 + Math.random() * 0.3,
                     delay: i * 0.05,
                   }}
-                  className="w-1 bg-gradient-to-t from-emerald-500 to-emerald-300 rounded-full"
+                  className="w-1 bg-foreground rounded-full"
                   style={{ minHeight: 3 }}
                 />
               ))}
@@ -521,18 +495,20 @@ export default function VoiceChatPage() {
           )}
 
           {/* Main controls */}
-          <div className="flex items-center gap-4">
-            {/* Mute/unmute speaking */}
-            {isSpeaking && (
-              <motion.button
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                onClick={stopSpeaking}
-                className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 shadow-sm"
-              >
-                <VolumeX size={20} />
-              </motion.button>
-            )}
+          <div className="flex items-center justify-center gap-6 mt-2 relative z-10 w-full px-10">
+            {/* Mute/unmute speaking placed uniformly */}
+            <div className="w-14 flex justify-end">
+               {isSpeaking && (
+                 <motion.button
+                   initial={{ scale: 0 }}
+                   animate={{ scale: 1 }}
+                   onClick={stopSpeaking}
+                   className="w-12 h-12 rounded-full border border-border bg-background flex items-center justify-center text-foreground hover:bg-muted transition-colors"
+                 >
+                   <VolumeX size={20} />
+                 </motion.button>
+               )}
+            </div>
 
             {/* Main mic button */}
             <motion.button
@@ -541,40 +517,46 @@ export default function VoiceChatPage() {
               onTouchStart={(e) => { e.preventDefault(); startRecording(); }}
               onTouchEnd={(e) => { e.preventDefault(); stopRecordingAndProcess(); }}
               disabled={isTranscribing || isThinking}
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.92 }}
               className={clsx(
-                "w-20 h-20 rounded-full flex items-center justify-center shadow-xl transition-all select-none touch-none",
+                "w-24 h-24 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 select-none touch-none",
                 isRecording
-                  ? "bg-red-500 shadow-red-200 scale-110"
+                  ? "bg-destructive text-destructive-foreground"
                   : isTranscribing || isThinking
-                  ? "bg-gray-200 text-gray-400 shadow-gray-100"
-                  : "bg-gradient-to-br from-violet-500 to-indigo-600 shadow-indigo-200 hover:shadow-indigo-300 active:shadow-indigo-400"
+                  ? "bg-muted border border-border/50 text-muted-foreground shadow-none"
+                  : "bg-foreground text-background"
               )}
             >
               {isTranscribing || isThinking ? (
-                <Loader2 size={32} className="text-gray-400 animate-spin" />
+                <motion.div 
+                   animate={{ rotate: 360 }} 
+                   transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                   className="w-8 h-8 rounded-full border-[2px] border-border border-t-muted-foreground" 
+                 />
               ) : isRecording ? (
                 <motion.div
                   animate={{ scale: [1, 1.15, 1] }}
                   transition={{ repeat: Infinity, duration: 1 }}
                 >
-                  <MicOff size={32} className="text-white" />
+                  <MicOff size={36} strokeWidth={1.5} />
                 </motion.div>
               ) : (
-                <Mic size={32} className="text-white" />
+                <Mic size={40} strokeWidth={1.5} />
               )}
             </motion.button>
 
             {/* Continuous mode indicator */}
-            {continuousMode && !isRecording && !isTranscribing && !isThinking && !isSpeaking && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500"
-              >
-                <Repeat size={18} />
-              </motion.div>
-            )}
+            <div className="w-14 flex justify-start">
+               {continuousMode && !isRecording && !isTranscribing && !isThinking && !isSpeaking && (
+                 <motion.div
+                   initial={{ scale: 0 }}
+                   animate={{ scale: 1 }}
+                   className="w-12 h-12 rounded-full border border-border bg-background flex items-center justify-center text-foreground"
+                 >
+                   <Repeat size={18} />
+                 </motion.div>
+               )}
+            </div>
           </div>
         </div>
       </div>

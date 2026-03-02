@@ -57,28 +57,28 @@ export default function CalendarPage() {
 
   const dotColor = (type: string) => {
     switch (type) {
-      case "task": return "bg-emerald-500";
-      case "exam": return "bg-red-500";
-      case "important": return "bg-purple-500";
-      default: return "bg-gray-400";
+      case "task": return "bg-foreground";
+      case "exam": return "bg-foreground";
+      case "important": return "bg-foreground";
+      default: return "bg-muted-foreground";
     }
   };
 
   const eventIcon = (type: string) => {
     switch (type) {
-      case "task": return <CheckSquare size={14} className="text-emerald-600" />;
-      case "exam": return <BookOpen size={14} className="text-red-600" />;
-      case "important": return <Star size={14} className="text-purple-600 fill-purple-600" />;
+      case "task": return <CheckSquare size={14} className="text-foreground" />;
+      case "exam": return <BookOpen size={14} className="text-foreground" />;
+      case "important": return <Star size={14} className="text-foreground fill-foreground" />;
       default: return null;
     }
   };
 
   const eventBg = (type: string) => {
     switch (type) {
-      case "task": return "bg-emerald-50 border-emerald-200";
-      case "exam": return "bg-red-50 border-red-200";
-      case "important": return "bg-purple-50 border-purple-200";
-      default: return "bg-gray-50 border-gray-200";
+      case "task": return "bg-card border-border";
+      case "exam": return "bg-card border-border";
+      case "important": return "bg-card border-border";
+      default: return "bg-card border-border";
     }
   };
 
@@ -133,44 +133,47 @@ export default function CalendarPage() {
   const selectedEvents = selectedDate ? getEventsForDate(selectedDate) : [];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-4">
+    <div className="min-h-screen bg-background text-foreground pb-24 font-sans transition-colors duration-300">
       {/* Header */}
-      <div className="bg-white px-5 pt-5 pb-4 border-b border-gray-100/60 sticky top-0 z-10">
-        <div className="flex items-center gap-3 mb-4">
+      <div className="bg-background/80 backdrop-blur-xl border-b border-border/50 px-6 pt-12 pb-6 sticky top-0 z-10">
+        <div className="flex items-center justify-between mb-6">
           <Link
-            to="/dashboard"
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            to="/"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 outline-none focus:ring-1 focus:ring-ring transition-colors"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={20} strokeWidth={1.5} />
           </Link>
-          <h1 className="text-lg font-bold text-gray-900">Calendario</h1>
+          <div className="flex flex-col items-center">
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">Calendario</h1>
+          </div>
+          <div className="w-10 h-10" />
         </div>
 
         {/* Month nav */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between px-2">
           <button
             onClick={goToPrev}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 outline-none focus:ring-1 focus:ring-ring transition-colors"
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={20} strokeWidth={1.5} />
           </button>
-          <h2 className="text-base font-semibold text-gray-900">{monthName}</h2>
+          <h2 className="text-[17px] font-semibold tracking-tight text-foreground">{monthName}</h2>
           <button
             onClick={goToNext}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 outline-none focus:ring-1 focus:ring-ring transition-colors"
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={20} strokeWidth={1.5} />
           </button>
         </div>
       </div>
 
-      <div className="px-5 pt-4">
+      <div className="px-6 pt-6">
         {/* Day labels */}
-        <div className="grid grid-cols-7 mb-2">
+        <div className="grid grid-cols-7 mb-4">
           {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((d) => (
             <div
               key={d}
-              className="text-center text-[10px] font-semibold text-gray-400 uppercase tracking-wider py-1"
+              className="text-center text-[10px] font-bold text-muted-foreground uppercase tracking-widest py-1"
             >
               {d}
             </div>
@@ -178,7 +181,7 @@ export default function CalendarPage() {
         </div>
 
         {/* Calendar grid */}
-        <div className="grid grid-cols-7 gap-y-0.5">
+        <div className="grid grid-cols-7 gap-y-2 gap-x-1">
           {cells.map((cell, i) => {
             const dots = cell.isCurrentMonth ? getDotsForDate(cell.dateStr) : [];
             const isToday = cell.dateStr === todayStr;
@@ -191,29 +194,30 @@ export default function CalendarPage() {
                   cell.isCurrentMonth && setSelectedDate(cell.dateStr === selectedDate ? null : cell.dateStr)
                 }
                 className={clsx(
-                  "flex flex-col items-center justify-center py-2 rounded-xl transition-all min-h-[44px]",
-                  !cell.isCurrentMonth && "opacity-30",
-                  isSelected && "bg-indigo-600 text-white shadow-md shadow-indigo-200",
-                  isToday && !isSelected && "bg-indigo-50",
-                  cell.isCurrentMonth && !isSelected && !isToday && "hover:bg-gray-50 active:bg-gray-100"
+                  "flex flex-col items-center justify-center py-2.5 rounded-full outline-none focus:ring-1 focus:ring-ring transition-all min-h-[48px]",
+                  !cell.isCurrentMonth && "opacity-20",
+                  isSelected && "bg-foreground text-background",
+                  isToday && !isSelected && "bg-secondary text-secondary-foreground font-bold",
+                  cell.isCurrentMonth && !isSelected && !isToday && "hover:bg-accent active:bg-secondary text-foreground"
                 )}
               >
                 <span
                   className={clsx(
-                    "text-sm font-medium",
-                    isSelected ? "text-white" : isToday ? "text-indigo-600 font-bold" : "text-gray-800"
+                    "text-[15px]",
+                    isSelected ? "text-background font-bold" : isToday ? "text-foreground font-bold" : "text-foreground font-medium"
                   )}
                 >
                   {cell.day}
                 </span>
                 {dots.length > 0 && (
-                  <div className="flex gap-0.5 mt-0.5">
+                  <div className="flex gap-[3px] mt-1 relative">
                     {dots.slice(0, 3).map((type, j) => (
                       <div
                         key={j}
                         className={clsx(
                           "w-1 h-1 rounded-full",
-                          isSelected ? "bg-white/70" : dotColor(type)
+                          isSelected ? "bg-background/80" : "bg-foreground",
+                          isToday && !isSelected && "bg-foreground"
                         )}
                       />
                     ))}
@@ -225,18 +229,14 @@ export default function CalendarPage() {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center justify-center gap-5 mt-3 mb-4">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-[10px] text-gray-500 font-medium">Tareas</span>
+        <div className="flex items-center justify-center gap-6 mt-6 mb-8 border-t border-border/50 pt-6">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-foreground" />
+            <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-wider">Eventos</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-red-500" />
-            <span className="text-[10px] text-gray-500 font-medium">Exámenes</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-purple-500" />
-            <span className="text-[10px] text-gray-500 font-medium">Importante</span>
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-foreground" />
+            <span className="text-[11px] text-foreground font-bold uppercase tracking-wider">Hoy</span>
           </div>
         </div>
 
@@ -248,9 +248,9 @@ export default function CalendarPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="space-y-2.5"
+              className="space-y-4"
             >
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              <h3 className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest pl-2">
                 {new Date(selectedDate + "T12:00:00").toLocaleDateString("es-ES", {
                   weekday: "long",
                   month: "long",
@@ -259,9 +259,9 @@ export default function CalendarPage() {
               </h3>
 
               {selectedEvents.length === 0 ? (
-                <div className="text-center py-8">
-                  <CalendarIcon size={32} className="mx-auto text-gray-300 mb-2" />
-                  <p className="text-sm text-gray-400">Sin eventos este día</p>
+                <div className="text-center py-16">
+                  <CalendarIcon size={48} className="mx-auto text-muted-foreground/30 mb-4" strokeWidth={1} />
+                  <p className="text-[15px] font-medium text-muted-foreground">Sin eventos este día</p>
                 </div>
               ) : (
                 selectedEvents.map((ev, i) => {
@@ -275,33 +275,37 @@ export default function CalendarPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
                       className={clsx(
-                        "p-4 rounded-2xl border shadow-sm",
-                        eventBg(ev.type)
+                        "p-5 rounded-3xl border transition-colors",
+                        "bg-card border-border shadow-sm"
                       )}
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="mt-0.5">{eventIcon(ev.type)}</div>
+                      <div className="flex items-start gap-4">
+                        <div className="mt-1 text-muted-foreground">
+                           {ev.type === "task" && <CheckSquare size={18} />}
+                           {ev.type === "exam" && <BookOpen size={18} />}
+                           {ev.type === "important" && <Star size={18} />}
+                        </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                          <div className="flex items-center gap-3 mb-1.5">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                               {eventLabel(ev.type)}
                             </span>
                             {ev.completed && (
-                              <span className="text-[9px] bg-emerald-100 text-emerald-700 rounded-full px-1.5 py-0.5 font-medium">
+                              <span className="text-[9px] bg-foreground text-background rounded-full px-2 py-0.5 font-bold uppercase tracking-wider">
                                 Hecho
                               </span>
                             )}
                           </div>
                           <h4
                             className={clsx(
-                              "font-semibold text-sm text-gray-900",
-                              ev.completed && "line-through text-gray-400"
+                              "font-semibold text-[17px] tracking-tight text-foreground",
+                              ev.completed && "line-through text-muted-foreground"
                             )}
                           >
                             {ev.title}
                           </h4>
                           {cls && (
-                            <p className="text-[11px] text-gray-500 mt-0.5">
+                            <p className="text-[13px] text-muted-foreground mt-1">
                               {cls.name}
                             </p>
                           )}
@@ -317,11 +321,11 @@ export default function CalendarPage() {
 
         {/* If no date selected, show next upcoming */}
         {!selectedDate && (
-          <div>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          <div className="mt-8">
+            <h3 className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-4 pl-2">
               Próximos Eventos
             </h3>
-            <div className="space-y-2.5">
+            <div className="space-y-4">
               {allEvents
                 .filter((e) => e.date >= todayStr)
                 .sort((a, b) => a.date.localeCompare(b.date))
@@ -336,24 +340,23 @@ export default function CalendarPage() {
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3"
+                      className="bg-card p-4 rounded-[24px] border border-border flex items-center gap-4 shadow-sm"
                     >
-                      <div className="flex flex-col items-center justify-center w-11 h-11 bg-gray-50 rounded-xl">
-                        <span className="text-[10px] font-bold text-gray-500 uppercase leading-none">
+                      <div className="flex flex-col items-center justify-center w-14 h-14 bg-secondary text-secondary-foreground rounded-[18px]">
+                        <span className="text-[10px] font-bold uppercase tracking-widest mb-0.5">
                           {new Date(ev.date + "T12:00:00").toLocaleDateString("es-ES", { month: "short" })}
                         </span>
-                        <span className="text-base font-bold text-gray-900 leading-none">
+                        <span className="text-xl font-bold tracking-tighter leading-none">
                           {new Date(ev.date + "T12:00:00").getDate()}
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-sm text-gray-900 truncate">
+                        <h4 className="font-semibold text-[15px] tracking-tight text-foreground truncate mb-1">
                           {ev.title}
                         </h4>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <div className={clsx("w-1.5 h-1.5 rounded-full", dotColor(ev.type))} />
-                          <span className="text-[10px] text-gray-500">
-                            {eventLabel(ev.type)} {cls ? `· ${cls.name}` : ""}
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+                            {eventLabel(ev.type)} {cls ? `• ${cls.name}` : ""}
                           </span>
                         </div>
                       </div>

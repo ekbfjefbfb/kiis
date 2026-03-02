@@ -39,11 +39,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[100dvh] p-6 bg-surface relative overflow-hidden font-sans transition-colors duration-300">
-      {/* Background decorations */}
-      <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -mr-20 -mt-20 opacity-50" style={{ background: "var(--primary-light)" }} />
-      <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl -ml-20 -mb-20 opacity-40" style={{ background: "var(--primary-muted)" }} />
-
+    <div className="flex flex-col items-center justify-center min-h-[100dvh] p-6 bg-background text-foreground relative overflow-hidden font-sans transition-colors duration-300">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -52,67 +48,64 @@ export default function LoginPage() {
       >
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 mb-5 relative group overflow-hidden">
-            <BookOpen size={32} className="text-white" />
-            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+          <div className="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center mb-5 overflow-hidden">
+            <BookOpen size={28} className="text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-themed">Bienvenido a Notdeer</h1>
-          <p className="text-sm mt-2 max-w-[280px] text-themed-secondary">
+          <h1 className="text-2xl font-semibold tracking-tight">Bienvenido a Notdeer</h1>
+          <p className="text-sm mt-2 max-w-[280px] text-muted-foreground">
             Inicia sesión para acceder a tus notas y clases.
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="w-full card-premium rounded-3xl p-6 md:p-8 relative overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent" />
-
+        <div className="w-full bg-card border border-border rounded-3xl p-6 md:p-8 relative">
           {error && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
-              className="mb-5 bg-red-50 text-red-600 text-[13px] p-3 rounded-2xl border border-red-100/50 font-medium"
+              className="mb-5 bg-destructive/10 text-destructive text-[13px] p-3 rounded-xl border border-destructive/20 font-medium"
             >
               {error}
             </motion.div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4 text-left">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest pl-1">
+              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest pl-1">
                 Correo Electrónico
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-input-themed border border-themed rounded-2xl py-3.5 pl-11 pr-4 text-[15px] focus:outline-none focus:bg-surface transition-all text-themed placeholder:text-themed-tertiary"
+                  className="w-full bg-transparent border border-border rounded-2xl py-3.5 pl-11 pr-4 text-[15px] focus:outline-none focus:ring-1 focus:ring-ring transition-all placeholder:text-muted-foreground"
                   placeholder="tu@correo.edu"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest pl-1">
+              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest pl-1">
                 Contraseña
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-input-themed border border-themed rounded-2xl py-3.5 pl-11 pr-4 text-[15px] focus:outline-none focus:bg-surface transition-all text-themed placeholder:text-themed-tertiary"
+                  className="w-full bg-transparent border border-border rounded-2xl py-3.5 pl-11 pr-4 text-[15px] focus:outline-none focus:ring-1 focus:ring-ring transition-all placeholder:text-muted-foreground"
                   placeholder="Tu contraseña"
                 />
               </div>
             </div>
 
             <div className="flex justify-end">
-              <a href="#" className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
+              <a href="#" className="text-xs text-muted-foreground hover:text-foreground font-medium transition-colors">
                 ¿Olvidaste tu contraseña?
               </a>
             </div>
@@ -120,11 +113,10 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading || !email || !password}
-              className="w-full bg-indigo-600 text-white rounded-2xl py-4 font-semibold text-[15px] mt-2 shadow-md shadow-indigo-600/20 disabled:opacity-50 disabled:shadow-none hover:bg-indigo-700 active:scale-[0.98] transition-all relative overflow-hidden group"
+              className="w-full bg-primary text-primary-foreground rounded-2xl py-4 font-semibold text-[15px] mt-2 shadow-sm disabled:opacity-50 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center h-14"
             >
-              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
+                <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
               ) : (
                 "Iniciar Sesión"
               )}
@@ -132,10 +124,10 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-8 text-center text-sm">
-            <span className="text-themed-secondary">¿No tienes una cuenta? </span>
+            <span className="text-muted-foreground">¿No tienes una cuenta? </span>
             <Link
               to="/register"
-              className="text-indigo-600 font-semibold hover:text-indigo-700 hover:underline underline-offset-4 transition-all"
+              className="font-semibold text-foreground hover:underline underline-offset-4 transition-all"
             >
               Registrarme
             </Link>

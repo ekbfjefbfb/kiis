@@ -79,163 +79,135 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen pb-4" style={{ background: "var(--bg-secondary)" }}>
+    <div className="min-h-[100dvh] bg-background text-foreground pb-24 font-sans transition-colors duration-300">
       {/* Header */}
-      <div className="px-5 pt-8 pb-6 flex flex-col items-center" style={{ background: "var(--bg-primary)", borderBottom: "1px solid var(--border-primary)" }}>
-        <div className="relative mb-4">
-          <div className="w-24 h-24 rounded-full border-4 shadow-xl overflow-hidden relative group" 
-               style={{ borderColor: "var(--bg-primary)", background: "var(--bg-tertiary)" }}>
+      <div className="px-5 pt-12 pb-8 flex flex-col items-center border-b border-border bg-card">
+        <div className="relative mb-6">
+          <div className="w-28 h-28 rounded-full shadow-sm overflow-hidden relative group bg-secondary border border-border">
             {profile.avatar ? (
               <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
             ) : (
-              <UserIcon size={40} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ color: "var(--text-tertiary)" }} />
+              <UserIcon size={46} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground" />
             )}
-            <label className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-              <Camera size={24} className="text-white mb-1" />
-              <span className="text-[10px] text-white font-medium">Cambiar</span>
+            <label className="absolute inset-0 bg-background/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+              <Camera size={24} className="text-foreground mb-1" />
+              <span className="text-[10px] text-foreground font-medium uppercase tracking-widest">Cambiar</span>
               <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
             </label>
-          </div>
-          <div className="absolute bottom-1 right-1 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "var(--success)", borderColor: "var(--bg-primary)", borderWidth: 2 }}>
-            <div className="w-2 h-2 bg-white rounded-full" />
           </div>
         </div>
         
         {showEditName ? (
-          <div className="flex items-center gap-2 w-full max-w-[200px]">
+          <div className="flex items-center gap-3 w-full max-w-[240px]">
             <input
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="flex-1 text-center rounded-xl py-1.5 px-3 text-sm focus:outline-none"
-              style={{ background: "var(--bg-input)", border: "1px solid var(--border-primary)", color: "var(--text-primary)" }}
+              className="flex-1 text-center rounded-lg py-2 px-3 text-lg font-bold outline-none focus:ring-1 focus:ring-ring bg-transparent border border-border text-foreground transition-all"
               autoFocus
               onKeyDown={(e) => e.key === "Enter" && handleSaveName()}
             />
-            <button onClick={handleSaveName} style={{ color: "var(--primary)" }} className="text-xs font-bold">OK</button>
+            <button onClick={handleSaveName} className="text-sm font-bold uppercase tracking-wider text-foreground hover:opacity-80 transition-opacity">OK</button>
           </div>
         ) : (
-          <button onClick={() => setShowEditName(true)} className="group">
-            <h1 className="text-xl font-bold leading-tight transition-colors" style={{ color: "var(--text-primary)" }}>
+          <button onClick={() => setShowEditName(true)} className="group active:scale-95 transition-transform outline-none focus-visible:ring-1 focus-visible:ring-ring rounded px-2">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
               {profile.name}
             </h1>
           </button>
         )}
-        <p className="text-sm font-medium mt-0.5" style={{ color: "var(--text-secondary)" }}>Estudiante Universitario</p>
+        <p className="text-[13px] font-medium mt-1 text-muted-foreground uppercase tracking-widest">Estudiante</p>
       </div>
 
-      <div className="px-5 pt-5 space-y-5">
+      <div className="px-5 pt-8 space-y-6">
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-4">
           {stats.map((s, i) => (
             <motion.div
               key={i}
               whileTap={{ scale: 0.95 }}
-              className="p-4 rounded-2xl flex flex-col items-center justify-center card-premium"
+              className="px-2 py-4 rounded-xl flex flex-col items-center justify-center bg-card border border-border shadow-sm transition-colors hover:border-foreground/20"
             >
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2" style={{ background: s.bg, color: s.color }}>
-                <s.icon size={16} />
+              <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3 bg-secondary text-secondary-foreground border border-border">
+                <s.icon size={18} className="text-current" />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: "var(--text-tertiary)" }}>{s.label}</span>
-              <span className="text-lg font-bold leading-none" style={{ color: "var(--text-primary)" }}>{s.value}</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest mb-1 text-muted-foreground">{s.label}</span>
+              <span className="text-xl font-semibold tracking-tighter text-foreground">{s.value}</span>
             </motion.div>
           ))}
         </div>
 
         {/* Contact Info */}
-        <div className="rounded-2xl p-2 card-premium">
-          <div className="flex items-center gap-3 p-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "var(--bg-tertiary)", color: "var(--text-tertiary)" }}>
+        <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+          <div className="flex items-center gap-4 p-4 hover:bg-secondary/50 transition-colors">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary text-secondary-foreground">
               <Mail size={18} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase font-bold tracking-wider" style={{ color: "var(--text-tertiary)" }}>Correo</p>
-              <p className="text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>{profile.email}</p>
+              <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground mb-0.5">Correo</p>
+              <p className="text-[15px] font-medium truncate text-foreground">{profile.email}</p>
             </div>
           </div>
-          <div className="h-px mx-4" style={{ background: "var(--border-secondary)" }} />
-          <div className="flex items-center gap-3 p-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "var(--bg-tertiary)", color: "var(--text-tertiary)" }}>
+          <div className="h-px bg-border ml-16" />
+          <div className="flex items-center gap-4 p-4 hover:bg-secondary/50 transition-colors">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary text-secondary-foreground">
               <Phone size={18} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase font-bold tracking-wider" style={{ color: "var(--text-tertiary)" }}>Teléfono</p>
-              <p className="text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>{profile.phone || "No especificado"}</p>
+              <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground mb-0.5">Teléfono</p>
+              <p className="text-[15px] font-medium truncate text-foreground">{profile.phone || "No especificado"}</p>
             </div>
           </div>
         </div>
 
         {/* Settings */}
-        <div className="rounded-2xl p-2 card-premium">
-          {/* Dark Mode Toggle — FUNCIONAL */}
-          <div className="flex items-center justify-between p-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" 
-                   style={{ background: isDark ? "rgba(129, 140, 248, 0.15)" : "#f1f5f9", color: isDark ? "var(--primary)" : "#475569" }}>
+        <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+          {/* Dark Mode Toggle */}
+          <div className="flex items-center justify-between p-4 hover:bg-secondary/50 transition-colors cursor-pointer" onClick={toggleDarkMode}>
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary text-secondary-foreground">
                 {isDark ? <Moon size={18} /> : <Sun size={18} />}
               </div>
               <div>
-                <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                  {isDark ? "Modo Oscuro" : "Modo Claro"}
+                <span className="text-[15px] font-medium text-foreground">
+                  Apariencia
                 </span>
-                <p className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>
-                  {isDark ? "Activado" : "Desactivado"}
+                <p className="text-[11px] text-muted-foreground uppercase tracking-widest mt-0.5">
+                  {isDark ? "Oscuro" : "Claro"}
                 </p>
               </div>
             </div>
-            <button 
-              onClick={toggleDarkMode}
-              className={clsx("toggle-switch", isDark && "active")}
-              aria-label="Toggle dark mode"
-            />
+            <div className={clsx("w-12 h-6 rounded-full transition-colors flex items-center px-1 border border-border outline-none focus-visible:ring-1 focus-visible:ring-ring", isDark ? "bg-foreground" : "bg-secondary")}>
+               <motion.div animate={{ x: isDark ? 24 : 0 }} className={clsx("w-4 h-4 rounded-full", isDark ? "bg-background" : "bg-foreground")} />
+            </div>
           </div>
 
-          <div className="h-px mx-4" style={{ background: "var(--border-secondary)" }} />
+          <div className="h-px bg-border ml-16" />
 
           {/* Notifications */}
-          <div className="flex items-center justify-between p-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "var(--success-light)", color: "var(--success)" }}>
+          <div className="flex items-center justify-between p-4 hover:bg-secondary/50 transition-colors cursor-pointer" onClick={() => setNotifications(!notifications)}>
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary text-secondary-foreground">
                 <Bell size={18} />
               </div>
-              <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>Notificaciones</span>
+              <span className="text-[15px] font-medium text-foreground">Notificaciones</span>
             </div>
-            <button 
-              onClick={() => setNotifications(!notifications)}
-              className={clsx("toggle-switch", notifications && "active")}
-              aria-label="Toggle notifications"
-            />
-          </div>
-
-          <div className="h-px mx-4" style={{ background: "var(--border-secondary)" }} />
-
-          {/* Settings link */}
-          <div className="flex items-center justify-between p-3 group cursor-pointer">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "var(--primary-light)", color: "var(--primary)" }}>
-                <Settings size={18} />
-              </div>
-              <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>Configuración</span>
+             <div className={clsx("w-12 h-6 rounded-full transition-colors flex items-center px-1 border border-border outline-none focus-visible:ring-1 focus-visible:ring-ring", notifications ? "bg-foreground" : "bg-secondary")}>
+               <motion.div animate={{ x: notifications ? 24 : 0 }} className={clsx("w-4 h-4 rounded-full", notifications ? "bg-background" : "bg-foreground")} />
             </div>
-            <ChevronRight size={18} style={{ color: "var(--text-tertiary)" }} />
           </div>
         </div>
 
         {/* Logout */}
         <button 
           onClick={handleLogout}
-          className="w-full p-4 rounded-2xl flex items-center justify-center gap-2 font-semibold transition-colors active:scale-[0.98]"
-          style={{ 
-            background: "var(--danger-light)", 
-            color: "var(--danger)", 
-            border: "1px solid var(--border-primary)" 
-          }}
+          className="w-full p-4 rounded-2xl flex items-center justify-center gap-2 font-bold tracking-wide transition-colors active:scale-[0.98] border border-destructive text-destructive bg-destructive/10 hover:bg-destructive hover:text-destructive-foreground mt-8 focus:outline-none focus:ring-1 focus:ring-destructive"
         >
-          <LogOut size={18} strokeWidth={2.5} />
-          <span>Cerrar Sesión</span>
+          <LogOut size={18} strokeWidth={2} />
+          <span>CERRAR SESIÓN</span>
         </button>
         
-        <p className="text-center text-[10px] font-semibold tracking-widest uppercase mt-8 mb-4" style={{ color: "var(--text-tertiary)" }}>
-          Notdeer App v1.0.0
+        <p className="text-center text-[10px] font-bold tracking-[0.2em] uppercase mt-12 mb-4 text-muted-foreground">
+          Notdeer App v2.0
         </p>
       </div>
     </div>

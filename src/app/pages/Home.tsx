@@ -117,68 +117,69 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white p-6 pb-24">
-      {/* Header */}
-      <header className="mb-8">
-        <h2 className="text-gray-500 text-sm font-medium uppercase tracking-wide mb-1">
+    <div className="min-h-[100dvh] bg-background px-6 pb-32 flex flex-col relative">
+      <header className="mb-4 mt-8">
+        <h2 className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-1.5 ml-1">
           {new Date().toLocaleDateString("es-ES", { weekday: "long", month: "long", day: "numeric" })}
         </h2>
-        <h1 className="text-2xl font-bold text-gray-900">Grabación Veloz</h1>
+        <h1 className="text-4xl font-semibold tracking-tight text-foreground">Grabación</h1>
       </header>
 
-      {/* Recording Button */}
-      <div className="flex flex-col items-center justify-center mb-12">
+      {/* Recording Area */}
+      <div className="flex flex-col items-center justify-center flex-1 min-h-[45vh]">
         <AnimatePresence mode="wait">
           {isProcessing ? (
             <motion.div
               key="processing"
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="text-center"
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="flex flex-col items-center"
             >
-              <div className="w-32 h-32 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
-                <Loader2 size={48} className="text-indigo-600 animate-spin" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Analizando...</h3>
-              <p className="text-sm text-gray-500">IA organizando tu nota</p>
+              <motion.div 
+                animate={{ rotate: 360 }} 
+                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                className="w-20 h-20 rounded-full border-[2px] border-muted border-t-foreground mb-6" 
+              />
+              <h3 className="text-lg font-medium text-foreground tracking-tight">Procesando</h3>
             </motion.div>
           ) : (
             <motion.button
               key="record"
               onClick={handleRecord}
-              whileTap={{ scale: 0.95 }}
+              whileTap={{ scale: 0.92 }}
               className={clsx(
-                "w-32 h-32 rounded-full flex items-center justify-center shadow-2xl transition-all mb-4",
-                isRecording 
-                  ? "bg-red-500 animate-pulse" 
-                  : "bg-indigo-600 hover:bg-indigo-700"
+                "relative flex items-center justify-center w-32 h-32 rounded-full transition-colors duration-500",
+                isRecording ? "bg-destructive text-destructive-foreground shadow-[0_0_40px_-5px_rgba(255,0,0,0.3)]" : "bg-foreground text-background shadow-2xl"
               )}
             >
-              {isRecording ? (
-                <Square size={48} className="text-white fill-white" />
-              ) : (
-                <Mic size={48} className="text-white" />
+              {isRecording ? <Square size={36} strokeWidth={2} fill="currentColor" /> : <Mic size={40} strokeWidth={1.5} />}
+              {isRecording && (
+                <motion.div
+                  className="absolute inset-0 rounded-full border border-destructive"
+                  animate={{ scale: [1, 1.4, 1], opacity: [0.8, 0, 0.8] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                />
               )}
             </motion.button>
           )}
         </AnimatePresence>
 
         {!isProcessing && (
-          <div className="text-center mt-2">
+          <div className="text-center mt-12 h-16 flex flex-col items-center justify-start">
             {isRecording ? (
-              <>
-                <h3 className="text-lg font-semibold text-red-600 mb-1">GRABANDO</h3>
-                <p className="text-2xl font-mono font-bold text-gray-900">{formatTime(recordingTime)}</p>
-                <div className="mt-4 pt-4 border-t border-gray-200 w-full">
-                   <p className="text-sm text-gray-400 italic font-mono">{transcription || "Escuchando..."}</p>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center">
+                <p className="text-4xl font-light tabular-nums tracking-tighter text-foreground mb-2">
+                  {formatTime(recordingTime)}
+                </p>
+                <div className="w-56 overflow-hidden relative h-5">
+                    <p className="text-[13px] text-muted-foreground truncate absolute w-full text-center font-medium">{transcription || "..."}</p>
                 </div>
-              </>
+              </motion.div>
             ) : (
-              <>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">TOCA PARA GRABAR</h3>
-                <p className="text-sm text-gray-500">Inicia grabación de apuntes</p>
-              </>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <h3 className="text-[11px] font-bold text-muted-foreground tracking-widest uppercase">Tocar para grabar</h3>
+              </motion.div>
             )}
           </div>
         )}
@@ -186,42 +187,33 @@ export default function Home() {
 
       {/* Recent Notes */}
       {!isRecording && !isProcessing && recentNotes.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Notas Recientes</h3>
-          <div className="space-y-3">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+          className="mt-4"
+        >
+          <div className="flex justify-between items-baseline mb-4">
+            <h3 className="text-[13px] font-semibold text-muted-foreground tracking-wide uppercase ml-1">Recientes</h3>
+          </div>
+          <div className="flex flex-col">
             {recentNotes.map((note) => (
               <Link
                 key={note.id}
                 to={`/note/${note.id}`}
-                className="block"
+                className="group py-4 border-b border-border/50 last:border-0 hover:bg-muted/40 px-3 -mx-2 rounded-2xl transition-all duration-300"
               >
-                <motion.div
-                  whileTap={{ scale: 0.98 }}
-                  className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-semibold text-gray-900 flex-1 truncate">{note.title || "Apunte Sin Título"}</h4>
-                    <span className="text-[10px] text-gray-500 ml-2 whitespace-nowrap">{getTimeAgo(note.created_at)}</span>
-                  </div>
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                     {note.summary || note.transcript || "Procesando contenido..."}
-                  </p>
-                </motion.div>
+                <div className="flex justify-between items-baseline mb-1">
+                  <h4 className="font-semibold text-foreground text-[17px] tracking-tight truncate pr-4">{note.title || "Nota"}</h4>
+                  <span className="text-[12px] font-medium text-muted-foreground whitespace-nowrap">{getTimeAgo(note.created_at)}</span>
+                </div>
+                <p className="text-[15px] text-muted-foreground line-clamp-1 leading-relaxed">
+                   {note.summary || note.transcript || "Procesando contenido..."}
+                </p>
               </Link>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {!isRecording && !isProcessing && recentNotes.length === 0 && (
-        <div className="text-center py-12">
-          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Mic size={32} className="text-gray-400" />
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Aún no hay notas</h3>
-          <p className="text-sm text-gray-500">Toca el botón arriba para grabar algo</p>
-        </div>
+        </motion.div>
       )}
     </div>
   );

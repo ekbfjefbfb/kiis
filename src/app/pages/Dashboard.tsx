@@ -150,22 +150,21 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen pb-4 relative" style={{ background: "var(--bg-secondary)" }}>
+    <div className="min-h-[100dvh] pb-4 bg-background text-foreground relative font-sans transition-colors duration-300">
       {/* Header */}
-      <div className="px-5 pt-6 pb-5" style={{ background: "var(--bg-primary)", borderBottom: "1px solid var(--border-primary)" }}>
+      <div className="px-5 pt-6 pb-5 border-b border-border bg-card">
         <div className="flex justify-between items-start mb-1">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest mb-0.5 capitalize" style={{ color: "var(--text-tertiary)" }}>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-0.5 capitalize text-muted-foreground">
               {today}
             </p>
-            <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Hola, {(() => { try { const p = JSON.parse(localStorage.getItem('user_profile') || '{}'); return p.name?.split(' ')[0] || authService.getCurrentUser()?.displayName?.split(' ')[0] || 'Estudiante'; } catch { return 'Estudiante'; } })()} 👋
             </h1>
           </div>
           <Link
             to="/calendar"
-            className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
-            style={{ background: "var(--primary-light)", color: "var(--primary)" }}
+            className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-1 focus:ring-ring"
           >
             <Calendar size={20} />
           </Link>
@@ -177,17 +176,17 @@ export default function Dashboard() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-700 p-5 text-white shadow-xl shadow-indigo-300/30"
+          className="relative overflow-hidden rounded-3xl bg-primary p-5 text-primary-foreground shadow-sm"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10" />
-          <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/5 rounded-full -ml-6 -mb-6" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary-foreground/5 rounded-full -mr-10 -mt-10" />
+          <div className="absolute bottom-0 left-0 w-20 h-20 bg-primary-foreground/5 rounded-full -ml-6 -mb-6" />
 
           <div className="relative flex items-center justify-between">
             <div className="flex-1 mr-4">
               <h3 className="font-semibold text-lg mb-1">
                 {isRecording ? "Grabando..." : isProcessing ? "Procesando..." : "Grabación Rápida"}
               </h3>
-              <p className="text-indigo-200 text-sm">
+              <p className="text-primary-foreground/70 text-sm">
                 {isRecording
                   ? formatTime(recordingTime)
                   : isProcessing
@@ -201,18 +200,18 @@ export default function Dashboard() {
               onClick={handleRecord}
               disabled={isProcessing}
               className={clsx(
-                "w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all",
+                "w-14 h-14 rounded-full flex items-center justify-center shadow-sm transition-all",
                 isRecording
-                  ? "bg-red-500 animate-pulse"
+                  ? "bg-destructive text-destructive-foreground animate-pulse"
                   : isProcessing
-                  ? "bg-white/20"
-                  : "bg-white/20 hover:bg-white/30 active:bg-white/40"
+                  ? "bg-primary-foreground/10 text-primary-foreground/50"
+                  : "bg-primary-foreground text-primary hover:bg-primary-foreground/90 active:bg-primary-foreground/80"
               )}
             >
               {isProcessing ? (
                 <Loader2 size={24} className="animate-spin" />
               ) : isRecording ? (
-                <Square size={20} className="fill-white" />
+                <Square size={20} className="fill-current" />
               ) : (
                 <Mic size={24} />
               )}
@@ -223,12 +222,12 @@ export default function Dashboard() {
         {/* Upcoming Tasks */}
         <section>
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               Próximos
             </h3>
             <Link
               to="/calendar"
-              className="text-xs font-medium text-indigo-600 hover:underline"
+              className="text-xs font-medium text-foreground hover:underline underline-offset-4"
             >
               Ver Todo
             </Link>
@@ -236,8 +235,8 @@ export default function Dashboard() {
 
           <div className="overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide flex gap-3">
             {upcomingTasks.length === 0 ? (
-              <div className="w-full text-center py-4 bg-white rounded-2xl border border-gray-100">
-                <p className="text-sm text-gray-400">No hay tareas próximas</p>
+              <div className="w-full text-center py-4 bg-card rounded-2xl border border-border">
+                <p className="text-sm text-muted-foreground">No hay tareas próximas</p>
               </div>
             ) : upcomingTasks.map((task, i) => {
               const cls = CLASSES.find((c) => c.id === task.classId);
@@ -248,23 +247,23 @@ export default function Dashboard() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.08 }}
                   whileTap={{ scale: 0.97 }}
-                  className="flex-shrink-0 w-52 bg-white p-4 rounded-2xl border border-gray-100/80 shadow-sm card-premium"
+                  className="flex-shrink-0 w-52 bg-card p-4 rounded-2xl border border-border shadow-sm"
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <Clock size={12} className="text-gray-400" />
-                    <span className="text-[11px] font-medium text-gray-500">
+                    <Clock size={12} className="text-muted-foreground" />
+                    <span className="text-[11px] font-medium text-muted-foreground">
                       {new Date(task.date).toLocaleDateString("es-ES", {
                         month: "short",
                         day: "numeric",
                       })}
                     </span>
                   </div>
-                  <h4 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 mb-2">
+                  <h4 className="font-semibold text-card-foreground text-sm leading-tight line-clamp-2 mb-2">
                     {task.title}
                   </h4>
                   <div className="flex items-center gap-1.5">
-                    <Bookmark size={11} className="text-gray-400" />
-                    <span className="text-[10px] text-gray-500 truncate">
+                    <Bookmark size={11} className="text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground truncate">
                       {cls?.name}
                     </span>
                   </div>
@@ -277,12 +276,12 @@ export default function Dashboard() {
         {/* My Classes */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               Mis Clases
             </h3>
             <button
               onClick={() => setIsAddingClass(true)}
-              className="w-7 h-7 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 hover:bg-indigo-100 transition-colors"
+              className="w-7 h-7 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground hover:bg-secondary/80 transition-colors"
             >
               <Plus size={16} />
             </button>
@@ -297,23 +296,20 @@ export default function Dashboard() {
                 transition={{ delay: i * 0.06 }}
               >
                 <Link to={`/class/${cls.id}`} className="block group">
-                  <div className="bg-white p-4 rounded-2xl border border-gray-100/80 shadow-sm card-premium">
+                  <div className="bg-card p-4 rounded-2xl border border-border shadow-sm transition-colors hover:border-foreground/20">
                     <div className="flex items-center gap-3.5">
                       <div
-                        className={clsx(
-                          "w-11 h-11 rounded-xl flex items-center justify-center shrink-0",
-                          cls.color
-                        )}
+                        className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-secondary text-secondary-foreground"
                       >
                         <cls.icon size={20} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-gray-900 text-sm truncate">
+                        <h4 className="font-semibold text-card-foreground text-sm truncate">
                           {cls.name}
                         </h4>
-                        <p className="text-[11px] text-gray-500 mt-0.5 flex items-center gap-1.5">
+                        <p className="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-1.5">
                           <span className="truncate max-w-[80px]">{cls.time}</span>
-                          <span className="w-0.5 h-0.5 bg-gray-300 rounded-full shrink-0" />
+                          <span className="w-0.5 h-0.5 bg-border rounded-full shrink-0" />
                           <span className="truncate">{cls.professor}</span>
                         </p>
                         {/* Important Topics Preview */}
@@ -321,14 +317,14 @@ export default function Dashboard() {
                           {cls.importantTopics.slice(0, 2).map((topic) => (
                             <span
                               key={topic}
-                              className="text-[9px] font-medium px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-full flex items-center gap-0.5"
+                              className="text-[9px] font-medium px-1.5 py-0.5 bg-secondary text-secondary-foreground rounded-full flex items-center gap-0.5"
                             >
-                              <Star size={7} className="fill-amber-400 text-amber-400 shrink-0" />
+                              <Star size={7} className="fill-current shrink-0" />
                               <span className="truncate max-w-[100px]">{topic}</span>
                             </span>
                           ))}
                           {cls.importantTopics.length > 2 && (
-                            <span className="text-[9px] font-medium px-1.5 py-0.5 bg-gray-50 text-gray-400 rounded-full">
+                            <span className="text-[9px] font-medium px-1.5 py-0.5 bg-secondary text-muted-foreground rounded-full">
                               +{cls.importantTopics.length - 2}
                             </span>
                           )}
@@ -336,7 +332,7 @@ export default function Dashboard() {
                       </div>
                       <ChevronRight
                         size={18}
-                        className="text-gray-300 group-hover:text-indigo-500 transition-colors shrink-0 pl-1"
+                        className="text-muted-foreground group-hover:text-foreground transition-colors shrink-0 pl-1"
                       />
                     </div>
                   </div>
@@ -350,12 +346,12 @@ export default function Dashboard() {
         {recentNotes.length > 0 && (
           <section>
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Notas Recientes
               </h3>
               <Link
                 to="/notes"
-                className="text-xs font-medium text-indigo-600 hover:underline"
+                className="text-xs font-medium text-foreground hover:underline underline-offset-4"
               >
                 Todas
               </Link>
@@ -365,17 +361,17 @@ export default function Dashboard() {
                 <Link key={note.id} to={`/note/${note.id}`} className="block">
                   <motion.div
                     whileTap={{ scale: 0.98 }}
-                    className="bg-white p-4 rounded-2xl border border-gray-100/80 shadow-sm card-premium"
+                    className="bg-card p-4 rounded-2xl border border-border shadow-sm transition-colors hover:border-foreground/20"
                   >
                     <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-semibold text-gray-900 text-sm truncate flex-1">
+                      <h4 className="font-semibold text-card-foreground text-sm truncate flex-1">
                         {note.title || "Apunte Sin Título"}
                       </h4>
-                      <span className="text-[10px] text-gray-400 ml-2 whitespace-nowrap">
+                      <span className="text-[10px] text-muted-foreground ml-2 whitespace-nowrap">
                         {getTimeAgo(note.created_at)}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 line-clamp-2">
+                    <p className="text-xs text-muted-foreground line-clamp-2">
                        {note.summary || note.transcript || "Procesando contenido..."}
                     </p>
                   </motion.div>
@@ -394,7 +390,7 @@ export default function Dashboard() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
               onClick={() => setIsAddingClass(false)}
             />
             <motion.div
@@ -402,69 +398,67 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 rounded-t-3xl z-50 p-6 shadow-2xl safe-bottom max-w-md mx-auto"
-              style={{ background: "var(--bg-primary)" }}
+              className="fixed bottom-0 left-0 right-0 rounded-t-3xl z-50 p-6 shadow-xl border-t border-border safe-bottom max-w-md mx-auto bg-card text-card-foreground"
             >
               <div className="flex justify-between items-center mb-5">
-                <h2 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>Añadir Nueva Clase</h2>
+                <h2 className="text-lg font-bold">Añadir Nueva Clase</h2>
                 <button
                   onClick={() => setIsAddingClass(false)}
-                  className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
-                  style={{ background: "var(--bg-tertiary)", color: "var(--text-secondary)" }}
+                  className="w-8 h-8 rounded-full flex items-center justify-center bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors focus:outline-none focus:ring-1 focus:ring-ring"
                 >
                   <X size={18} />
                 </button>
               </div>
 
-              <form onSubmit={handleCreateClass} className="space-y-4">
+              <form onSubmit={handleCreateClass} className="space-y-4 text-left">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase">Nombre de Materia</label>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase">Nombre de Materia</label>
                   <input
                     type="text"
                     required
                     value={newClassName}
                     onChange={(e) => setNewClassName(e.target.value)}
                     placeholder="Ej. Programación Avanzada"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                    className="w-full bg-transparent border border-border rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-ring focus:outline-none transition-all placeholder:text-muted-foreground text-foreground"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase">Profesor</label>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase">Profesor</label>
                   <input
                     type="text"
                     required
                     value={newClassProfessor}
                     onChange={(e) => setNewClassProfessor(e.target.value)}
                     placeholder="Nombre del Profesor"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                    className="w-full bg-transparent border border-border rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-ring focus:outline-none transition-all placeholder:text-muted-foreground text-foreground"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase">Horario</label>
+                    <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase">Horario</label>
                     <input
                       type="text"
                       value={newClassTime}
                       onChange={(e) => setNewClassTime(e.target.value)}
                       placeholder="Ej. Mar, Jue 10:00 AM"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                      className="w-full bg-transparent border border-border rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-ring focus:outline-none transition-all placeholder:text-muted-foreground text-foreground"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase">Aula</label>
+                    <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase">Aula</label>
                     <input
                       type="text"
                       value={newClassRoom}
                       onChange={(e) => setNewClassRoom(e.target.value)}
                       placeholder="Ej. Lab 2"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                      className="w-full bg-transparent border border-border rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-ring focus:outline-none transition-all placeholder:text-muted-foreground text-foreground"
                     />
                   </div>
                 </div>
                 <button
                   type="submit"
                   disabled={!newClassName.trim() || !newClassProfessor.trim()}
-                  className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold mt-2 disabled:opacity-50 active:bg-indigo-700 transition-colors"
+                  className="w-full bg-primary text-primary-foreground rounded-xl py-4 font-semibold mt-2 disabled:opacity-50 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center h-14"
                 >
                   Guardar Clase
                 </button>
