@@ -23,26 +23,6 @@ export default function Layout() {
     <div className="mx-auto max-w-md min-h-[100dvh] relative overflow-hidden font-sans bg-background text-foreground">
       {/* PWA Install Prompt */}
       {!shouldHideNav && <PWAInstallPrompt />}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="bg-foreground text-background px-4 py-3 flex justify-between items-center text-sm safe-top">
-              <span className="font-medium text-[13px]">Instala Notdeer</span>
-              <div className="flex gap-2">
-                <button
-                  onClick={handleInstall}
-                  className="flex items-center gap-1.5 bg-background text-foreground px-3.5 py-1.5 rounded-full font-bold text-xs outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-background/90 transition-colors"
-                >
-                  <Download size={13} strokeWidth={2.5} />
-                  Instalar
-                </button>
-                <button onClick={() => setShowInstallBanner(false)} className="text-background/60 hover:text-background text-xs px-1">✕</button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <main className={clsx("h-full", !shouldHideNav && "pb-[88px]")}>
         <Outlet />
