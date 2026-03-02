@@ -146,7 +146,19 @@ export default function LiveRecording() {
 
       // Finalizar sesión
       if (session) {
-        await agendaService.finalizeSession(session.id);
+        const finalized = await agendaService.finalizeSession(session.id);
+        
+        // Guardar en localStorage para Dashboard
+        const stored = localStorage.getItem('recent_sessions');
+        const sessions = stored ? JSON.parse(stored) : [];
+        sessions.unshift({
+          id: session.id,
+          class_name: session.class_name,
+          session_datetime: session.session_datetime,
+          summary: agendaState?.state.summary || '',
+          created_at: new Date().toISOString()
+        });
+        localStorage.setItem('recent_sessions', JSON.stringify(sessions.slice(0, 10)));
         
         // Desconectar WebSocket
         agendaService.disconnect();

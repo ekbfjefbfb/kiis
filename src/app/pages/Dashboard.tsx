@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [recordingTime, setRecordingTime] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [recentNotes, setRecentNotes] = useState<BackendNote[]>([]);
+  const [recentSessions, setRecentSessions] = useState<any[]>([]);
 
   // Add class state
   const [isAddingClass, setIsAddingClass] = useState(false);
@@ -34,6 +35,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadRecentNotes();
+    loadRecentSessions();
   }, []);
 
   useEffect(() => {
@@ -52,6 +54,19 @@ export default function Dashboard() {
        setRecentNotes(backendNotes);
     } catch (e) {
        console.error("Error loading notes", e);
+    }
+  };
+
+  const loadRecentSessions = async () => {
+    try {
+      // Load recent sessions from localStorage as fallback
+      const stored = localStorage.getItem('recent_sessions');
+      if (stored) {
+        const sessions = JSON.parse(stored);
+        setRecentSessions(sessions.slice(0, 5));
+      }
+    } catch (e) {
+      console.error("Error loading sessions", e);
     }
   };
 
@@ -172,56 +187,11 @@ export default function Dashboard() {
       </div>
 
       <div className="px-5 pt-4 space-y-5">
-        {/* Quick Record */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl bg-foreground p-5 text-background"
-        >
-          <div className="relative flex items-center justify-between">
-            <div className="flex-1 mr-4">
-              <h3 className="font-semibold text-lg tracking-tight">
-                {isRecording ? "Grabando..." : isProcessing ? "Procesando..." : "Grabar clase"}
-              </h3>
-              <p className="text-background/70 text-sm mt-1">
-                {isRecording
-                  ? formatTime(recordingTime)
-                  : isProcessing
-                  ? "Preparando tus notas..."
-                  : "Toca para grabar tu clase al instante"}
-              </p>
-            </div>
-
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={handleRecord}
-              disabled={isProcessing}
-              className={clsx(
-                "w-14 h-14 rounded-full flex items-center justify-center transition-all",
-                isRecording
-                  ? "bg-destructive text-destructive-foreground animate-pulse"
-                  : isProcessing
-                  ? "bg-background/10 text-background/50"
-                  : "bg-background text-foreground hover:bg-background/90"
-              )}
-            >
-              {isProcessing ? (
-                <Loader2 size={26} className="animate-spin" />
-              ) : isRecording ? (
-                <Square size={22} className="fill-current" />
-              ) : (
-                <Mic size={26} />
-              )}
-            </motion.button>
-          </div>
-        </motion.div>
-
-        {/* AI Recording Button */}
+        {/* Quick Record - UNIFIED BUTTON */}
         <Link to="/live">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
             className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 p-5 text-white"
           >
             <div className="relative flex items-center justify-between">
@@ -229,7 +199,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2 mb-1.5">
                   <Sparkles size={18} className="text-yellow-300" />
                   <h3 className="font-semibold text-lg tracking-tight">
-                    Grabación IA en Vivo
+                    Grabar Clase con IA
                   </h3>
                 </div>
                 <p className="text-white/80 text-sm">
@@ -238,7 +208,7 @@ export default function Dashboard() {
               </div>
 
               <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <Sparkles size={26} className="text-white" />
+                <Mic size={26} className="text-white" />
               </div>
             </div>
             
@@ -305,9 +275,81 @@ export default function Dashboard() {
 
         {/* My Classes */}
         <section>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">
+              Clases Grabadas
+            </h3>
+            <Link
+              to="/notes"
+              className="text-sm font-medium text-foreground hover:underline underline-offset-4"
+            >
+              Ver Todas
+            </Link>
+          </div>
+          
+          {recentSessions.length > 0 ? (
+            <div className="space-y-3">
+              {recentSessions.map((session, i) => (
+                <motion.div
+                  key={session.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.06 }}
+                >
+                  <Link to={`/session/${session.id}`} className="block group">
+                    <div className="bg-card p-4 rounded-2xl border border-border transition-all hover:border-indigo-500/50 hover:shadow-lg">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+                          <Sparkles size={20} className="text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-foreground text-base mb-1 truncate">
+                            {session.class_name || "Clase"}
+                          </h4>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {new Date(session.session_datetime).toLocaleDateString("es-ES", {
+                              weekday: "short",
+                              month: "short",
+                              day: "numeric"
+                            })}
+                          </p>
+                          {session.summary && (
+                            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                              {session.summary}
+                            </p>
+                          )}
+                        </div>
+                        <ChevronRight size={20} className="text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-muted/30 rounded-2xl p-6 text-center border border-border/50">
+              <div className="w-12 h-12 rounded-full bg-muted mx-auto mb-3 flex items-center justify-center">
+                <Mic size={24} className="text-muted-foreground" />
+              </div>
+              <p className="text-sm text-muted-foreground mb-3">
+                No hay clases grabadas aún
+              </p>
+              <Link
+                to="/live"
+                className="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-700"
+              >
+                <Sparkles size={16} />
+                Grabar primera clase
+              </Link>
+            </div>
+          )}
+        </section>
+
+        {/* My Classes */}
+        <section>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">
-              Mis Clases
+              Mis Materias
             </h3>
             <button
               onClick={() => setIsAddingClass(true)}
