@@ -240,8 +240,8 @@ export default function VoiceChatPage() {
             <ArrowLeft size={20} strokeWidth={1.5} />
           </Link>
           <div className="flex flex-col items-center">
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">Voz</h1>
-            <p className="text-[10px] text-muted-foreground font-bold tracking-[0.2em] uppercase mt-1">Siempre disponible</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Voz</h1>
+            <p className="text-xs text-muted-foreground font-bold tracking-[0.2em] uppercase mt-1">Siempre disponible</p>
           </div>
           <button
             onClick={() => setShowVoiceSelector(!showVoiceSelector)}
@@ -263,14 +263,14 @@ export default function VoiceChatPage() {
           >
             <div className="px-6 py-6 space-y-6">
               <div>
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] block mb-3">
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] block mb-3">
                   Voz
                 </label>
                 <div className="relative">
                   <select
                     value={selectedVoice || ""}
                     onChange={(e) => setSelectedVoice(e.target.value || null)}
-                    className="w-full bg-muted text-foreground border border-border/50 rounded-xl px-4 py-3 text-[15px] appearance-none focus:outline-none focus:ring-1 focus:ring-foreground pr-10"
+                    className="w-full bg-muted text-foreground border border-border/50 rounded-xl px-4 py-3 text-base appearance-none focus:outline-none focus:ring-1 focus:ring-foreground pr-10"
                   >
                     <option value="">Voz por defecto</option>
                     {availableVoices.map((v) => (
@@ -284,7 +284,7 @@ export default function VoiceChatPage() {
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] block mb-3">
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] block mb-3">
                   Velocidad: {speechRate.toFixed(1)}x
                 </label>
                 <input
@@ -299,14 +299,14 @@ export default function VoiceChatPage() {
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-[15px] text-foreground font-medium">Lectura automática</span>
+                <span className="text-base text-foreground font-medium">Lectura automática</span>
                 <div className={clsx("w-12 h-6 rounded-full transition-colors flex items-center px-1 border border-border cursor-pointer", autoSpeak ? "bg-foreground" : "bg-muted")} onClick={() => setAutoSpeak(!autoSpeak)}>
                    <motion.div animate={{ x: autoSpeak ? 24 : 0 }} className={clsx("w-4 h-4 rounded-full", autoSpeak ? "bg-background" : "bg-foreground")} />
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-[15px] text-foreground font-medium">Modo continuo</span>
+                <span className="text-base text-foreground font-medium">Modo continuo</span>
                 <div className={clsx("w-12 h-6 rounded-full transition-colors flex items-center px-1 border border-border cursor-pointer", continuousMode ? "bg-foreground" : "bg-muted")} onClick={() => setContinuousMode(!continuousMode)}>
                    <motion.div animate={{ x: continuousMode ? 24 : 0 }} className={clsx("w-4 h-4 rounded-full", continuousMode ? "bg-background" : "bg-foreground")} />
                 </div>
@@ -316,9 +316,9 @@ export default function VoiceChatPage() {
                 onClick={() => {
                   audioService.speakWithVoice("Hola, soy tu asistente. Así sueno con esta voz.", selectedVoice, speechRate);
                 }}
-                className="w-full bg-foreground text-background py-4 rounded-xl text-[13px] font-bold tracking-widest uppercase hover:bg-foreground/90 transition-colors flex items-center justify-center gap-2 mt-4"
+                className="w-full bg-foreground text-background py-4 rounded-xl text-sm font-bold tracking-widest uppercase hover:bg-foreground/90 transition-colors flex items-center justify-center gap-2 mt-4"
               >
-                <Volume2 size={16} />
+                <Volume2 size={18} />
                 Probar voz
               </button>
             </div>
@@ -352,25 +352,25 @@ export default function VoiceChatPage() {
           >
             <div
               className={clsx(
-                "max-w-[85%] p-4 text-[15px] leading-relaxed",
+                "max-w-[85%] p-5 text-base leading-relaxed",
                 msg.role === "user"
                   ? "bg-foreground text-background rounded-[24px] rounded-br-md"
                   : "bg-muted/50 text-foreground border border-border/50 rounded-[24px] rounded-bl-md"
               )}
             >
               {msg.role === "user" && (
-                <div className="flex items-center gap-1 mb-2 opacity-50">
-                  <Mic size={10} />
-                  <span className="text-[10px] font-bold tracking-widest uppercase">Tú</span>
+                <div className="flex items-center gap-1.5 mb-2 opacity-50">
+                  <Mic size={12} />
+                  <span className="text-xs font-bold tracking-widest uppercase">Tú</span>
                 </div>
               )}
               <p>{msg.text}</p>
               {msg.role === "ai" && msg.text && (
                 <button
                   onClick={() => replaySpeech(msg.text)}
-                  className="mt-3 text-muted-foreground hover:text-foreground w-8 h-8 rounded-full border border-border/50 bg-background flex items-center justify-center transition-colors"
+                  className="mt-4 text-muted-foreground hover:text-foreground w-10 h-10 rounded-full border border-border/50 bg-background flex items-center justify-center transition-colors"
                 >
-                  <Repeat size={14} />
+                  <Repeat size={16} />
                 </button>
               )}
             </div>
@@ -384,7 +384,7 @@ export default function VoiceChatPage() {
             animate={{ opacity: 1 }}
             className="flex justify-end"
           >
-            <div className="max-w-[85%] p-4 bg-muted text-muted-foreground/80 rounded-[24px] rounded-br-md text-[15px] italic border border-border/50">
+            <div className="max-w-[85%] p-5 bg-muted text-muted-foreground/80 rounded-[24px] rounded-br-md text-base italic border border-border/50">
               {currentTranscript}
             </div>
           </motion.div>
@@ -423,10 +423,10 @@ export default function VoiceChatPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-48 left-6 right-6 mx-auto bg-destructive text-destructive-foreground text-[13px] font-medium tracking-wide p-4 rounded-xl z-30 flex justify-between items-center"
+            className="fixed bottom-48 left-6 right-6 mx-auto bg-destructive text-destructive-foreground text-sm font-medium tracking-wide p-4 rounded-xl z-30 flex justify-between items-center"
           >
             <span>{error}</span>
-            <button onClick={() => setError(null)} className="font-bold opacity-70 hover:opacity-100 uppercase tracking-widest text-[10px]">Cerrar</button>
+            <button onClick={() => setError(null)} className="font-bold opacity-70 hover:opacity-100 uppercase tracking-widest text-xs">Cerrar</button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -441,7 +441,7 @@ export default function VoiceChatPage() {
                initial={{ opacity: 0, y: 5 }}
                animate={{ opacity: 1, y: 0 }}
                exit={{ opacity: 0, y: -5 }}
-               className={clsx("text-[11px] font-bold tracking-[0.2em] uppercase transition-colors", 
+               className={clsx("text-sm font-bold tracking-[0.2em] uppercase transition-colors", 
                  isRecording ? "text-destructive" : getStatusColor()
                )}
              >

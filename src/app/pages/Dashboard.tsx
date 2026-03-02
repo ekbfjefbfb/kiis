@@ -152,38 +152,38 @@ export default function Dashboard() {
   return (
     <div className="min-h-[100dvh] pb-4 bg-background text-foreground relative font-sans transition-colors duration-300">
       {/* Header */}
-      <div className="px-4 pt-4 pb-3 border-b border-border bg-card">
-        <div className="flex justify-between items-start mb-0.5">
+      <div className="px-5 pt-6 pb-4 border-b border-border bg-card">
+        <div className="flex justify-between items-start mb-1">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest capitalize text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-widest capitalize text-muted-foreground">
               {today}
             </p>
-            <h1 className="text-lg font-bold tracking-tight text-foreground">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground mt-1">
               Hola, {(() => { try { const p = JSON.parse(localStorage.getItem('user_profile') || '{}'); return p.name?.split(' ')[0] || authService.getCurrentUser()?.displayName?.split(' ')[0] || 'Estudiante'; } catch { return 'Estudiante'; } })()} 👋
             </h1>
           </div>
           <Link
             to="/calendar"
-            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80"
+            className="w-11 h-11 rounded-lg flex items-center justify-center transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80"
           >
-            <Calendar size={18} />
+            <Calendar size={20} />
           </Link>
         </div>
       </div>
 
-      <div className="px-4 pt-3 space-y-4">
+      <div className="px-5 pt-4 space-y-5">
         {/* Quick Record */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-xl bg-foreground p-4 text-background"
+          className="relative overflow-hidden rounded-2xl bg-foreground p-5 text-background"
         >
           <div className="relative flex items-center justify-between">
-            <div className="flex-1 mr-3">
-              <h3 className="font-semibold text-base tracking-tight">
+            <div className="flex-1 mr-4">
+              <h3 className="font-semibold text-lg tracking-tight">
                 {isRecording ? "Grabando..." : isProcessing ? "Procesando..." : "Grabar clase"}
               </h3>
-              <p className="text-background/60 text-xs mt-0.5">
+              <p className="text-background/70 text-sm mt-1">
                 {isRecording
                   ? formatTime(recordingTime)
                   : isProcessing
@@ -197,7 +197,7 @@ export default function Dashboard() {
               onClick={handleRecord}
               disabled={isProcessing}
               className={clsx(
-                "w-12 h-12 rounded-full flex items-center justify-center transition-all",
+                "w-14 h-14 rounded-full flex items-center justify-center transition-all",
                 isRecording
                   ? "bg-destructive text-destructive-foreground animate-pulse"
                   : isProcessing
@@ -206,11 +206,11 @@ export default function Dashboard() {
               )}
             >
               {isProcessing ? (
-                <Loader2 size={24} className="animate-spin" />
+                <Loader2 size={26} className="animate-spin" />
               ) : isRecording ? (
-                <Square size={20} className="fill-current" />
+                <Square size={22} className="fill-current" />
               ) : (
-                <Mic size={24} />
+                <Mic size={26} />
               )}
             </motion.button>
           </div>
@@ -222,23 +222,23 @@ export default function Dashboard() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 p-4 text-white"
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 p-5 text-white"
           >
             <div className="relative flex items-center justify-between">
-              <div className="flex-1 mr-3">
-                <div className="flex items-center gap-2 mb-1">
-                  <Sparkles size={16} className="text-yellow-300" />
-                  <h3 className="font-semibold text-base tracking-tight">
+              <div className="flex-1 mr-4">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Sparkles size={18} className="text-yellow-300" />
+                  <h3 className="font-semibold text-lg tracking-tight">
                     Grabación IA en Vivo
                   </h3>
                 </div>
-                <p className="text-white/80 text-xs">
+                <p className="text-white/80 text-sm">
                   Análisis inteligente en tiempo real con resumen automático
                 </p>
               </div>
 
-              <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <Sparkles size={24} className="text-white" />
+              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <Sparkles size={26} className="text-white" />
               </div>
             </div>
             
@@ -250,13 +250,13 @@ export default function Dashboard() {
 
         {/* Upcoming Tasks */}
         <section>
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">
               Próximos
             </h3>
             <Link
               to="/calendar"
-              className="text-xs font-medium text-foreground hover:underline underline-offset-4"
+              className="text-sm font-medium text-foreground hover:underline underline-offset-4"
             >
               Ver Todo
             </Link>
@@ -264,8 +264,8 @@ export default function Dashboard() {
 
           <div className="overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide flex gap-3">
             {upcomingTasks.length === 0 ? (
-              <div className="w-full text-center py-4 bg-card rounded-2xl border border-border">
-                <p className="text-sm text-muted-foreground">No hay tareas próximas</p>
+              <div className="w-full text-center py-6 bg-card rounded-2xl border border-border">
+                <p className="text-base text-muted-foreground">No hay tareas próximas</p>
               </div>
             ) : upcomingTasks.map((task, i) => {
               const cls = CLASSES.find((c) => c.id === task.classId);
@@ -276,19 +276,19 @@ export default function Dashboard() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.08 }}
                   whileTap={{ scale: 0.97 }}
-                  className="flex-shrink-0 w-44 bg-card p-3 rounded-xl border border-border"
+                  className="flex-shrink-0 w-48 bg-card p-4 rounded-2xl border border-border"
                 >
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    <Clock size={10} className="text-muted-foreground" />
-                    <span className="text-[10px] font-medium text-muted-foreground">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                    <Clock size={12} className="text-muted-foreground" />
+                    <span className="text-xs font-medium text-muted-foreground">
                       {new Date(task.date).toLocaleDateString("es-ES", {
                         month: "short",
                         day: "numeric",
                       })}
                     </span>
                   </div>
-                  <h4 className="font-semibold text-card-foreground text-xs leading-tight line-clamp-2 mb-1.5">
+                  <h4 className="font-semibold text-card-foreground text-sm leading-tight line-clamp-2 mb-2">
                     {task.title}
                   </h4>
                   <div className="flex items-center gap-1">
@@ -306,7 +306,7 @@ export default function Dashboard() {
         {/* My Classes */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">
               Mis Clases
             </h3>
             <button
@@ -334,10 +334,10 @@ export default function Dashboard() {
                         <cls.icon size={18} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-card-foreground text-xs truncate">
+                        <h4 className="font-semibold text-card-foreground text-sm truncate">
                           {cls.name}
                         </h4>
-                        <p className="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-1.5">
+                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
                           <span className="truncate max-w-[80px]">{cls.time}</span>
                           <span className="w-0.5 h-0.5 bg-border rounded-full shrink-0" />
                           <span className="truncate">{cls.professor}</span>
@@ -397,11 +397,11 @@ export default function Dashboard() {
                       <h4 className="font-semibold text-card-foreground text-sm truncate flex-1">
                         {note.title || "Apunte Sin Título"}
                       </h4>
-                      <span className="text-[10px] text-muted-foreground ml-2 whitespace-nowrap">
+                      <span className="text-xs text-muted-foreground ml-2 whitespace-nowrap">
                         {getTimeAgo(note.created_at)}
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2">
+                    <p className="text-sm text-muted-foreground line-clamp-2">
                        {note.summary || note.transcript || "Procesando contenido..."}
                     </p>
                   </motion.div>
