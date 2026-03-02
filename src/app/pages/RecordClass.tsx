@@ -105,7 +105,7 @@ export function RecordClass({ audioService, classRecordingService, onRecordingCo
           {isProcessing ? (
             <>
               <Loader2 className="animate-spin" />
-              Procesando con IA...
+              Preparando tus notas...
             </>
           ) : (
             'Procesar y Guardar'

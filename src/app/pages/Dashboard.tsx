@@ -187,7 +187,7 @@ export default function Dashboard() {
                 {isRecording
                   ? formatTime(recordingTime)
                   : isProcessing
-                  ? "La IA procesa tu clase en backend"
+                  ? "Preparando tus notas..."
                   : "Toca para grabar tu clase al instante"}
               </p>
             </div>

@@ -34,6 +34,6 @@ export const router = createBrowserRouter([
   },
   {
     path: "*",
-    Component: () => <div className="p-10 text-center text-muted-foreground font-['Inter']">404 - Not Found</div>
+    Component: () => <div className="p-10 text-center text-muted-foreground font-['Inter']">Página no encontrada</div>
   }
 ]);

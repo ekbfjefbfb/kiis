@@ -241,7 +241,7 @@ export default function VoiceChatPage() {
           </Link>
           <div className="flex flex-col items-center">
             <h1 className="text-xl font-semibold tracking-tight text-foreground">Asistente de Voz</h1>
-            <p className="text-[10px] text-muted-foreground font-bold tracking-[0.2em] uppercase mt-1">Whisper V3 Turbo</p>
+            <p className="text-[10px] text-muted-foreground font-bold tracking-[0.2em] uppercase mt-1">Siempre disponible</p>
           </div>
           <button
             onClick={() => setShowVoiceSelector(!showVoiceSelector)}
@@ -335,7 +335,7 @@ export default function VoiceChatPage() {
             </div>
             <h2 className="text-2xl font-semibold tracking-tight text-foreground mb-3">Empieza a hablar</h2>
             <p className="text-[15px] text-muted-foreground text-center max-w-[280px] leading-relaxed mb-8">
-              Mantén pulsado para hablar con la IA en tiempo real utilizando procesamiento de voz.
+              Mantén pulsado el micrófono para hacerle preguntas sobre tus clases.
             </p>
           </div>
         )}

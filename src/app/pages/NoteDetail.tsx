@@ -47,7 +47,7 @@ export default function NoteDetail() {
     // Prepare full text reading
     const sections = [];
     if (note.title) sections.push(`Título de la nota: ${note.title}.`);
-    if (note.summary) sections.push(`Resumen de IA: ${note.summary}`);
+    if (note.summary) sections.push(`Resumen: ${note.summary}`);
     if (note.key_points && note.key_points.length > 0) {
        sections.push(`Puntos Clave: ${note.key_points.join(". ")}`);
     }
@@ -213,7 +213,7 @@ export default function NoteDetail() {
         {note.transcript && (
           <div className="pt-8">
              <h3 className="text-[12px] font-bold tracking-[0.2em] uppercase text-muted-foreground border-b border-border/50 pb-2 mb-4 flex items-center gap-2">
-                Transcripción Cruda
+                Lo que se dijo en clase
              </h3>
              <p className="text-[15px] text-muted-foreground whitespace-pre-wrap leading-loose font-mono opacity-60">
                 {note.transcript}
