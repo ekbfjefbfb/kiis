@@ -41,7 +41,7 @@ export default function SearchPage() {
           >
             <ArrowLeft size={20} />
           </button>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">Búsqueda Web e IA</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">Buscar</h1>
         </div>
 
         <form onSubmit={handleSearch} className="relative">
@@ -74,7 +74,7 @@ export default function SearchPage() {
               <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mb-4 border border-border">
                 <Globe size={32} className="text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground text-sm font-medium">Ingresa cualquier tema para buscar y resumir con IA</p>
+              <p className="text-muted-foreground text-sm font-medium">Ingresa cualquier tema para buscar y resumir</p>
             </motion.div>
           )}
 
@@ -88,7 +88,7 @@ export default function SearchPage() {
                 <div className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center">
                   <Bot size={18} className="text-background" />
                 </div>
-                <h2 className="text-sm font-bold tracking-tight text-foreground">Resumen IA</h2>
+                <h2 className="text-sm font-bold tracking-tight text-foreground">Resumen</h2>
               </div>
               <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap">
                 {aiSummary}

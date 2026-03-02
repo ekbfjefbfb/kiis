@@ -48,7 +48,7 @@ export default function NotesPage() {
         <Link to="/search" className="relative mb-3 block">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <div className="w-full pl-10 pr-4 py-2.5 bg-secondary border border-border rounded-xl text-sm text-muted-foreground text-left transition-all">
-            Buscar con IA en toda la web...
+            Buscar...
           </div>
         </Link>
       </div>

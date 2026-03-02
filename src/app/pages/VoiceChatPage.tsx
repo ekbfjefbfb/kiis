@@ -214,8 +214,8 @@ export default function VoiceChatPage() {
   // Get the current status label
   const getStatusLabel = () => {
     if (isRecording) return "Escuchando tu voz...";
-    if (isTranscribing) return "Transcribiendo con Whisper...";
-    if (isThinking) return "La IA está pensando...";
+    if (isTranscribing) return "Procesando...";
+    if (isThinking) return "Pensando...";
     if (isSpeaking) return "Hablando...";
     return "Toca el micrófono para hablar";
   };
@@ -240,7 +240,7 @@ export default function VoiceChatPage() {
             <ArrowLeft size={20} strokeWidth={1.5} />
           </Link>
           <div className="flex flex-col items-center">
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">Asistente de Voz</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">Voz</h1>
             <p className="text-[10px] text-muted-foreground font-bold tracking-[0.2em] uppercase mt-1">Siempre disponible</p>
           </div>
           <button
@@ -264,7 +264,7 @@ export default function VoiceChatPage() {
             <div className="px-6 py-6 space-y-6">
               <div>
                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] block mb-3">
-                  Voz del Asistente
+                  Voz
                 </label>
                 <div className="relative">
                   <select

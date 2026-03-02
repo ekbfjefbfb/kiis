@@ -164,8 +164,8 @@ export default function ChatPage() {
             <Bot size={22} className="text-foreground" />
             <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-foreground border-2 border-card rounded-full" />
           </div>
-          <h1 className="text-sm font-bold leading-none text-foreground">Asistente IA</h1>
-          <p className="text-[10px] font-medium text-muted-foreground">Siempre activo</p>
+          <h1 className="text-sm font-bold leading-none text-foreground">Chat</h1>
+          <p className="text-[10px] font-medium text-muted-foreground">Pregúntame lo que sea</p>
         </div>
         <div className="flex-1 flex justify-end">
           {isRecording && (
@@ -184,9 +184,9 @@ export default function ChatPage() {
             <div className="w-16 h-16 rounded-3xl flex items-center justify-center mb-5 bg-secondary border border-border">
               <Bot size={32} className="text-muted-foreground" />
             </div>
-            <h2 className="text-lg font-bold mb-2 text-foreground">¡Hola! Soy tu asistente</h2>
+            <h2 className="text-lg font-bold mb-2 text-foreground">¡Hola!</h2>
             <p className="text-sm text-center max-w-[240px] leading-relaxed mb-8 text-muted-foreground">
-              Puedo organizar tus tareas, resumir tus clases, y moverme por la app si me lo pides.
+              Puedo organizar tus tareas, resumir tus clases, y moverme por la app.
             </p>
             
             <div className="w-full max-w-[280px] space-y-2">

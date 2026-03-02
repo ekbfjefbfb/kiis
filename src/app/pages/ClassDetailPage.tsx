@@ -526,7 +526,7 @@ export default function ClassDetailPage() {
                      className="bg-background text-foreground px-8 py-3.5 rounded-2xl font-bold flex items-center gap-2 active:scale-95 transition-transform"
                    >
                      {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <Square size={18} className="fill-current" />}
-                     {isProcessing ? "Procesando IA..." : "Guardar Nota"}
+                     {isProcessing ? "Guardando..." : "Guardar"}
                    </button>
                  </div>
                ) : (
