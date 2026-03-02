@@ -136,7 +136,7 @@ export default function NoteDetail() {
       </div>
 
       {/* Audio Player */}
-      <div className="px-4 pt-5">
+      <div className="px-4 pt-5 space-y-3">
         <button
           onClick={handleSpeechPlay}
           className="w-full flex items-center justify-center gap-2 bg-foreground text-background py-3 rounded-xl hover:bg-foreground/90 transition-all active:scale-[0.98]"
@@ -146,6 +146,17 @@ export default function NoteDetail() {
             {isPlaying ? "Detener" : "Reproducir"}
           </span>
         </button>
+        
+        {/* Intelligent Analysis Button */}
+        <Link
+          to={`/analysis/${id}`}
+          className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition-all active:scale-[0.98]"
+        >
+          <Sparkles size={18} />
+          <span className="text-xs font-bold tracking-wide uppercase">
+            Ver Análisis Inteligente
+          </span>
+        </Link>
       </div>
 
       {/* Content */}

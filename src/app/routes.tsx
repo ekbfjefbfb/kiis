@@ -5,6 +5,7 @@ import RegisterPage from "./pages/RegisterPage";
 import Dashboard from "./pages/Dashboard";
 import NotesPage from "./pages/Notes";
 import NoteDetail from "./pages/NoteDetail";
+import AnalysisDetail from "./pages/AnalysisDetail";
 import ChatPage from "./pages/Chat";
 import ProfilePage from "./pages/Profile";
 import CalendarPage from "./pages/CalendarPage";
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
       { path: "home", element: <Navigate to="/dashboard" replace /> },
       { path: "notes", Component: NotesPage },
       { path: "note/:id", Component: NoteDetail },
+      { path: "analysis/:id", Component: AnalysisDetail },
       { path: "chat", Component: ChatPage },
       { path: "profile", Component: ProfilePage },
       { path: "calendar", Component: CalendarPage },

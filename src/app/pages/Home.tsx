@@ -5,6 +5,8 @@ import { clsx } from "clsx";
 import { Link, useNavigate } from "react-router";
 import { audioService } from "../../services/audio.service";
 import { notesService, BackendNote } from "../../services/notes.service";
+import { intelligentProcessor, ProcessedTranscript } from "../../services/intelligent-processor";
+import IntelligentAnalysis from "../components/IntelligentAnalysis";
 
 export default function Home() {
   const [isRecording, setIsRecording] = useState(false);
@@ -12,6 +14,9 @@ export default function Home() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [transcription, setTranscription] = useState("");
   const [recentNotes, setRecentNotes] = useState<BackendNote[]>([]);
+  const [analysis, setAnalysis] = useState<ProcessedTranscript | null>(null);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [showAnalysis, setShowAnalysis] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,9 +58,19 @@ export default function Home() {
         const audioBlob = await audioService.stopAudioRecording();
         setIsRecording(false);
         setIsProcessing(true);
+        setShowAnalysis(true);
 
         const finalTranscript = transcription.trim() || "Transcripción no disponible (audio guardado).";
 
+        // Procesar con sistema inteligente
+        const processedData = await intelligentProcessor.processTranscript(
+          finalTranscript,
+          (progress) => setAnalysisProgress(progress)
+        );
+        
+        setAnalysis(processedData);
+
+        // Guardar en backend
         await notesService.createFromTranscript(
             finalTranscript,
             "Grabación Rápida",
@@ -64,7 +79,11 @@ export default function Home() {
 
         setIsProcessing(false);
         setTranscription("");
-        navigate("/notes"); // Send user to notes directly after recording for them to see what just got processed
+        
+        // Esperar 2 segundos para que el usuario vea el análisis
+        setTimeout(() => {
+          navigate("/notes");
+        }, 2000);
       } catch (error) {
         console.error("Error:", error);
         setIsRecording(false);
@@ -185,8 +204,23 @@ export default function Home() {
         )}
       </div>
 
+      {/* Intelligent Analysis */}
+      {showAnalysis && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-6"
+        >
+          <IntelligentAnalysis
+            analysis={analysis}
+            isProcessing={isProcessing}
+            progress={analysisProgress}
+          />
+        </motion.div>
+      )}
+
       {/* Recent Notes */}
-      {!isRecording && !isProcessing && recentNotes.length > 0 && (
+      {!isRecording && !isProcessing && !showAnalysis && recentNotes.length > 0 && (
         <motion.div 
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
