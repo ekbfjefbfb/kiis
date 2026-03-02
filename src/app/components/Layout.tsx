@@ -42,7 +42,7 @@ export default function Layout() {
   const shouldHideNav = isAuthPage;
 
   return (
-    <div className="mx-auto max-w-md min-h-[100dvh] relative shadow-2xl overflow-hidden font-sans" style={{ background: "var(--bg-primary)" }}>
+    <div className="mx-auto max-w-md min-h-[100dvh] relative overflow-hidden font-sans bg-background text-foreground">
       {/* PWA Install Banner */}
       <AnimatePresence>
         {deferredPrompt && !shouldHideNav && showInstallBanner && (
@@ -52,17 +52,17 @@ export default function Layout() {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="gradient-animated text-white px-4 py-3 flex justify-between items-center text-sm safe-top">
-              <span className="font-medium text-[13px]">📱 Instala Notdeer</span>
+            <div className="bg-foreground text-background px-4 py-3 flex justify-between items-center text-sm safe-top">
+              <span className="font-medium text-[13px]">Instala Notdeer</span>
               <div className="flex gap-2">
                 <button
                   onClick={handleInstall}
-                  className="flex items-center gap-1.5 bg-white text-indigo-600 px-3.5 py-1.5 rounded-full font-bold text-xs shadow-sm btn-premium"
+                  className="flex items-center gap-1.5 bg-background text-foreground px-3.5 py-1.5 rounded-full font-bold text-xs outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-background/90 transition-colors"
                 >
                   <Download size={13} strokeWidth={2.5} />
                   Instalar
                 </button>
-                <button onClick={() => setShowInstallBanner(false)} className="text-white/60 hover:text-white text-xs px-1">✕</button>
+                <button onClick={() => setShowInstallBanner(false)} className="text-background/60 hover:text-background text-xs px-1">✕</button>
               </div>
             </div>
           </motion.div>
@@ -76,10 +76,9 @@ export default function Layout() {
       {/* Bottom Nav */}
       {!shouldHideNav && (
         <nav 
-          className="fixed bottom-0 w-full max-w-md glass flex justify-around items-center pt-2.5 pb-2.5 safe-bottom px-3 z-50"
+          className="fixed bottom-0 w-full max-w-md bg-card/90 backdrop-blur-xl flex justify-around items-center pt-2.5 pb-2.5 safe-bottom px-3 z-50 border-t border-border"
           style={{ 
-            paddingBottom: "max(env(safe-area-inset-bottom, 12px), 12px)",
-            borderTop: "1px solid var(--border-primary)"
+            paddingBottom: "max(env(safe-area-inset-bottom, 12px), 12px)"
           }}
         >
           {navItems.map((item) => {
@@ -88,7 +87,7 @@ export default function Layout() {
               (item.path === "/dashboard" && (location.pathname === "/" || location.pathname === "/home"));
               
             return (
-              <Link key={item.path} to={item.path} className="flex flex-col items-center gap-0.5 min-w-[56px] min-h-[44px] justify-center relative group">
+              <Link key={item.path} to={item.path} className="flex flex-col items-center gap-0.5 min-w-[56px] min-h-[44px] justify-center relative group outline-none rounded-lg focus-visible:ring-1 focus-visible:ring-ring">
                 <motion.div 
                   whileTap={{ scale: 0.8 }}
                   transition={{ type: "spring", stiffness: 500, damping: 25 }}
@@ -97,20 +96,17 @@ export default function Layout() {
                   {isActive && (
                     <motion.div
                       layoutId="nav-pill"
-                      className="absolute -top-1.5 w-8 h-1 rounded-full"
-                      style={{ background: "var(--primary)", boxShadow: `0 2px 8px var(--primary-shadow)` }}
+                      className="absolute -top-1.5 w-8 h-1 rounded-full bg-foreground"
                       transition={{ type: "spring", stiffness: 500, damping: 35 }}
                     />
                   )}
                   <item.icon
                     size={21}
                     strokeWidth={isActive ? 2.5 : 1.6}
-                    style={{ color: isActive ? "var(--primary)" : "var(--text-tertiary)" }}
-                    className="transition-all duration-300"
+                    className={clsx("transition-all duration-300", isActive ? "text-foreground" : "text-muted-foreground")}
                   />
                   <span
-                    style={{ color: isActive ? "var(--primary)" : "var(--text-tertiary)" }}
-                    className="text-[10px] font-semibold transition-all duration-300"
+                    className={clsx("text-[10px] font-semibold transition-all duration-300", isActive ? "text-foreground" : "text-muted-foreground")}
                   >
                     {item.label}
                   </span>

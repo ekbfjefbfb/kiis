@@ -221,11 +221,11 @@ export default function VoiceChatPage() {
   };
 
   const getStatusColor = () => {
-    if (isRecording) return "text-red-500";
-    if (isTranscribing) return "text-amber-500";
-    if (isThinking) return "text-indigo-500";
-    if (isSpeaking) return "text-emerald-500";
-    return "text-gray-400";
+    if (isRecording) return "text-destructive";
+    if (isTranscribing) return "text-muted-foreground";
+    if (isThinking) return "text-foreground";
+    if (isSpeaking) return "text-foreground";
+    return "text-muted-foreground";
   };
 
   return (

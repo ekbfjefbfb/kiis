@@ -39,15 +39,15 @@ export default function NotesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-4">
+    <div className="min-h-screen bg-background text-foreground pb-4 transition-colors duration-300">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100/60 px-5 pt-5 pb-3 sticky top-0 z-10">
-        <h1 className="text-xl font-bold text-gray-900 mb-3">Mis Notas</h1>
+      <div className="bg-card/90 backdrop-blur-xl border-b border-border px-5 pt-5 pb-3 sticky top-0 z-10">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground mb-3">Mis Notas</h1>
 
         {/* Search */}
         <Link to="/search" className="relative mb-3 block">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <div className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-0 rounded-xl text-sm text-gray-400 text-left transition-all">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <div className="w-full pl-10 pr-4 py-2.5 bg-secondary border border-border rounded-xl text-sm text-muted-foreground text-left transition-all">
             Buscar con IA en toda la web...
           </div>
         </Link>
@@ -57,11 +57,11 @@ export default function NotesPage() {
       <div className="px-5 pt-4">
         {filteredNotes.length === 0 ? (
           <div className="text-center py-16">
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-              <Mic size={24} className="text-gray-400" />
+            <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-3 border border-border">
+              <Mic size={24} className="text-muted-foreground" />
             </div>
-            <h3 className="text-base font-semibold text-gray-900 mb-1">No hay notas</h3>
-            <p className="text-sm text-gray-400">
+            <h3 className="text-base font-semibold text-foreground mb-1">No hay notas</h3>
+            <p className="text-sm text-muted-foreground">
               {searchQuery ? "Prueba otra búsqueda" : "Empieza a grabar para crear notas geniales"}
             </p>
           </div>
@@ -74,23 +74,23 @@ export default function NotesPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04 }}
                   whileTap={{ scale: 0.98 }}
-                  className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all"
+                  className="bg-card p-4 rounded-2xl border border-border shadow-sm hover:border-foreground/20 transition-all"
                 >
                   <div className="flex justify-between items-start mb-1.5">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] text-gray-400">
+                        <span className="text-[10px] text-muted-foreground font-bold tracking-widest uppercase">
                           {getTimeAgo(note.created_at)}
                         </span>
                       </div>
-                      <h4 className="font-semibold text-sm text-gray-900 truncate">
+                      <h4 className="font-semibold text-sm text-foreground truncate">
                         {note.title || "Clase sin título"}
                       </h4>
                     </div>
-                    <ChevronRight className="text-gray-300 flex-shrink-0 ml-2" size={16} />
+                    <ChevronRight className="text-muted-foreground flex-shrink-0 ml-2" size={16} />
                   </div>
 
-                  <p className="text-xs text-gray-500 line-clamp-2 mb-1.5">
+                  <p className="text-xs text-muted-foreground line-clamp-2 mb-1.5">
                     {note.summary || note.transcript || "Procesando contenido..."}
                   </p>
                 </motion.div>

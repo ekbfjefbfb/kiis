@@ -41,36 +41,36 @@ export function Tasks({ recordingId, classRecordingService }: TasksProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 bg-background text-foreground min-h-screen">
       <div className="flex items-center gap-3 mb-6">
-        <CheckSquare size={32} className="text-green-500" />
-        <h1 className="text-3xl font-bold">Tareas</h1>
+        <CheckSquare size={32} className="text-foreground" />
+        <h1 className="text-3xl font-semibold tracking-tight">Tareas</h1>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="bg-card rounded-2xl border border-border p-6">
         {recording.tasks && recording.tasks.length > 0 ? (
           <ul className="space-y-3">
             {recording.tasks.map((task: any) => (
               <li
                 key={task.id}
-                className="flex items-start gap-3 p-4 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-start gap-3 p-4 rounded-xl hover:bg-secondary transition-colors"
               >
                 <button
                   onClick={() => toggleTask(task.id)}
-                  className="flex-shrink-0 mt-1"
+                  className="flex-shrink-0 mt-1 text-foreground"
                 >
                   {task.completed ? (
-                    <CheckSquare size={24} className="text-green-500" />
+                    <CheckSquare size={24} className="text-foreground" />
                   ) : (
-                    <Square size={24} className="text-gray-400" />
+                    <Square size={24} className="text-muted-foreground" />
                   )}
                 </button>
                 <div className="flex-1">
-                  <p className={`text-lg ${task.completed ? 'line-through text-gray-400' : ''}`}>
+                  <p className={`text-lg ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                     {task.description}
                   </p>
                   {task.dueDate && (
-                    <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                    <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                       <Calendar size={14} />
                       {new Date(task.dueDate).toLocaleDateString('es-ES')}
                     </p>
@@ -80,7 +80,7 @@ export function Tasks({ recordingId, classRecordingService }: TasksProps) {
             ))}
           </ul>
         ) : (
-          <p className="text-gray-500 text-center py-8">No hay tareas registradas</p>
+          <p className="text-muted-foreground text-center py-8">No hay tareas registradas</p>
         )}
       </div>
     </div>

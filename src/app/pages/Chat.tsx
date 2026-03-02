@@ -155,23 +155,23 @@ export default function ChatPage() {
   ];
 
   return (
-    <div className="flex flex-col h-screen bg-surface transition-colors duration-300">
+    <div className="flex flex-col h-screen bg-background text-foreground transition-colors duration-300">
       {/* Header */}
-      <div className="glass border-b border-themed px-4 pt-5 pb-3 sticky top-0 z-10 flex items-center shadow-sm">
+      <div className="bg-card/90 backdrop-blur-xl border-b border-border px-4 pt-5 pb-3 sticky top-0 z-10 flex items-center">
         <div className="flex-1" />
         <div className="flex flex-col items-center">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-1 relative shadow-inner" style={{ background: "var(--primary-light)" }}>
-            <Bot size={22} style={{ color: "var(--primary)" }} />
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 rounded-full" style={{ borderColor: "var(--bg-primary)" }} />
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-1 relative bg-secondary border border-border">
+            <Bot size={22} className="text-foreground" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-foreground border-2 border-card rounded-full" />
           </div>
-          <h1 className="text-sm font-bold leading-none text-themed">Asistente IA</h1>
-          <p className="text-[10px] font-medium text-themed-tertiary">Siempre activo</p>
+          <h1 className="text-sm font-bold leading-none text-foreground">Asistente IA</h1>
+          <p className="text-[10px] font-medium text-muted-foreground">Siempre activo</p>
         </div>
         <div className="flex-1 flex justify-end">
           {isRecording && (
             <span className="flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+              <span className="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-destructive opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-destructive"></span>
             </span>
           )}
         </div>
@@ -181,21 +181,21 @@ export default function ChatPage() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-32">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center pt-8">
-            <div className="w-16 h-16 rounded-3xl flex items-center justify-center mb-5 shadow-inner" style={{ background: "var(--primary-light)" }}>
-              <Bot size={32} style={{ color: "var(--primary)" }} />
+            <div className="w-16 h-16 rounded-3xl flex items-center justify-center mb-5 bg-secondary border border-border">
+              <Bot size={32} className="text-muted-foreground" />
             </div>
-            <h2 className="text-lg font-bold mb-2 text-themed">¡Hola! Soy tu asistente</h2>
-            <p className="text-sm text-center max-w-[240px] leading-relaxed mb-8 text-themed-secondary">
+            <h2 className="text-lg font-bold mb-2 text-foreground">¡Hola! Soy tu asistente</h2>
+            <p className="text-sm text-center max-w-[240px] leading-relaxed mb-8 text-muted-foreground">
               Puedo organizar tus tareas, resumir tus clases, y moverme por la app si me lo pides.
             </p>
             
             <div className="w-full max-w-[280px] space-y-2">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest text-center mb-3">Sugerencias</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center mb-3">Sugerencias</p>
               {suggestions.map((sug, i) => (
                 <button
                   key={i}
                   onClick={() => setInput(sug)}
-                  className="w-full bg-gray-50 hover:bg-gray-100 text-left px-4 py-3 rounded-2xl text-sm text-gray-700 transition-colors border border-gray-100/50"
+                  className="w-full bg-card hover:bg-secondary text-left px-4 py-3 rounded-2xl text-sm text-foreground transition-colors border border-border"
                 >
                   {sug}
                 </button>
@@ -217,15 +217,15 @@ export default function ChatPage() {
                 className={clsx(
                   "max-w-[85%] p-3.5 shadow-sm leading-relaxed",
                   msg.role === "user"
-                    ? "bg-indigo-600 text-white rounded-2xl rounded-tr-[4px]"
-                    : "bg-card text-themed rounded-2xl rounded-tl-[4px] border border-themed"
+                    ? "bg-foreground text-background rounded-2xl rounded-tr-[4px]"
+                    : "bg-card text-foreground rounded-2xl rounded-tl-[4px] border border-border"
                 )}
               >
                 <p className="text-sm">{msg.content}</p>
                 {msg.role === "ai" && msg.content && (
                   <button
                     onClick={() => handlePlayVoice(msg.content, msg.id!)}
-                    className="mt-2 text-indigo-500 hover:text-indigo-700 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-sm"
+                    className="mt-2 text-muted-foreground hover:text-foreground w-7 h-7 bg-secondary rounded-full flex items-center justify-center border border-border transition-colors"
                   >
                     {currentlyPlayingId === msg.id ? <StopCircle size={14} /> : <Play size={14} className="ml-0.5" />}
                   </button>
@@ -237,21 +237,21 @@ export default function ChatPage() {
 
         {isTyping && messages.length > 0 && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 p-4 rounded-2xl rounded-tl-[4px] flex items-center gap-1.5 shadow-sm">
+            <div className="bg-secondary p-4 rounded-2xl rounded-tl-[4px] flex items-center gap-1.5 border border-border">
               <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ repeat: Infinity, duration: 1 }}
-                className="w-1.5 h-1.5 bg-gray-400 rounded-full"
+                className="w-1.5 h-1.5 bg-muted-foreground rounded-full"
               />
               <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ repeat: Infinity, duration: 1, delay: 0.2 }}
-                className="w-1.5 h-1.5 bg-gray-400 rounded-full"
+                className="w-1.5 h-1.5 bg-muted-foreground rounded-full"
               />
               <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ repeat: Infinity, duration: 1, delay: 0.4 }}
-                className="w-1.5 h-1.5 bg-gray-400 rounded-full"
+                className="w-1.5 h-1.5 bg-muted-foreground rounded-full"
               />
             </div>
           </div>
@@ -260,17 +260,17 @@ export default function ChatPage() {
       </div>
 
       {/* Input Area */}
-      <div className="fixed bottom-0 w-full max-w-md glass border-t border-themed p-3 pt-4 pb-5 safe-bottom z-20" style={{ paddingBottom: "max(env(safe-area-inset-bottom, 20px), 80px)" }}>
+      <div className="fixed bottom-0 w-full max-w-md bg-card/90 backdrop-blur-xl border-t border-border p-3 pt-4 pb-5 safe-bottom z-20" style={{ paddingBottom: "max(env(safe-area-inset-bottom, 20px), 80px)" }}>
         <div className="flex items-center gap-2">
           <button
             onClick={toggleVoiceRecording}
             className={clsx(
-              "w-11 h-11 rounded-2xl flex flex-shrink-0 items-center justify-center transition-all shadow-sm",
+              "w-11 h-11 rounded-2xl flex flex-shrink-0 items-center justify-center transition-all",
               isRecording
-                ? "bg-red-50 text-red-500 animate-pulse border border-red-100"
+                ? "bg-destructive text-destructive-foreground animate-pulse"
                 : isProcessing
-                ? "bg-gray-100 text-gray-400"
-                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                ? "bg-secondary text-muted-foreground"
+                : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80"
             )}
             disabled={isProcessing}
           >
@@ -291,7 +291,7 @@ export default function ChatPage() {
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
               placeholder={isRecording ? "Grabando..." : "Escribe tu duda o dile dónde ir..."}
               disabled={isRecording || isProcessing}
-              className="w-full bg-input-themed border border-themed rounded-2xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:bg-surface text-themed transition-all shadow-sm placeholder:text-themed-tertiary"
+              className="w-full bg-secondary border border-border rounded-2xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:ring-1 focus:ring-ring focus:bg-background text-foreground transition-all placeholder:text-muted-foreground"
             />
             <AnimatePresence>
               {input.trim() && (
@@ -301,7 +301,7 @@ export default function ChatPage() {
                   exit={{ opacity: 0, scale: 0.8 }}
                   onClick={handleSend}
                   disabled={isProcessing}
-                  className="absolute right-1.5 top-1.5 bottom-1.5 w-9 bg-indigo-600 text-white rounded-xl flex items-center justify-center hover:bg-indigo-700 transition-colors shadow-sm"
+                  className="absolute right-1.5 top-1.5 bottom-1.5 w-9 bg-foreground text-background rounded-xl flex items-center justify-center hover:bg-foreground/90 transition-colors"
                 >
                   <Send size={16} className="ml-0.5" />
                 </motion.button>
