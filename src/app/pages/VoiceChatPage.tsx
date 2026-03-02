@@ -432,29 +432,12 @@ export default function VoiceChatPage() {
       </AnimatePresence>
 
       {/* Bottom Recording Area */}
-      <div className="fixed bottom-0 w-full max-w-md bg-background/90 backdrop-blur-2xl border-t border-border/40 z-20 safe-bottom pb-8 pt-4">
-        {/* Status */}
-        <div className="text-center mb-6">
-           <AnimatePresence mode="wait">
-             <motion.p 
-               key={getStatusLabel()}
-               initial={{ opacity: 0, y: 5 }}
-               animate={{ opacity: 1, y: 0 }}
-               exit={{ opacity: 0, y: -5 }}
-               className={clsx("text-sm font-bold tracking-[0.2em] uppercase transition-colors", 
-                 isRecording ? "text-destructive" : getStatusColor()
-               )}
-             >
-               {getStatusLabel()}
-             </motion.p>
-           </AnimatePresence>
-        </div>
-
-        {/* Waveform & Button */}
+      <div className="fixed bottom-0 w-full max-w-md bg-background/90 backdrop-blur-2xl border-t border-border/40 z-20 safe-bottom pb-8 pt-6">
+        {/* Main controls */}
         <div className="flex flex-col items-center">
           {/* Animated waveform during recording */}
           {isRecording && (
-            <div className="flex items-center gap-[3px] h-12 mb-6 absolute bottom-28">
+            <div className="flex items-center gap-[3px] h-12 mb-4">
               {Array.from({ length: 30 }).map((_, i) => (
                 <motion.div
                   key={i}
@@ -475,7 +458,7 @@ export default function VoiceChatPage() {
 
           {/* Speaking indicator */}
           {isSpeaking && (
-            <div className="flex items-center gap-[3px] h-10 mb-6 absolute bottom-28">
+            <div className="flex items-center gap-[3px] h-10 mb-4">
               {Array.from({ length: 20 }).map((_, i) => (
                 <motion.div
                   key={i}
@@ -494,8 +477,7 @@ export default function VoiceChatPage() {
             </div>
           )}
 
-          {/* Main controls */}
-          <div className="flex items-center justify-center gap-6 mt-2 relative z-10 w-full px-10">
+          <div className="flex items-center justify-center gap-6 relative z-10 w-full px-10">
             {/* Mute/unmute speaking placed uniformly */}
             <div className="w-14 flex justify-end">
                {isSpeaking && (
@@ -558,6 +540,23 @@ export default function VoiceChatPage() {
                )}
             </div>
           </div>
+        </div>
+
+        {/* Status - MOVED TO BOTTOM */}
+        <div className="text-center mt-6">
+           <AnimatePresence mode="wait">
+             <motion.p 
+               key={getStatusLabel()}
+               initial={{ opacity: 0, y: 5 }}
+               animate={{ opacity: 1, y: 0 }}
+               exit={{ opacity: 0, y: -5 }}
+               className={clsx("text-sm font-bold tracking-[0.2em] uppercase transition-colors", 
+                 isRecording ? "text-destructive" : getStatusColor()
+               )}
+             >
+               {getStatusLabel()}
+             </motion.p>
+           </AnimatePresence>
         </div>
       </div>
     </div>
