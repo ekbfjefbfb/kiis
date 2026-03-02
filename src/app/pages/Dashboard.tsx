@@ -216,6 +216,38 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
+        {/* AI Recording Button */}
+        <Link to="/live">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 p-4 text-white"
+          >
+            <div className="relative flex items-center justify-between">
+              <div className="flex-1 mr-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <Sparkles size={16} className="text-yellow-300" />
+                  <h3 className="font-semibold text-base tracking-tight">
+                    Grabación IA en Vivo
+                  </h3>
+                </div>
+                <p className="text-white/80 text-xs">
+                  Análisis inteligente en tiempo real con resumen automático
+                </p>
+              </div>
+
+              <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <Sparkles size={24} className="text-white" />
+              </div>
+            </div>
+            
+            {/* Decorative elements */}
+            <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+            <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-purple-500/20 rounded-full blur-2xl" />
+          </motion.div>
+        </Link>
+
         {/* Upcoming Tasks */}
         <section>
           <div className="flex justify-between items-center mb-3">

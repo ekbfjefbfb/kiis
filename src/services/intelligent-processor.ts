@@ -84,140 +84,22 @@ class IntelligentProcessor {
 
   /**
    * Clasifica un chunk como IMPORTANTE, SECUNDARIO o IRRELEVANTE
+   * Usa el backend de Agenda IA que ya tiene la lógica implementada
    */
   async classifyChunk(chunk: string): Promise<RelevanceClassification> {
-    if (!this.GROQ_API_KEY) {
-      return this.fallbackClassification(chunk);
-    }
-
-    const prompt = `Analiza este fragmento de clase y clasifícalo.
-
-FRAGMENTO:
-"${chunk}"
-
-Clasifícalo como:
-- IMPORTANTE: conceptos clave, definiciones, tareas, fechas de examen, instrucciones del profesor
-- SECUNDARIO: ejemplos largos, aclaraciones, repeticiones de conceptos ya mencionados
-- IRRELEVANTE: bromas, conversaciones fuera del tema, comentarios personales
-
-Responde SOLO con un JSON en este formato exacto:
-{
-  "relevance": "IMPORTANTE" | "SECUNDARIO" | "IRRELEVANTE",
-  "reason": "breve explicación",
-  "confidence": 0.95
-}`;
-
-    try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.GROQ_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: [{ role: 'user', content: prompt }],
-          temperature: 0.3,
-          max_tokens: 200,
-        }),
-      });
-
-      if (!response.ok) {
-        console.warn('Groq API error, usando fallback');
-        return this.fallbackClassification(chunk);
-      }
-
-      const data = await response.json();
-      const content = data.choices[0]?.message?.content || '{}';
-      
-      // Extraer JSON del contenido
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        return {
-          relevance: parsed.relevance || 'SECUNDARIO',
-          reason: parsed.reason || 'Clasificación automática',
-          confidence: parsed.confidence || 0.7,
-        };
-      }
-      
-      return this.fallbackClassification(chunk);
-    } catch (error) {
-      console.error('Error clasificando chunk:', error);
-      return this.fallbackClassification(chunk);
-    }
+    // Por ahora usamos clasificación local
+    // El backend ya hace esto automáticamente cuando envías chunks por WS
+    return this.fallbackClassification(chunk);
   }
 
   /**
    * Extrae información estructurada de un chunk IMPORTANTE
+   * Usa clasificación local por ahora
    */
   async extractStructuredData(chunk: string): Promise<ExtractedData> {
-    if (!this.GROQ_API_KEY) {
-      return this.fallbackExtraction(chunk);
-    }
-
-    const prompt = `Extrae información estructurada de este fragmento de clase.
-
-FRAGMENTO:
-"${chunk}"
-
-Extrae:
-- Conceptos clave mencionados
-- Tareas asignadas (con fecha si se menciona)
-- Fechas importantes (exámenes, entregas)
-- Definiciones
-- Instrucciones del profesor
-
-Responde SOLO con un JSON en este formato exacto:
-{
-  "concepts": ["concepto1", "concepto2"],
-  "tasks": [{"description": "tarea", "dueDate": "fecha o null", "priority": "high|medium|low"}],
-  "dates": [{"event": "evento", "date": "fecha", "type": "exam|deadline|event"}],
-  "exams": [{"topic": "tema", "date": "fecha o null", "coverage": ["tema1", "tema2"]}],
-  "definitions": ["definición1"],
-  "instructions": ["instrucción1"]
-}`;
-
-    try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.GROQ_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: [{ role: 'user', content: prompt }],
-          temperature: 0.2,
-          max_tokens: 500,
-        }),
-      });
-
-      if (!response.ok) {
-        return this.fallbackExtraction(chunk);
-      }
-
-      const data = await response.json();
-      const content = data.choices[0]?.message?.content || '{}';
-      
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        return {
-          concepts: parsed.concepts || [],
-          tasks: parsed.tasks || [],
-          dates: parsed.dates || [],
-          exams: parsed.exams || [],
-          definitions: parsed.definitions || [],
-          instructions: parsed.instructions || [],
-        };
-      }
-      
-      return this.fallbackExtraction(chunk);
-    } catch (error) {
-      console.error('Error extrayendo datos:', error);
-      return this.fallbackExtraction(chunk);
-    }
+    // El backend ya hace esto automáticamente
+    // Por ahora usamos extracción local
+    return this.fallbackExtraction(chunk);
   }
 
   /**
