@@ -157,14 +157,14 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col h-screen bg-background text-foreground transition-colors duration-300">
       {/* Header */}
-      <div className="bg-card/90 backdrop-blur-xl border-b border-border px-4 pt-5 pb-3 sticky top-0 z-10 flex items-center">
+      <div className="bg-card/90 backdrop-blur-xl border-b border-border px-4 pt-3 pb-2 sticky top-0 z-10 flex items-center">
         <div className="flex-1" />
         <div className="flex flex-col items-center">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-1 relative bg-secondary border border-border">
-            <Bot size={22} className="text-foreground" />
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-foreground border-2 border-card rounded-full" />
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-0.5 relative bg-secondary border border-border">
+            <Bot size={18} className="text-foreground" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-foreground border-2 border-card rounded-full" />
           </div>
-          <h1 className="text-sm font-bold leading-none text-foreground">Chat</h1>
+          <h1 className="text-xs font-bold leading-none text-foreground">Chat</h1>
           <p className="text-[10px] font-medium text-muted-foreground">Pregúntame lo que sea</p>
         </div>
         <div className="flex-1 flex justify-end">
@@ -180,22 +180,22 @@ export default function ChatPage() {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-32">
         {messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center pt-8">
-            <div className="w-16 h-16 rounded-3xl flex items-center justify-center mb-5 bg-secondary border border-border">
-              <Bot size={32} className="text-muted-foreground" />
+          <div className="h-full flex flex-col items-center justify-center pt-4">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 bg-secondary border border-border">
+              <Bot size={24} className="text-muted-foreground" />
             </div>
-            <h2 className="text-lg font-bold mb-2 text-foreground">¡Hola!</h2>
-            <p className="text-sm text-center max-w-[240px] leading-relaxed mb-8 text-muted-foreground">
+            <h2 className="text-base font-bold mb-1.5 text-foreground">¡Hola!</h2>
+            <p className="text-xs text-center max-w-[220px] leading-relaxed mb-6 text-muted-foreground">
               Puedo organizar tus tareas, resumir tus clases, y moverme por la app.
             </p>
             
-            <div className="w-full max-w-[280px] space-y-2">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center mb-3">Sugerencias</p>
+            <div className="w-full max-w-[260px] space-y-1.5">
+              <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-center mb-2">Sugerencias</p>
               {suggestions.map((sug, i) => (
                 <button
                   key={i}
                   onClick={() => setInput(sug)}
-                  className="w-full bg-card hover:bg-secondary text-left px-4 py-3 rounded-2xl text-sm text-foreground transition-colors border border-border"
+                  className="w-full bg-card hover:bg-secondary text-left px-3 py-2 rounded-xl text-xs text-foreground transition-colors border border-border"
                 >
                   {sug}
                 </button>
@@ -215,10 +215,10 @@ export default function ChatPage() {
             >
               <div
                 className={clsx(
-                  "max-w-[85%] p-3.5 shadow-sm leading-relaxed",
+                  "max-w-[85%] p-3 leading-relaxed",
                   msg.role === "user"
-                    ? "bg-foreground text-background rounded-2xl rounded-tr-[4px]"
-                    : "bg-card text-foreground rounded-2xl rounded-tl-[4px] border border-border"
+                    ? "bg-foreground text-background rounded-xl rounded-tr-[4px]"
+                    : "bg-card text-foreground rounded-xl rounded-tl-[4px] border border-border"
                 )}
               >
                 <p className="text-sm">{msg.content}</p>
@@ -260,7 +260,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input Area */}
-      <div className="fixed bottom-0 w-full max-w-md bg-card/90 backdrop-blur-xl border-t border-border p-3 pt-4 pb-5 safe-bottom z-20" style={{ paddingBottom: "max(env(safe-area-inset-bottom, 20px), 80px)" }}>
+      <div className="fixed bottom-0 w-full max-w-md bg-card/90 backdrop-blur-xl border-t border-border p-2.5 pb-4 safe-bottom z-20" style={{ paddingBottom: "max(env(safe-area-inset-bottom, 16px), 72px)" }}>
         <div className="flex items-center gap-2">
           <button
             onClick={toggleVoiceRecording}

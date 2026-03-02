@@ -152,38 +152,38 @@ export default function Dashboard() {
   return (
     <div className="min-h-[100dvh] pb-4 bg-background text-foreground relative font-sans transition-colors duration-300">
       {/* Header */}
-      <div className="px-5 pt-6 pb-5 border-b border-border bg-card">
-        <div className="flex justify-between items-start mb-1">
+      <div className="px-4 pt-4 pb-3 border-b border-border bg-card">
+        <div className="flex justify-between items-start mb-0.5">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-0.5 capitalize text-muted-foreground">
+            <p className="text-[10px] font-semibold uppercase tracking-widest capitalize text-muted-foreground">
               {today}
             </p>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            <h1 className="text-lg font-bold tracking-tight text-foreground">
               Hola, {(() => { try { const p = JSON.parse(localStorage.getItem('user_profile') || '{}'); return p.name?.split(' ')[0] || authService.getCurrentUser()?.displayName?.split(' ')[0] || 'Estudiante'; } catch { return 'Estudiante'; } })()} 👋
             </h1>
           </div>
           <Link
             to="/calendar"
-            className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-1 focus:ring-ring"
+            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80"
           >
-            <Calendar size={20} />
+            <Calendar size={18} />
           </Link>
         </div>
       </div>
 
-      <div className="px-5 pt-5 space-y-6">
+      <div className="px-4 pt-3 space-y-4">
         {/* Quick Record */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl bg-foreground p-5 text-background"
+          className="relative overflow-hidden rounded-xl bg-foreground p-4 text-background"
         >
           <div className="relative flex items-center justify-between">
-            <div className="flex-1 mr-4">
-              <h3 className="font-semibold text-lg tracking-tight mb-1">
-                {isRecording ? "Grabando..." : isProcessing ? "Procesando..." : "Grabación Rápida"}
+            <div className="flex-1 mr-3">
+              <h3 className="font-semibold text-base tracking-tight">
+                {isRecording ? "Grabando..." : isProcessing ? "Procesando..." : "Grabar clase"}
               </h3>
-              <p className="text-background/60 text-sm">
+              <p className="text-background/60 text-xs mt-0.5">
                 {isRecording
                   ? formatTime(recordingTime)
                   : isProcessing
@@ -197,7 +197,7 @@ export default function Dashboard() {
               onClick={handleRecord}
               disabled={isProcessing}
               className={clsx(
-                "w-14 h-14 rounded-full flex items-center justify-center transition-all",
+                "w-12 h-12 rounded-full flex items-center justify-center transition-all",
                 isRecording
                   ? "bg-destructive text-destructive-foreground animate-pulse"
                   : isProcessing
@@ -244,24 +244,24 @@ export default function Dashboard() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.08 }}
                   whileTap={{ scale: 0.97 }}
-                  className="flex-shrink-0 w-52 bg-card p-4 rounded-2xl border border-border"
+                  className="flex-shrink-0 w-44 bg-card p-3 rounded-xl border border-border"
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                    <Clock size={12} className="text-muted-foreground" />
-                    <span className="text-[11px] font-medium text-muted-foreground">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <Clock size={10} className="text-muted-foreground" />
+                    <span className="text-[10px] font-medium text-muted-foreground">
                       {new Date(task.date).toLocaleDateString("es-ES", {
                         month: "short",
                         day: "numeric",
                       })}
                     </span>
                   </div>
-                  <h4 className="font-semibold text-card-foreground text-sm leading-tight line-clamp-2 mb-2">
+                  <h4 className="font-semibold text-card-foreground text-xs leading-tight line-clamp-2 mb-1.5">
                     {task.title}
                   </h4>
-                  <div className="flex items-center gap-1.5">
-                    <Bookmark size={11} className="text-muted-foreground" />
-                    <span className="text-[10px] text-muted-foreground truncate">
+                  <div className="flex items-center gap-1">
+                    <Bookmark size={9} className="text-muted-foreground" />
+                    <span className="text-[9px] text-muted-foreground truncate">
                       {cls?.name}
                     </span>
                   </div>
@@ -274,14 +274,14 @@ export default function Dashboard() {
         {/* My Classes */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               Mis Clases
             </h3>
             <button
               onClick={() => setIsAddingClass(true)}
-              className="w-7 h-7 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground hover:bg-secondary/80 transition-colors"
+              className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground hover:bg-secondary/80 transition-colors"
             >
-              <Plus size={16} />
+              <Plus size={14} />
             </button>
           </div>
           
@@ -294,15 +294,15 @@ export default function Dashboard() {
                 transition={{ delay: i * 0.06 }}
               >
                 <Link to={`/class/${cls.id}`} className="block group">
-                  <div className="bg-card p-4 rounded-2xl border border-border shadow-sm transition-colors hover:border-foreground/20">
-                    <div className="flex items-center gap-3.5">
+                  <div className="bg-card p-3 rounded-xl border border-border transition-colors hover:border-foreground/20">
+                    <div className="flex items-center gap-3">
                       <div
-                        className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-secondary text-secondary-foreground"
+                        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-secondary text-secondary-foreground"
                       >
-                        <cls.icon size={20} />
+                        <cls.icon size={18} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-card-foreground text-sm truncate">
+                        <h4 className="font-semibold text-card-foreground text-xs truncate">
                           {cls.name}
                         </h4>
                         <p className="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-1.5">

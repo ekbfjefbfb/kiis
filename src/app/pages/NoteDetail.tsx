@@ -110,46 +110,46 @@ export default function NoteDetail() {
   return (
     <div className="min-h-[100dvh] bg-background text-foreground pb-24 font-sans">
       {/* Header */}
-      <div className="bg-background/80 backdrop-blur-xl border-b border-border/50 px-6 pt-12 pb-6 sticky top-0 z-10">
-        <div className="flex items-center justify-between mb-6">
+      <div className="bg-background/80 backdrop-blur-xl border-b border-border/50 px-4 pt-8 pb-4 sticky top-0 z-10">
+        <div className="flex items-center justify-between mb-4">
           <Link
             to="/notes"
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-muted text-foreground hover:bg-muted/80 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-muted text-foreground hover:bg-muted/80 transition-colors"
           >
-            <ArrowLeft size={20} strokeWidth={1.5} />
+            <ArrowLeft size={18} strokeWidth={1.5} />
           </Link>
           <div className="flex gap-2">
             <button
                onClick={handleExportPDF}
-               className="w-10 h-10 flex items-center justify-center rounded-full text-foreground hover:bg-muted transition-colors"
+               className="w-9 h-9 flex items-center justify-center rounded-full text-foreground hover:bg-muted transition-colors"
              >
-               <Download size={18} strokeWidth={1.5} />
+               <Download size={16} strokeWidth={1.5} />
             </button>
           </div>
         </div>
 
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground mb-2">{note.title || "Sin Título"}</h1>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Calendar size={14} />
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-1">{note.title || "Sin Título"}</h1>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Calendar size={12} />
           <span className="capitalize">{formatDate(note.created_at)}</span>
         </div>
       </div>
 
       {/* Audio Player */}
-      <div className="px-6 pt-8">
+      <div className="px-4 pt-5">
         <button
           onClick={handleSpeechPlay}
-          className="w-full flex items-center justify-center gap-3 bg-foreground text-background py-4 rounded-2xl hover:bg-foreground/90 transition-all shadow-xl active:scale-[0.98]"
+          className="w-full flex items-center justify-center gap-2 bg-foreground text-background py-3 rounded-xl hover:bg-foreground/90 transition-all active:scale-[0.98]"
         >
-          {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
-          <span className="text-[15px] font-bold tracking-wide uppercase">
+          {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
+          <span className="text-xs font-bold tracking-wide uppercase">
             {isPlaying ? "Detener" : "Reproducir"}
           </span>
         </button>
       </div>
 
       {/* Content */}
-      <div className="px-6 pt-10 space-y-12">
+      <div className="px-4 pt-6 space-y-8">
         {/* IA Summary */}
         {note.summary && (
            <motion.div

@@ -168,26 +168,26 @@ export default function ClassDetailPage() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-4 transition-colors duration-300">
       {/* Header */}
-      <div className="bg-card/90 backdrop-blur-xl px-5 pt-6 pb-0 border-b border-border sticky top-0 z-10">
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-card/90 backdrop-blur-xl px-4 pt-4 pb-0 border-b border-border sticky top-0 z-10">
+        <div className="flex items-center justify-between mb-3">
           <Link
             to="/dashboard"
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary text-foreground hover:bg-secondary/80 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-secondary text-foreground hover:bg-secondary/80 transition-colors"
           >
-            <ArrowLeft size={20} strokeWidth={1.5} />
+            <ArrowLeft size={18} strokeWidth={1.5} />
           </Link>
           <button 
             onClick={handleDeleteClass}
-            className="w-10 h-10 flex items-center justify-center rounded-full text-destructive hover:bg-destructive/10 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full text-destructive hover:bg-destructive/10 transition-colors"
           >
-            <Trash2 size={18} strokeWidth={1.5} />
+            <Trash2 size={16} strokeWidth={1.5} />
           </button>
         </div>
         
         <div>
           <div className="flex items-center gap-3 mb-3">
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-semibold tracking-tight text-foreground truncate">{cls.name}</h1>
+              <h1 className="text-lg font-semibold tracking-tight text-foreground truncate">{cls.name}</h1>
               <div className="flex items-center gap-2 mt-1">
                 <User size={11} className="text-muted-foreground" />
                 <span className="text-[11px] text-muted-foreground">{cls.professor}</span>
@@ -246,7 +246,7 @@ export default function ClassDetailPage() {
       </div>
 
       {/* Tab Content */}
-      <div className="px-5 pt-4">
+      <div className="px-4 pt-3">
         <AnimatePresence mode="wait">
           {/* OVERVIEW */}
           {activeTab === "overview" && (
