@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
-import { Search, Mic, ChevronRight } from "lucide-react";
+import { Search, Mic, ChevronRight, ArrowUpDown, Filter } from "lucide-react";
 import { motion } from "motion/react";
 import { clsx } from "clsx";
 import { Link } from "react-router";
 import { notesService, BackendNote } from "../../services/notes.service";
 
+type SortOption = "recent" | "oldest" | "title";
+type FilterOption = "all" | "today" | "week" | "month";
+
 export default function NotesPage() {
   const [notes, setNotes] = useState<BackendNote[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<SortOption>("recent");
+  const [filterBy, setFilterBy] = useState<FilterOption>("all");
 
   useEffect(() => {
     loadNotes();
@@ -25,7 +30,35 @@ export default function NotesPage() {
   const filteredNotes = notes.filter((note) => {
     const titleMatch = (note.title || "").toLowerCase().includes(searchQuery.toLowerCase());
     const contentMatch = (note.summary || note.transcript || "").toLowerCase().includes(searchQuery.toLowerCase());
-    return titleMatch || contentMatch;
+    if (!titleMatch && !contentMatch) return false;
+    
+    // Filtro por fecha
+    if (filterBy === "all") return true;
+    const noteDate = new Date(note.created_at || Date.now());
+    const now = new Date();
+    if (filterBy === "today") {
+      return noteDate.toDateString() === now.toDateString();
+    }
+    if (filterBy === "week") {
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      return noteDate >= weekAgo;
+    }
+    if (filterBy === "month") {
+      const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      return noteDate >= monthAgo;
+    }
+    return true;
+  }).sort((a, b) => {
+    if (sortBy === "recent") {
+      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+    }
+    if (sortBy === "oldest") {
+      return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
+    }
+    if (sortBy === "title") {
+      return (a.title || "").localeCompare(b.title || "");
+    }
+    return 0;
   });
 
   const getTimeAgo = (isoDate: string | null) => {
@@ -45,12 +78,54 @@ export default function NotesPage() {
         <h1 className="text-xl font-semibold tracking-tight text-foreground mb-3">Mis Notas</h1>
 
         {/* Search */}
-        <Link to="/search" className="relative mb-3 block">
+        <div className="relative mb-3">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-          <div className="w-full pl-10 pr-4 py-2.5 bg-secondary border border-border rounded-xl text-sm text-muted-foreground text-left transition-all">
-            Buscar...
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Buscar notas..."
+            className="w-full pl-10 pr-4 py-2.5 bg-secondary border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+        </div>
+
+        {/* Filters Row */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-5 px-5 scrollbar-hide">
+          {/* Sort */}
+          <div className="flex items-center gap-1 bg-secondary rounded-lg px-2 py-1.5 flex-shrink-0">
+            <ArrowUpDown size={14} className="text-muted-foreground" />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="bg-transparent text-xs text-foreground focus:outline-none"
+            >
+              <option value="recent">Más reciente</option>
+              <option value="oldest">Más antiguo</option>
+              <option value="title">A-Z</option>
+            </select>
           </div>
-        </Link>
+
+          {/* Filter buttons */}
+          {[
+            { value: "all", label: "Todo" },
+            { value: "today", label: "Hoy" },
+            { value: "week", label: "Semana" },
+            { value: "month", label: "Mes" },
+          ].map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setFilterBy(opt.value as FilterOption)}
+              className={clsx(
+                "px-3 py-1.5 rounded-lg text-xs font-medium flex-shrink-0 transition-colors",
+                filterBy === opt.value
+                  ? "bg-foreground text-background"
+                  : "bg-secondary text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Notes List */}

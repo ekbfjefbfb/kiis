@@ -1,13 +1,23 @@
-import { useState } from "react";
-import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, CheckSquare, Calendar as CalendarIcon, Star } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, CheckSquare, Calendar as CalendarIcon, Star, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { Link } from "react-router";
 import { TASKS, EXAMS, IMPORTANT_DATES, CLASSES } from "../data/mock";
 
+interface CalendarEvent {
+  date: string;
+  title: string;
+  type: "task" | "exam" | "important";
+  classId?: string;
+  completed: boolean;
+}
+
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -21,33 +31,57 @@ export default function CalendarPage() {
   const goToPrev = () => setCurrentDate(new Date(year, month - 1, 1));
   const goToNext = () => setCurrentDate(new Date(year, month + 1, 1));
 
-  // Collect all events
-  const allEvents = [
-    ...TASKS.map((t) => ({
-      date: t.date,
-      title: t.title,
-      type: "task" as const,
-      classId: t.classId,
-      completed: t.completed,
-    })),
-    ...EXAMS.map((e) => ({
-      date: e.date,
-      title: e.title,
-      type: "exam" as const,
-      classId: e.classId,
-      completed: false,
-    })),
-    ...IMPORTANT_DATES.map((d) => ({
-      date: d.date,
-      title: d.title,
-      type: "important" as const,
-      classId: null,
-      completed: false,
-    })),
-  ];
+  // Cargar eventos del backend o localStorage
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  const loadEvents = async () => {
+    setLoading(true);
+    try {
+      // Cargar tareas del localStorage
+      const storedTasks = localStorage.getItem('user_tasks');
+      const tasks = storedTasks ? JSON.parse(storedTasks) : TASKS;
+      
+      // Cargar sesiones del backend/localStorage
+      const storedSessions = localStorage.getItem('recent_sessions');
+      const sessions = storedSessions ? JSON.parse(storedSessions) : [];
+
+      // Combinar eventos
+      const allEvents: CalendarEvent[] = [
+        ...tasks.map((t: any) => ({
+          date: t.date,
+          title: t.title,
+          type: "task" as const,
+          classId: t.classId,
+          completed: t.completed,
+        })),
+        ...sessions.filter((s: any) => s.session_datetime).map((s: any) => ({
+          date: s.session_datetime.split('T')[0],
+          title: s.class_name || "Clase grabada",
+          type: "important" as const,
+          classId: null,
+          completed: false,
+        })),
+      ];
+      
+      setEvents(allEvents);
+    } catch (e) {
+      console.error("Error loading events:", e);
+      // Fallback a datos mock
+      setEvents(TASKS.map((t) => ({
+        date: t.date,
+        title: t.title,
+        type: "task" as const,
+        classId: t.classId,
+        completed: t.completed,
+      })));
+    }
+    setLoading(false);
+  };
 
   const getEventsForDate = (dateStr: string) =>
-    allEvents.filter((e) => e.date === dateStr);
+    events.filter((e) => e.date === dateStr);
 
   const getDotsForDate = (dateStr: string) => {
     const events = getEventsForDate(dateStr);

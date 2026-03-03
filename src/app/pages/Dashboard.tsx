@@ -1,22 +1,26 @@
 import { useState, useEffect } from "react";
 import {
   Mic, Square, Loader2, Calendar, ChevronRight, Bookmark,
-  Clock, Sparkles, Star, BookOpen, Plus, X
+  Clock, Sparkles, Star, BookOpen, Plus, X, Zap, Play
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { CLASSES, TASKS, AI_SUMMARIES, addClass } from "../data/mock";
 import { audioService } from "../../services/audio.service";
 import { notesService, BackendNote } from "../../services/notes.service";
 import { authService } from "../../services/auth.service";
+import { groqService } from "../../services/groq.service";
+import { aiService } from "../../services/ai.service";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [recentNotes, setRecentNotes] = useState<BackendNote[]>([]);
   const [recentSessions, setRecentSessions] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
 
   // Add class state
   const [isAddingClass, setIsAddingClass] = useState(false);
@@ -31,11 +35,12 @@ export default function Dashboard() {
     day: "numeric",
   });
 
-  const upcomingTasks = TASKS.filter((t) => !t.completed).slice(0, 4);
+  const upcomingTasks = tasks.filter((t) => !t.completed).slice(0, 4);
 
   useEffect(() => {
     loadRecentNotes();
     loadRecentSessions();
+    loadTasks();
   }, []);
 
   useEffect(() => {
@@ -59,7 +64,6 @@ export default function Dashboard() {
 
   const loadRecentSessions = async () => {
     try {
-      // Load recent sessions from localStorage as fallback
       const stored = localStorage.getItem('recent_sessions');
       if (stored) {
         const sessions = JSON.parse(stored);
@@ -67,6 +71,17 @@ export default function Dashboard() {
       }
     } catch (e) {
       console.error("Error loading sessions", e);
+    }
+  };
+
+  const loadTasks = async () => {
+    try {
+      const stored = localStorage.getItem('user_tasks');
+      if (stored) {
+        setTasks(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error("Error loading tasks", e);
     }
   };
 
@@ -87,15 +102,21 @@ export default function Dashboard() {
         setIsRecording(false);
         setIsProcessing(true);
         
-        // Use live transcript if available, otherwise a default string (fallback if speech recognition failed)
-        const finalTranscript = liveTranscript.trim() || "Transcripción no disponible (audio guardado).";
+        // Transcribir con Groq
+        let finalTranscript = "";
+        try {
+          finalTranscript = await groqService.transcribe(audioBlob, 'es');
+        } catch (e) {
+          console.error("Transcription failed:", e);
+          finalTranscript = "Transcripción no disponible";
+        }
 
-        // Send transcript to backend directly
-        await notesService.createFromTranscript(
-            finalTranscript,
-            "Grabación Rápida",
-            true
-        );
+        // Crear nota en backend
+        try {
+          await notesService.createFromTranscript(finalTranscript, "Nota Rápida", true);
+        } catch (e) {
+          console.error("Error creating note:", e);
+        }
 
         setIsProcessing(false);
         setLiveTranscript("");
@@ -187,36 +208,56 @@ export default function Dashboard() {
       </div>
 
       <div className="px-5 pt-4 space-y-5">
-        {/* Quick Record - UNIFIED BUTTON */}
-        <Link to="/live">
-          <motion.div
+        {/* Quick Actions Row */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Quick Record - Grabación rápida */}
+          <motion.button
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 p-5 text-white"
+            onClick={async () => {
+              const ok = await audioService.requestPermissions();
+              if (!ok) {
+                alert("Se necesitan permisos de micrófono");
+                return;
+              }
+              try {
+                await audioService.startAudioRecording();
+                setIsRecording(true);
+                setRecordingTime(0);
+              } catch (e) {
+                console.error("Error:", e);
+              }
+            }}
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 p-4 text-white text-left"
           >
-            <div className="relative flex items-center justify-between">
-              <div className="flex-1 mr-4">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <Sparkles size={18} className="text-yellow-300" />
-                  <h3 className="font-semibold text-lg tracking-tight">
-                    Grabar Clase con IA
-                  </h3>
-                </div>
-                <p className="text-white/80 text-sm">
-                  Análisis inteligente en tiempo real con resumen automático
-                </p>
-              </div>
-
-              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <Mic size={26} className="text-white" />
-              </div>
+            <div className="flex items-center gap-2 mb-2">
+              <Zap size={18} className="text-yellow-300" />
+              <span className="font-semibold text-sm">Nota Rápida</span>
             </div>
-            
-            {/* Decorative elements */}
-            <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-            <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-purple-500/20 rounded-full blur-2xl" />
-          </motion.div>
-        </Link>
+            <p className="text-white/70 text-xs">
+              Graba y resume al instante
+            </p>
+            <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full blur-xl" />
+          </motion.button>
+
+          {/* Full Recording - Grabación completa */}
+          <Link to="/live">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 p-4 text-white text-left h-full"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles size={18} className="text-yellow-300" />
+                <span className="font-semibold text-sm">Grabar Clase</span>
+              </div>
+              <p className="text-white/70 text-xs">
+                Análisis completo con IA
+              </p>
+              <div className="absolute -right-4 -top-4 w-20 h-20 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+        </div>
 
         {/* Upcoming Tasks */}
         <section>
