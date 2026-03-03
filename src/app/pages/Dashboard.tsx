@@ -159,211 +159,120 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-[100dvh] bg-black text-white pb-24 font-sans selection:bg-white/30">
-      {/* Header - Ultra Minimalista y Grande */}
-      <div className="px-6 pt-10 pb-8">
+      {/* Header - Ajustado para móvil */}
+      <div className="px-6 pt-8 pb-6">
         <div className="flex justify-between items-start">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <p className="text-lg font-medium text-white/40 mb-2 uppercase tracking-widest">{today}</p>
-            <h1 className="text-5xl font-black tracking-tight leading-none">
+            <p className="text-xs font-bold text-white/40 mb-1 uppercase tracking-widest">{today}</p>
+            <h1 className="text-3xl font-black tracking-tight leading-none">
               Hola,<br/>{(() => { try { const p = JSON.parse(localStorage.getItem('user_profile') || '{}'); return p.name?.split(' ')[0] || authService.getCurrentUser()?.displayName?.split(' ')[0] || 'Estudiante'; } catch { return 'Estudiante'; } })()}
             </h1>
           </motion.div>
           <Link
             to="/calendar"
-            className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-transform"
+            className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-transform"
           >
-            <Calendar size={24} className="text-white" />
+            <Calendar size={20} className="text-white" />
           </Link>
         </div>
       </div>
 
-      <div className="px-6 space-y-10">
-        {/* Recording States - Llamativos */}
-        <AnimatePresence mode="wait">
-          {isRecording && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-red-600 rounded-[40px] p-8 flex items-center justify-between shadow-[0_0_50px_-12px_rgba(220,38,38,0.5)]"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-4 h-4 rounded-full bg-white animate-ping" />
-                <span className="font-black text-2xl uppercase italic">Grabando</span>
-              </div>
-              <span className="text-4xl font-mono font-black tabular-nums">{formatTime(recordingTime)}</span>
-            </motion.div>
-          )}
-
-          {isProcessing && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-blue-600 rounded-[40px] p-8 flex items-center gap-5 shadow-[0_0_50px_-12px_rgba(37,99,235,0.5)]"
-            >
-              <motion.div 
-                animate={{ rotate: 360 }} 
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              >
-                <Sparkles size={32} />
-              </motion.div>
-              <span className="font-black text-2xl uppercase italic text-white">IA Analizando...</span>
-            </motion.div>
-          )}
-
-          {showSuccess && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-green-600 rounded-[40px] p-8 flex items-center gap-5 shadow-[0_0_50px_-12px_rgba(22,163,74,0.5)]"
-            >
-              <Zap size={32} fill="white" />
-              <span className="font-black text-2xl uppercase italic">¡Guardado!</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Action Buttons - Diferenciación Real */}
-        <div className="flex flex-col gap-5">
-          {/* Quick Note - Acción Inmediata */}
+      <div className="px-6 space-y-8">
+        {/* Main Actions - Botones más pequeños y lógicos para móvil */}
+        <div className="grid grid-cols-2 gap-3">
           <motion.button
             onClick={handleQuickRecord}
             whileTap={{ scale: 0.96 }}
             className={clsx(
-              "w-full rounded-[40px] p-8 text-left transition-all duration-500 flex items-center justify-between relative overflow-hidden group",
-              isRecording 
-                ? "bg-red-600" 
-                : "bg-emerald-500"
+              "rounded-[32px] p-6 text-left transition-all duration-500 relative overflow-hidden group",
+              isRecording ? "bg-red-600" : "bg-emerald-500"
             )}
           >
             <div className="relative z-10">
-              <div className="w-16 h-16 rounded-3xl bg-white/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                {isRecording ? <Square size={32} fill="currentColor" /> : <Zap size={32} fill="white" />}
+              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
+                {isRecording ? <Square size={24} fill="currentColor" /> : <Zap size={24} fill="white" />}
               </div>
-              <p className="font-black text-3xl tracking-tight leading-none mb-2 uppercase italic">
+              <p className="font-black text-xl tracking-tight uppercase italic mb-1">
                 {isRecording ? "Detener" : "Nota Rápida"}
               </p>
-              <p className="text-lg text-white/70 font-medium tracking-tight">
-                {isRecording ? "Toca para terminar" : "Graba y resume al instante"}
+              <p className="text-xs text-white/70 font-bold uppercase tracking-tighter">
+                {isRecording ? formatTime(recordingTime) : "Graba ya"}
               </p>
-            </div>
-            <div className="absolute -right-10 -bottom-10 opacity-10 group-hover:scale-125 transition-transform duration-700">
-               {isRecording ? <Square size={200} fill="white" /> : <Zap size={200} fill="white" />}
             </div>
           </motion.button>
 
-          {/* Record Class - Acción Completa */}
-          <Link to="/live" className="block w-full">
+          <Link to="/live" className="block">
             <motion.div
               whileTap={{ scale: 0.96 }}
-              className="w-full rounded-[40px] bg-white text-black p-8 text-left relative overflow-hidden group border border-white/10"
+              className="rounded-[32px] bg-white text-black p-6 text-left h-full relative overflow-hidden group"
             >
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="w-16 h-16 rounded-3xl bg-black/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <Radio size={32} className="text-black" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-2xl bg-black/5 flex items-center justify-center mb-4">
+                  <Radio size={24} className="text-black" />
                 </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-black text-3xl tracking-tight leading-none mb-2 uppercase italic">Grabar Clase</p>
-                    <p className="text-lg text-black/50 font-medium tracking-tight">Análisis IA en tiempo real</p>
-                  </div>
-                  <div className="w-12 h-12 rounded-full bg-black/5 flex items-center justify-center group-hover:translate-x-2 transition-transform">
-                    <ChevronRight size={24} />
-                  </div>
-                </div>
+                <p className="font-black text-xl tracking-tight uppercase italic mb-1">Clase</p>
+                <p className="text-xs text-black/40 font-bold uppercase tracking-tighter">IA en vivo</p>
               </div>
             </motion.div>
           </Link>
         </div>
 
-        {/* Secondary Navigation - Compacta y Elegante */}
-        <div className="grid grid-cols-3 gap-4">
+        {/* Secondary Navigation - Iconos limpios */}
+        <div className="grid grid-cols-3 gap-3">
           {[
-            { to: "/voice", icon: Brain, label: "IA Voz", color: "bg-orange-500", text: "text-orange-400" },
-            { to: "/notes", icon: FileText, label: "Notas", color: "bg-blue-500", text: "text-blue-400" },
-            { to: "/chat", icon: Sparkles, label: "Chat", color: "bg-pink-500", text: "text-pink-400" },
+            { to: "/voice", icon: Brain, label: "Voz", color: "text-orange-400" },
+            { to: "/notes", icon: FileText, label: "Notas", color: "text-blue-400" },
+            { to: "/chat", icon: Sparkles, label: "Chat", color: "text-pink-400" },
           ].map((item) => (
             <Link key={item.label} to={item.to}>
               <motion.div 
                 whileTap={{ scale: 0.92 }}
-                className="bg-white/5 rounded-[32px] p-5 flex flex-col items-center justify-center border border-white/5 group hover:bg-white/10 transition-colors"
+                className="bg-zinc-900 rounded-[24px] p-4 flex flex-col items-center justify-center border border-white/5"
               >
-                <div className={clsx("w-12 h-12 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform", `${item.color}/20`)}>
-                  <item.icon size={24} className={item.text} />
-                </div>
-                <p className="text-sm font-bold uppercase tracking-widest">{item.label}</p>
+                <item.icon size={20} className={clsx("mb-2", item.color)} />
+                <p className="text-[10px] font-black uppercase tracking-widest">{item.label}</p>
               </motion.div>
             </Link>
           ))}
         </div>
 
-        {/* My Classes - Cards Dinámicas */}
+        {/* My Classes - Lista compacta */}
         <section>
-          <div className="flex justify-between items-end mb-6">
-            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white/40">Mis Materias</h3>
+          <div className="flex justify-between items-end mb-4">
+            <h3 className="text-lg font-black uppercase italic tracking-tighter text-white/40 ml-1">Materias</h3>
             <button 
               onClick={() => setIsAddingClass(true)}
-              className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-[0_0_30px_-5px_rgba(255,255,255,0.3)] active:scale-90 transition-transform"
+              className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center active:scale-90 transition-transform"
             >
-              <Plus size={24} strokeWidth={3} />
+              <Plus size={20} strokeWidth={3} />
             </button>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {CLASSES.map((cls) => (
               <Link key={cls.id} to={`/class/${cls.id}`}>
                 <motion.div 
-                  whileTap={{ scale: 0.97 }}
-                  className="bg-zinc-900 rounded-[32px] p-6 flex items-center gap-5 border border-white/5 hover:border-white/20 transition-all active:scale-95"
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-zinc-900 rounded-[28px] p-5 flex items-center gap-4 border border-white/5 active:scale-95"
                 >
-                  <div className="w-16 h-16 rounded-[24px] bg-white/5 flex items-center justify-center shrink-0">
-                    <BookOpen size={28} className="text-white/80" />
+                  <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center shrink-0">
+                    <BookOpen size={22} className="text-white/80" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-black text-xl uppercase italic tracking-tight truncate leading-tight">{cls.name}</p>
-                    <p className="text-lg text-white/40 font-medium truncate">{cls.professor}</p>
+                    <p className="font-black text-lg uppercase italic tracking-tight truncate leading-none mb-1">{cls.name}</p>
+                    <p className="text-sm text-white/40 font-medium truncate">{cls.professor}</p>
                   </div>
-                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
-                    <ChevronRight size={20} className="text-white/20" />
-                  </div>
+                  <ChevronRight size={18} className="text-white/20" />
                 </motion.div>
               </Link>
             ))}
           </div>
         </section>
-
-        {/* Tasks Row - Scroll Horizontal Elegante */}
-        {upcomingTasks.length > 0 && (
-          <section>
-            <div className="flex justify-between items-end mb-6">
-              <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white/40">Pendientes</h3>
-              <Link to="/calendar" className="text-white/40 font-bold uppercase text-xs tracking-widest border-b border-white/10 pb-1">Ver todo</Link>
-            </div>
-            <div className="flex gap-4 overflow-x-auto scrollbar-hide -mx-6 px-6">
-              {upcomingTasks.map((task) => (
-                <div 
-                  key={task.id}
-                  className="bg-zinc-900/50 border border-white/5 rounded-[32px] p-6 min-w-[280px] shrink-0"
-                >
-                  <div className="w-12 h-12 rounded-2xl bg-yellow-500/10 flex items-center justify-center mb-4">
-                    <Clock size={24} className="text-yellow-500" />
-                  </div>
-                  <p className="font-black text-xl uppercase italic leading-tight mb-2 line-clamp-2">{task.title}</p>
-                  <p className="text-lg text-white/40 font-bold uppercase tracking-widest text-sm">
-                    {new Date(task.date).toLocaleDateString("es-ES", { month: "short", day: "numeric" })}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
       </div>
 
-      {/* Add Class Modal - Rediseñado */}
+      {/* Add Class Modal */}
       <AnimatePresence>
         {isAddingClass && (
           <>
@@ -378,42 +287,34 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: "100%" }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 right-0 bg-zinc-900 rounded-t-[48px] z-50 p-8 pb-12"
+              className="fixed bottom-0 left-0 right-0 bg-zinc-900 rounded-t-[40px] z-50 p-8 pb-12 max-w-md mx-auto"
             >
-              <div className="flex justify-between items-center mb-10">
-                <h2 className="text-3xl font-black uppercase italic italic">Nueva Materia</h2>
-                <button onClick={() => setIsAddingClass(false)} className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
-                  <X size={24} />
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-2xl font-black uppercase italic">Nueva Materia</h2>
+                <button onClick={() => setIsAddingClass(false)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                  <X size={20} />
                 </button>
               </div>
-              <form onSubmit={handleCreateClass} className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-[0.2em] text-white/40 ml-2">Nombre</label>
-                  <input
-                    type="text"
-                    required
-                    value={newClassName}
-                    onChange={(e) => setNewClassName(e.target.value)}
-                    placeholder="Ej. MATEMÁTICAS"
-                    className="w-full bg-white/5 border border-white/10 rounded-3xl px-6 py-5 text-xl font-bold placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-white transition-all uppercase"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-[0.2em] text-white/40 ml-2">Profesor</label>
-                  <input
-                    type="text"
-                    required
-                    value={newClassProfessor}
-                    onChange={(e) => setNewClassProfessor(e.target.value)}
-                    placeholder="Nombre del Profe"
-                    className="w-full bg-white/5 border border-white/10 rounded-3xl px-6 py-5 text-xl font-bold placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-white transition-all uppercase"
-                  />
-                </div>
+              <form onSubmit={handleCreateClass} className="space-y-5">
+                <input
+                  type="text"
+                  required
+                  value={newClassName}
+                  onChange={(e) => setNewClassName(e.target.value)}
+                  placeholder="MATERIA"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-lg font-bold placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-white transition-all uppercase"
+                />
+                <input
+                  type="text"
+                  required
+                  value={newClassProfessor}
+                  onChange={(e) => setNewClassProfessor(e.target.value)}
+                  placeholder="PROFESOR"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-lg font-bold placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-white transition-all uppercase"
+                />
                 <button
                   type="submit"
-                  disabled={!newClassName.trim() || !newClassProfessor.trim()}
-                  className="w-full bg-white text-black rounded-[32px] py-6 text-2xl font-black uppercase italic tracking-tight mt-6 disabled:opacity-30 active:scale-95 transition-transform"
+                  className="w-full bg-white text-black rounded-[24px] py-5 text-xl font-black uppercase italic tracking-tight mt-4"
                 >
                   Guardar
                 </button>
