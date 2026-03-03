@@ -7,8 +7,8 @@
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "fullscreen", "minimal-ui"],
-  "background_color": "#ffffff",
-  "theme_color": "#4f46e5",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "orientation": "portrait-primary",
   "dir": "ltr",
   "prefer_related_applications": false,
@@ -104,53 +104,7 @@
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ],
-  "categories": [
-    "education",
-    "productivity",
-    "utilities"
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshot-1.png",
-      "sizes": "540x720",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Pantalla principal con grabación rápida"
-    },
-    {
-      "src": "/screenshot-2.png",
-      "sizes": "540x720",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Análisis inteligente en tiempo real"
-    }
-  ],
-  "share_target": {
-    "action": "/share",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url",
-      "files": [
-        {
-          "name": "audio",
-          "accept": ["audio/*", ".mp3", ".wav", ".m4a", ".webm"]
-        },
-        {
-          "name": "document",
-          "accept": ["application/pdf", ".pdf", ".doc", ".docx", ".txt"]
-        }
-      ]
-    }
-  },
-  "protocol_handlers": [
-    {
-      "protocol": "web+notdeer",
-      "url": "/?action=%s"
-    }
-  ],
+  "categories": ["education", "productivity", "utilities"],
   "related_applications": [],
   "iarc_rating_id": ""
 }
