@@ -79,13 +79,9 @@ class ApiService {
           console.log('Token refreshed, retrying request...');
           return this.request<T>(endpoint, options, retryCount + 1);
         } else {
-          // Refresh falló, logout
-          console.error('Token refresh failed, logging out...');
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          localStorage.removeItem('current_user');
-          window.location.href = '/login';
-          throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.');
+          // Refresh falló, pero no hacemos logout (uso anónimo)
+          console.log('Token refresh failed, continuing without auth...');
+          throw new Error('Sesión no disponible.继续 usando modo anónimo.');
         }
       }
 

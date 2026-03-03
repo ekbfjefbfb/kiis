@@ -91,7 +91,7 @@ export default function ChatPage() {
       audioService.stopSpeaking();
       cancelAnimationFrame(animFrameRef.current);
     };
-  }, [autoSpeak]);
+  }, []); // Solo ejecutar una vez al montar
 
   const handleNavigationCommand = useCallback((text: string) => {
     const navMatch = text.match(/\[NAVIGATE:(.*?)\]/);
