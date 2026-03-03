@@ -159,29 +159,21 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-[100dvh] bg-black text-white pb-24 font-sans selection:bg-white/30">
-      {/* Header - Ajustado para móvil */}
       <div className="px-6 pt-8 pb-6">
         <div className="flex justify-between items-start">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-          >
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
             <p className="text-xs font-bold text-white/40 mb-1 uppercase tracking-widest">{today}</p>
             <h1 className="text-3xl font-black tracking-tight leading-none">
               Hola,<br/>{(() => { try { const p = JSON.parse(localStorage.getItem('user_profile') || '{}'); return p.name?.split(' ')[0] || authService.getCurrentUser()?.displayName?.split(' ')[0] || 'Estudiante'; } catch { return 'Estudiante'; } })()}
             </h1>
           </motion.div>
-          <Link
-            to="/calendar"
-            className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-transform"
-          >
+          <Link to="/calendar" className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
             <Calendar size={20} className="text-white" />
           </Link>
         </div>
       </div>
 
       <div className="px-6 space-y-8">
-        {/* Main Actions - Botones más pequeños y lógicos para móvil */}
         <div className="grid grid-cols-2 gap-3">
           <motion.button
             onClick={handleQuickRecord}
@@ -220,12 +212,11 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        {/* Secondary Navigation - Iconos limpios */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { to: "/voice", icon: Brain, label: "Voz", color: "text-orange-400" },
+            { to: "/chat", icon: Brain, label: "Chat IA", color: "text-orange-400" },
             { to: "/notes", icon: FileText, label: "Notas", color: "text-blue-400" },
-            { to: "/chat", icon: Sparkles, label: "Chat", color: "text-pink-400" },
+            { to: "/profile", icon: Sparkles, label: "Perfil", color: "text-pink-400" },
           ].map((item) => (
             <Link key={item.label} to={item.to}>
               <motion.div 
@@ -239,24 +230,17 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* My Classes - Lista compacta */}
         <section>
           <div className="flex justify-between items-end mb-4">
             <h3 className="text-lg font-black uppercase italic tracking-tighter text-white/40 ml-1">Materias</h3>
-            <button 
-              onClick={() => setIsAddingClass(true)}
-              className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center active:scale-90 transition-transform"
-            >
+            <button onClick={() => setIsAddingClass(true)} className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center active:scale-90 transition-transform">
               <Plus size={20} strokeWidth={3} />
             </button>
           </div>
           <div className="space-y-3">
             {CLASSES.map((cls) => (
               <Link key={cls.id} to={`/class/${cls.id}`}>
-                <motion.div 
-                  whileTap={{ scale: 0.98 }}
-                  className="bg-zinc-900 rounded-[28px] p-5 flex items-center gap-4 border border-white/5 active:scale-95"
-                >
+                <motion.div whileTap={{ scale: 0.98 }} className="bg-zinc-900 rounded-[28px] p-5 flex items-center gap-4 border border-white/5 active:scale-95">
                   <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center shrink-0">
                     <BookOpen size={22} className="text-white/80" />
                   </div>
@@ -272,52 +256,19 @@ export default function Dashboard() {
         </section>
       </div>
 
-      {/* Add Class Modal */}
       <AnimatePresence>
         {isAddingClass && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/90 backdrop-blur-md z-40"
-              onClick={() => setIsAddingClass(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, y: "100%" }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: "100%" }}
-              className="fixed bottom-0 left-0 right-0 bg-zinc-900 rounded-t-[40px] z-50 p-8 pb-12 max-w-md mx-auto"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/90 backdrop-blur-md z-40" onClick={() => setIsAddingClass(false)} />
+            <motion.div initial={{ opacity: 0, y: "100%" }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: "100%" }} className="fixed bottom-0 left-0 right-0 bg-zinc-900 rounded-t-[40px] z-50 p-8 pb-12 max-w-md mx-auto">
               <div className="flex justify-between items-center mb-8">
                 <h2 className="text-2xl font-black uppercase italic">Nueva Materia</h2>
-                <button onClick={() => setIsAddingClass(false)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                  <X size={20} />
-                </button>
+                <button onClick={() => setIsAddingClass(false)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center"><X size={20} /></button>
               </div>
               <form onSubmit={handleCreateClass} className="space-y-5">
-                <input
-                  type="text"
-                  required
-                  value={newClassName}
-                  onChange={(e) => setNewClassName(e.target.value)}
-                  placeholder="MATERIA"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-lg font-bold placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-white transition-all uppercase"
-                />
-                <input
-                  type="text"
-                  required
-                  value={newClassProfessor}
-                  onChange={(e) => setNewClassProfessor(e.target.value)}
-                  placeholder="PROFESOR"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-lg font-bold placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-white transition-all uppercase"
-                />
-                <button
-                  type="submit"
-                  className="w-full bg-white text-black rounded-[24px] py-5 text-xl font-black uppercase italic tracking-tight mt-4"
-                >
-                  Guardar
-                </button>
+                <input type="text" required value={newClassName} onChange={(e) => setNewClassName(e.target.value)} placeholder="MATERIA" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-lg font-bold placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-white transition-all uppercase" />
+                <input type="text" required value={newClassProfessor} onChange={(e) => setNewClassProfessor(e.target.value)} placeholder="PROFESOR" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-lg font-bold placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-white transition-all uppercase" />
+                <button type="submit" className="w-full bg-white text-black rounded-[24px] py-5 text-xl font-black uppercase italic tracking-tight mt-4">Guardar</button>
               </form>
             </motion.div>
           </>
