@@ -186,31 +186,31 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-[100dvh] pb-4 bg-background text-foreground relative font-sans transition-colors duration-300">
-      {/* Header */}
-      <div className="px-5 pt-6 pb-4 border-b border-border bg-card">
-        <div className="flex justify-between items-start mb-1">
+    <div className="min-h-[100dvh] pb-6 bg-background text-foreground relative font-sans">
+      {/* Header - Minimalista */}
+      <div className="px-6 pt-8 pb-6">
+        <div className="flex justify-between items-start">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest capitalize text-muted-foreground">
+            <p className="text-sm font-medium text-muted-foreground mb-1">
               {today}
             </p>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground mt-1">
-              Hola, {(() => { try { const p = JSON.parse(localStorage.getItem('user_profile') || '{}'); return p.name?.split(' ')[0] || authService.getCurrentUser()?.displayName?.split(' ')[0] || 'Estudiante'; } catch { return 'Estudiante'; } })()} 👋
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              Hola, {(() => { try { const p = JSON.parse(localStorage.getItem('user_profile') || '{}'); return p.name?.split(' ')[0] || authService.getCurrentUser()?.displayName?.split(' ')[0] || 'Estudiante'; } catch { return 'Estudiante'; } })()}
             </h1>
           </div>
           <Link
             to="/calendar"
-            className="w-11 h-11 rounded-lg flex items-center justify-center transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80"
+            className="w-12 h-12 rounded-2xl flex items-center justify-center bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
           >
-            <Calendar size={20} />
+            <Calendar size={22} />
           </Link>
         </div>
       </div>
 
-      <div className="px-5 pt-4 space-y-5">
-        {/* Quick Actions Row */}
-        <div className="grid grid-cols-2 gap-3">
-          {/* Quick Record - Grabación rápida */}
+      <div className="px-6 space-y-8">
+        {/* Quick Actions - Minimalistas y grandes */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Quick Record */}
           <motion.button
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -228,55 +228,45 @@ export default function Dashboard() {
                 console.error("Error:", e);
               }
             }}
-            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 p-4 text-white text-left"
+            className="relative overflow-hidden rounded-3xl bg-emerald-500 p-5 text-white text-left active:scale-95 transition-transform"
           >
-            <div className="flex items-center gap-2 mb-2">
-              <Zap size={18} className="text-yellow-300" />
-              <span className="font-semibold text-sm">Nota Rápida</span>
-            </div>
-            <p className="text-white/70 text-xs">
-              Graba y resume al instante
-            </p>
-            <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full blur-xl" />
+            <Zap size={28} className="mb-3" />
+            <span className="font-semibold text-lg block">Nota Rápida</span>
+            <span className="text-white/70 text-sm">Graba al instante</span>
           </motion.button>
 
-          {/* Full Recording - Grabación completa */}
+          {/* Full Recording */}
           <Link to="/live">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 p-4 text-white text-left h-full"
+              className="relative overflow-hidden rounded-3xl bg-indigo-600 p-5 text-white text-left h-full active:scale-95 transition-transform"
             >
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles size={18} className="text-yellow-300" />
-                <span className="font-semibold text-sm">Grabar Clase</span>
-              </div>
-              <p className="text-white/70 text-xs">
-                Análisis completo con IA
-              </p>
-              <div className="absolute -right-4 -top-4 w-20 h-20 bg-white/10 rounded-full blur-xl" />
+              <Sparkles size={28} className="mb-3" />
+              <span className="font-semibold text-lg block">Grabar Clase</span>
+              <span className="text-white/70 text-sm">Análisis con IA</span>
             </motion.div>
           </Link>
         </div>
 
-        {/* Upcoming Tasks */}
+        {/* Upcoming Tasks - Minimalista */}
         <section>
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">
+          <div className="flex justify-between items-center mb-5">
+            <h3 className="text-lg font-semibold text-foreground">
               Próximos
             </h3>
             <Link
               to="/calendar"
-              className="text-sm font-medium text-foreground hover:underline underline-offset-4"
+              className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              Ver Todo
+              Ver todo →
             </Link>
           </div>
 
-          <div className="overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide flex gap-3">
+          <div className="overflow-x-auto pb-2 -mx-6 px-6 scrollbar-hide flex gap-4">
             {upcomingTasks.length === 0 ? (
-              <div className="w-full text-center py-6 bg-card rounded-2xl border border-border">
-                <p className="text-base text-muted-foreground">No hay tareas próximas</p>
+              <div className="w-full text-center py-8 bg-card rounded-3xl">
+                <p className="text-lg text-muted-foreground">No hay tareas próximas</p>
               </div>
             ) : upcomingTasks.map((task, i) => {
               const cls = CLASSES.find((c) => c.id === task.classId);
@@ -287,49 +277,46 @@ export default function Dashboard() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.08 }}
                   whileTap={{ scale: 0.97 }}
-                  className="flex-shrink-0 w-48 bg-card p-4 rounded-2xl border border-border"
+                  className="flex-shrink-0 w-56 bg-card p-5 rounded-3xl border border-border"
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                    <Clock size={12} className="text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-3 h-3 rounded-full bg-emerald-500 shrink-0" />
+                    <Clock size={16} className="text-muted-foreground" />
+                    <span className="text-base font-medium text-muted-foreground">
                       {new Date(task.date).toLocaleDateString("es-ES", {
                         month: "short",
                         day: "numeric",
                       })}
                     </span>
                   </div>
-                  <h4 className="font-semibold text-card-foreground text-sm leading-tight line-clamp-2 mb-2">
+                  <h4 className="font-semibold text-lg leading-tight line-clamp-2 mb-2">
                     {task.title}
                   </h4>
-                  <div className="flex items-center gap-1">
-                    <Bookmark size={9} className="text-muted-foreground" />
-                    <span className="text-[9px] text-muted-foreground truncate">
-                      {cls?.name}
-                    </span>
-                  </div>
+                  <p className="text-base text-muted-foreground">
+                    {cls?.name}
+                  </p>
                 </motion.div>
               );
             })}
           </div>
         </section>
 
-        {/* My Classes */}
+        {/* My Classes - Minimalista */}
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-lg font-semibold text-foreground">
               Clases Grabadas
             </h3>
             <Link
               to="/notes"
-              className="text-sm font-medium text-foreground hover:underline underline-offset-4"
+              className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              Ver Todas
+              Ver todo →
             </Link>
           </div>
           
           {recentSessions.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {recentSessions.map((session, i) => (
                 <motion.div
                   key={session.id}
@@ -337,30 +324,25 @@ export default function Dashboard() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.06 }}
                 >
-                  <Link to={`/session/${session.id}`} className="block group">
-                    <div className="bg-card p-4 rounded-2xl border border-border transition-all hover:border-indigo-500/50 hover:shadow-lg">
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center flex-shrink-0">
-                          <Sparkles size={20} className="text-white" />
+                  <Link to={`/session/${session.id}`} className="block">
+                    <div className="bg-card p-5 rounded-3xl border border-border active:scale-[0.98] transition-transform">
+                      <div className="flex items-start gap-4">
+                        <div className="w-14 h-14 rounded-2xl bg-indigo-500 flex items-center justify-center shrink-0">
+                          <Sparkles size={28} className="text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-foreground text-base mb-1 truncate">
+                          <h4 className="font-semibold text-xl mb-1 truncate">
                             {session.class_name || "Clase"}
                           </h4>
-                          <p className="text-sm text-muted-foreground mb-2">
+                          <p className="text-base text-muted-foreground">
                             {new Date(session.session_datetime).toLocaleDateString("es-ES", {
-                              weekday: "short",
+                              weekday: "long",
                               month: "short",
                               day: "numeric"
                             })}
                           </p>
-                          {session.summary && (
-                            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                              {session.summary}
-                            </p>
-                          )}
                         </div>
-                        <ChevronRight size={20} className="text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
+                        <ChevronRight size={28} className="text-muted-foreground shrink-0" />
                       </div>
                     </div>
                   </Link>
@@ -368,39 +350,39 @@ export default function Dashboard() {
               ))}
             </div>
           ) : (
-            <div className="bg-muted/30 rounded-2xl p-6 text-center border border-border/50">
-              <div className="w-12 h-12 rounded-full bg-muted mx-auto mb-3 flex items-center justify-center">
-                <Mic size={24} className="text-muted-foreground" />
+            <div className="bg-card rounded-3xl p-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-secondary mx-auto mb-4 flex items-center justify-center">
+                <Mic size={32} className="text-muted-foreground" />
               </div>
-              <p className="text-sm text-muted-foreground mb-3">
-                No hay clases grabadas aún
+              <p className="text-lg text-muted-foreground mb-4">
+                No hay clases grabadas
               </p>
               <Link
                 to="/live"
-                className="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-700"
+                className="inline-flex items-center gap-2 text-lg font-medium text-indigo-600"
               >
-                <Sparkles size={16} />
+                <Sparkles size={20} />
                 Grabar primera clase
               </Link>
             </div>
           )}
         </section>
 
-        {/* My Classes */}
+        {/* My Classes / Materias - Minimalista */}
         <section>
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-lg font-semibold text-foreground">
               Mis Materias
             </h3>
             <button
               onClick={() => setIsAddingClass(true)}
-              className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground hover:bg-secondary/80 transition-colors"
+              className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground hover:bg-secondary/80 transition-colors"
             >
-              <Plus size={14} />
+              <Plus size={20} />
             </button>
           </div>
           
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {CLASSES.map((cls, i) => (
               <motion.div
                 key={cls.id}
@@ -408,45 +390,21 @@ export default function Dashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.06 }}
               >
-                <Link to={`/class/${cls.id}`} className="block group">
-                  <div className="bg-card p-3 rounded-xl border border-border transition-colors hover:border-foreground/20">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-secondary text-secondary-foreground"
-                      >
-                        <cls.icon size={18} />
+                <Link to={`/class/${cls.id}`} className="block">
+                  <div className="bg-card p-4 rounded-2xl border border-border active:scale-[0.98] transition-transform">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center shrink-0">
+                        <cls.icon size={24} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-card-foreground text-sm truncate">
+                        <h4 className="font-semibold text-lg truncate">
                           {cls.name}
                         </h4>
-                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
-                          <span className="truncate max-w-[80px]">{cls.time}</span>
-                          <span className="w-0.5 h-0.5 bg-border rounded-full shrink-0" />
-                          <span className="truncate">{cls.professor}</span>
+                        <p className="text-base text-muted-foreground mt-1">
+                          {cls.professor}
                         </p>
-                        {/* Important Topics Preview */}
-                        <div className="flex flex-wrap gap-1 mt-1.5">
-                          {cls.importantTopics.slice(0, 2).map((topic) => (
-                            <span
-                              key={topic}
-                              className="text-[9px] font-medium px-1.5 py-0.5 bg-secondary text-secondary-foreground rounded-full flex items-center gap-0.5"
-                            >
-                              <Star size={7} className="fill-current shrink-0" />
-                              <span className="truncate max-w-[100px]">{topic}</span>
-                            </span>
-                          ))}
-                          {cls.importantTopics.length > 2 && (
-                            <span className="text-[9px] font-medium px-1.5 py-0.5 bg-secondary text-muted-foreground rounded-full">
-                              +{cls.importantTopics.length - 2}
-                            </span>
-                          )}
-                        </div>
                       </div>
-                      <ChevronRight
-                        size={18}
-                        className="text-muted-foreground group-hover:text-foreground transition-colors shrink-0 pl-1"
-                      />
+                      <ChevronRight size={24} className="text-muted-foreground shrink-0" />
                     </div>
                   </div>
                 </Link>
@@ -455,36 +413,36 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Recent Notes */}
+        {/* Recent Notes - Minimalista */}
         {recentNotes.length > 0 && (
           <section>
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-lg font-semibold text-foreground">
                 Notas Recientes
               </h3>
               <Link
                 to="/notes"
-                className="text-xs font-medium text-foreground hover:underline underline-offset-4"
+                className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
-                Todas
+                Ver todo →
               </Link>
             </div>
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               {recentNotes.map((note) => (
                 <Link key={note.id} to={`/note/${note.id}`} className="block">
                   <motion.div
                     whileTap={{ scale: 0.98 }}
-                    className="bg-card p-4 rounded-2xl border border-border shadow-sm transition-colors hover:border-foreground/20"
+                    className="bg-card p-5 rounded-3xl border border-border active:scale-[0.98] transition-transform"
                   >
-                    <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-semibold text-card-foreground text-sm truncate flex-1">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-semibold text-lg truncate flex-1">
                         {note.title || "Apunte Sin Título"}
                       </h4>
-                      <span className="text-xs text-muted-foreground ml-2 whitespace-nowrap">
+                      <span className="text-base text-muted-foreground ml-2 whitespace-nowrap">
                         {getTimeAgo(note.created_at)}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
+                    <p className="text-base text-muted-foreground line-clamp-2">
                        {note.summary || note.transcript || "Procesando contenido..."}
                     </p>
                   </motion.div>
