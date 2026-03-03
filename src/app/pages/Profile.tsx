@@ -64,6 +64,7 @@ export default function Profile() {
     if (authService.isAuthenticated()) {
       loadBackendProfile();
     } else {
+      // Modo anónimo - usar datos locales
       setLoading(false);
     }
   }, []);
