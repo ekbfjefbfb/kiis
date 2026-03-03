@@ -1,8 +1,7 @@
 import { useState } from "react";
 import {
-  ArrowLeft, FileText, Lightbulb, CheckSquare, Calendar,
-  BookOpen, MessageSquare, Star, Mic, Square, Loader2,
-  User, Trash2, Plus, X, ChevronRight, Zap
+  ArrowLeft, Calendar, User, Trash2, Plus, X, ChevronRight, Zap, 
+  MessageCircle, Mic, Square, Loader2, Star, BookOpen, Clock
 } from "lucide-react";
 import { useParams, Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
@@ -12,61 +11,59 @@ import { aiService } from "../../services/ai.service";
 import { audioService } from "../../services/audio.service";
 import { groqService } from "../../services/groq.service";
 
-type TabType = "overview" | "tasks" | "notes" | "chat";
+type TabType = "chat" | "info" | "tasks";
 
 export default function ClassDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [cls, setCls] = useState(CLASSES.find((c) => c.id === id));
-  const [activeTab, setActiveTab] = useState<TabType>("overview");
+  const [cls] = useState(CLASSES.find((c) => c.id === id));
+  const [activeTab, setActiveTab] = useState<TabType>("chat");
 
-  // Chat state
-  const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "ai"; text: string }>>([
-    { role: "ai", text: "¡Hola! Pregúntame sobre esta clase. Conozco todos los temas y grabaciones." },
+  // Chat/Recording Unified State
+  const [messages, setMessages] = useState<Array<{ role: "user" | "ai"; text: string; id: string }>>([
+    { id: "1", role: "ai", text: "¡Hola! Soy tu asistente para esta clase. Puedo ayudarte con dudas, resumir lo que grabes o repasar temas." },
   ]);
   const [chatInput, setChatInput] = useState("");
-  const [chatLoading, setChatLoading] = useState(false);
-
-  // Recording state
   const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [noteText, setNoteText] = useState("");
+  const [recordingTime, setRecordingTime] = useState(0);
 
   if (!cls) return null;
 
   const classTasks = TASKS.filter((t) => t.classId === id);
   const classExams = EXAMS.filter((e) => e.classId === id);
 
-  const handleSendChat = async () => {
-    if (!chatInput.trim() || chatLoading) return;
-    const msg = chatInput.trim();
+  const handleSendChat = async (textOverride?: string) => {
+    const msg = textOverride || chatInput.trim();
+    if (!msg || isProcessing) return;
+    
     setChatInput("");
-    setChatMessages((prev) => [...prev, { role: "user", text: msg }]);
-    setChatLoading(true);
+    const userMsgId = Date.now().toString();
+    setMessages(prev => [...prev, { id: userMsgId, role: "user", text: msg }]);
+    setIsProcessing(true);
+
     try {
       const response = await aiService.chat(
-        `Materia: ${cls.name}. Profesor: ${cls.professor}. Temas: ${cls.importantTopics.join(", ")}. Pregunta: ${msg}`
+        `CONTEXTO CLASE: ${cls.name}. PROFE: ${cls.professor}. TEMAS: ${cls.importantTopics.join(", ")}. PREGUNTA: ${msg}`
       );
-      setChatMessages((prev) => [...prev, { role: "ai", text: response }]);
+      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: "ai", text: response }]);
     } catch {
-      setChatMessages((prev) => [...prev, { role: "ai", text: "Error de conexión. Reintenta." }]);
+      setMessages(prev => [...prev, { id: "err", role: "ai", text: "Error de conexión. Reintenta." }]);
     } finally {
-      setChatLoading(false);
+      setIsProcessing(false);
     }
   };
 
-  const handleRecord = async () => {
+  const toggleRecording = async () => {
     if (isRecording) {
       setIsRecording(false);
       setIsProcessing(true);
       try {
         const audioBlob = await audioService.stopAudioRecording();
-        const text = await groqService.transcribe(audioBlob, 'es');
-        setNoteText(text);
+        const transcript = await groqService.transcribe(audioBlob, 'es');
+        await handleSendChat(`He grabado esto de la clase, por favor resúmelo y extrae puntos clave: ${transcript}`);
       } catch (err) {
         console.error(err);
-      } finally {
         setIsProcessing(false);
       }
     } else {
@@ -83,147 +80,159 @@ export default function ClassDetailPage() {
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
   return (
-    <div className="min-h-[100dvh] bg-black text-white pb-24 font-sans">
-      {/* Header Fijo */}
-      <div className="px-5 pt-6 pb-4 flex items-center justify-between sticky top-0 bg-black/80 backdrop-blur-xl z-20">
+    <div className="min-h-[100dvh] bg-black text-white pb-24 font-sans flex flex-col">
+      {/* Header Minimalista */}
+      <div className="px-6 pt-10 pb-6 flex items-center justify-between sticky top-0 bg-black/80 backdrop-blur-xl z-20">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-            <ArrowLeft size={20} />
+          <button onClick={() => navigate(-1)} className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
+            <ArrowLeft size={24} />
           </button>
           <div>
-            <h1 className="text-xl font-bold truncate max-w-[200px]">{cls.name}</h1>
-            <p className="text-sm text-white/50">{cls.professor}</p>
+            <h1 className="text-2xl font-black uppercase italic tracking-tighter leading-none">{cls.name}</h1>
+            <p className="text-sm font-bold text-white/40 uppercase tracking-widest mt-1">{cls.professor}</p>
           </div>
         </div>
-        <button onClick={() => { if(confirm("¿Eliminar?")) { removeClass(cls.id); navigate("/dashboard"); } }} className="text-red-500 p-2">
+        <button onClick={() => { if(confirm("¿Eliminar clase?")) { removeClass(cls.id); navigate("/dashboard"); } }} className="text-red-500/50 p-2 active:text-red-500 transition-colors">
           <Trash2 size={20} />
         </button>
       </div>
 
-      <div className="px-5">
-        {/* Chips de Temas */}
-        <div className="flex gap-2 overflow-x-auto py-4 scrollbar-hide">
-          {cls.importantTopics.map(t => (
-            <span key={t} className="px-4 py-2 bg-white/10 rounded-full text-xs font-bold whitespace-nowrap border border-white/5 uppercase tracking-wider">
-              {t}
-            </span>
-          ))}
-        </div>
-
-        {/* Tabs Modernos */}
-        <div className="flex bg-white/5 rounded-2xl p-1 mb-6">
-          {(["overview", "tasks", "notes", "chat"] as TabType[]).map((t) => (
+      {/* Selector de Tabs Gigante */}
+      <div className="px-6 mb-6">
+        <div className="flex bg-white/5 rounded-[24px] p-1.5">
+          {(["chat", "tasks", "info"] as TabType[]).map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t)}
               className={clsx(
-                "flex-1 py-3 rounded-xl text-sm font-bold transition-all",
-                activeTab === t ? "bg-white text-black shadow-lg" : "text-white/40 hover:text-white"
+                "flex-1 py-4 rounded-[18px] text-sm font-black uppercase italic transition-all",
+                activeTab === t ? "bg-white text-black shadow-xl scale-100" : "text-white/30 scale-95"
               )}
             >
-              {t === "overview" && "Info"}
-              {t === "tasks" && "Tareas"}
-              {t === "notes" && "Notas"}
-              {t === "chat" && "Chat"}
+              {t === "chat" && "Chat & Voz"}
+              {t === "tasks" && "Agenda"}
+              {t === "info" && "Info"}
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Contenido Dinámico */}
+      {/* Contenido Principal */}
+      <div className="flex-1 px-6">
         <AnimatePresence mode="wait">
-          {activeTab === "overview" && (
-            <motion.div key="ov" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-10}} className="space-y-4">
-              <div className="bg-zinc-900 rounded-3xl p-6 border border-white/5">
-                <h3 className="text-white/40 text-xs font-bold uppercase mb-4 tracking-widest">Información</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center"><Calendar className="text-blue-400" /></div>
-                    <div><p className="text-white/40 text-xs uppercase font-bold">Horario</p><p className="font-bold text-lg">{cls.time}</p></div>
+          {activeTab === "chat" && (
+            <motion.div key="chat" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-10}} className="flex flex-col h-[calc(100dvh-320px)]">
+              <div className="flex-1 space-y-6 overflow-y-auto scrollbar-hide pb-10">
+                {messages.map((m) => (
+                  <div key={m.id} className={clsx("flex", m.role === "user" ? "justify-end" : "justify-start")}>
+                    <div className={clsx(
+                      "max-w-[90%] p-6 rounded-[32px] text-xl font-medium leading-tight shadow-2xl",
+                      m.role === "user" ? "bg-emerald-500 text-white rounded-tr-sm" : "bg-zinc-900 text-white rounded-tl-sm border border-white/5"
+                    )}>
+                      {m.text}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-purple-500/20 flex items-center justify-center"><User className="text-purple-400" /></div>
-                    <div><p className="text-white/40 text-xs uppercase font-bold">Lugar</p><p className="font-bold text-lg">{cls.room}</p></div>
+                ))}
+                {isProcessing && (
+                  <div className="flex gap-2 p-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]" />
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:0.4s]" />
                   </div>
+                )}
+              </div>
+
+              {/* Botones de Acción Gigantes para el Chat */}
+              <div className="fixed bottom-6 left-6 right-6 flex gap-3 items-end z-30">
+                <motion.button
+                  onClick={toggleRecording}
+                  whileTap={{ scale: 0.9 }}
+                  className={clsx(
+                    "w-24 h-24 rounded-[35px] flex items-center justify-center transition-all duration-500 shadow-2xl",
+                    isRecording ? "bg-red-600 animate-pulse" : "bg-zinc-900 border border-white/10"
+                  )}
+                >
+                  {isRecording ? <Square size={36} fill="white" /> : <Mic size={36} />}
+                </motion.button>
+
+                <div className="flex-1 relative">
+                  <textarea
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    rows={1}
+                    placeholder={isRecording ? "Grabando..." : "Pregunta algo..."}
+                    className="w-full bg-zinc-900 border border-white/10 rounded-[35px] px-8 py-8 text-xl font-medium focus:outline-none focus:ring-2 focus:ring-white/20 resize-none overflow-hidden h-[96px]"
+                  />
+                  <AnimatePresence>
+                    {chatInput.trim() && (
+                      <motion.button
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        onClick={() => handleSendChat()}
+                        className="absolute right-4 bottom-4 w-16 h-16 bg-white text-black rounded-3xl flex items-center justify-center active:scale-90 transition-transform"
+                      >
+                        <MessageCircle size={28} />
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </motion.div>
           )}
 
           {activeTab === "tasks" && (
-            <motion.div key="tk" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-10}} className="space-y-3">
+            <motion.div key="tasks" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-10}} className="space-y-4">
+              <h3 className="text-xl font-black uppercase italic tracking-tighter text-white/40 mb-2">Próximos Eventos</h3>
               {classExams.map(e => (
-                <div key={e.id} className="bg-amber-500/10 border border-amber-500/20 p-5 rounded-3xl flex items-center gap-4">
-                  <Star className="text-amber-500 fill-amber-500" size={24} />
-                  <div className="flex-1">
-                    <p className="font-bold text-lg">Examen: {e.title}</p>
-                    <p className="text-amber-500/60 font-bold uppercase text-xs">{e.date}</p>
+                <div key={e.id} className="bg-amber-500/10 border border-amber-500/20 p-6 rounded-[32px] flex items-center gap-5">
+                  <Star className="text-amber-500 fill-amber-500" size={28} />
+                  <div>
+                    <p className="font-black text-xl uppercase italic leading-none mb-1">Examen: {e.title}</p>
+                    <p className="text-amber-500/60 font-bold uppercase text-xs tracking-widest">{e.date}</p>
                   </div>
                 </div>
               ))}
               {classTasks.map(t => (
-                <div key={t.id} className="bg-white/5 p-5 rounded-3xl flex items-center gap-4 border border-white/5">
-                  <div className={clsx("w-6 h-6 rounded-full border-2 flex items-center justify-center", t.completed ? "bg-green-500 border-green-500" : "border-white/20")}>
-                    {t.completed && <CheckSquare size={14} className="text-black" />}
+                <div key={t.id} className="bg-white/5 p-6 rounded-[32px] flex items-center gap-5 border border-white/5">
+                  <div className={clsx("w-8 h-8 rounded-full border-2 flex items-center justify-center", t.completed ? "bg-emerald-500 border-emerald-500" : "border-white/20")}>
+                    {t.completed && <CheckSquare size={18} className="text-black" />}
                   </div>
-                  <div className="flex-1">
-                    <p className={clsx("font-bold text-lg", t.completed && "line-through text-white/30")}>{t.title}</p>
-                    <p className="text-white/40 text-sm font-medium">{t.date}</p>
+                  <div>
+                    <p className={clsx("font-black text-xl uppercase italic leading-none mb-1", t.completed && "line-through text-white/20")}>{t.title}</p>
+                    <p className="text-white/40 text-sm font-bold uppercase tracking-widest">{t.date}</p>
                   </div>
                 </div>
               ))}
             </motion.div>
           )}
 
-          {activeTab === "notes" && (
-            <motion.div key="nt" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-10}} className="space-y-6">
-              <button onClick={handleRecord} className={clsx("w-full py-6 rounded-3xl flex items-center justify-center gap-4 transition-all", isRecording ? "bg-red-500" : "bg-white text-black active:scale-95")}>
-                {isRecording ? <Square size={24} fill="currentColor" /> : <Mic size={24} />}
-                <span className="font-bold text-xl">{isRecording ? formatTime(recordingTime) : "Grabar Apunte"}</span>
-              </button>
-              
-              {isProcessing && (
-                <div className="bg-blue-500/20 p-6 rounded-3xl border border-blue-500/30 flex items-center gap-4">
-                  <Loader2 className="animate-spin text-blue-400" />
-                  <p className="font-bold text-blue-400">La IA está procesando tu clase...</p>
-                </div>
-              )}
-
-              {noteText && (
-                <div className="bg-white/5 p-6 rounded-3xl border border-white/10">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Zap className="text-yellow-400" size={18} />
-                    <h3 className="font-bold uppercase text-xs tracking-widest text-white/40">Resumen Inteligente</h3>
+          {activeTab === "info" && (
+            <motion.div key="info" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-10}} className="space-y-6">
+              <div className="bg-zinc-900 rounded-[40px] p-8 border border-white/5 space-y-8">
+                <div className="flex items-center gap-6">
+                  <div className="w-16 h-16 rounded-3xl bg-blue-500/20 flex items-center justify-center shadow-inner"><Clock className="text-blue-400" size={32} /></div>
+                  <div>
+                    <p className="text-white/40 text-xs font-black uppercase tracking-[0.2em] mb-1">Horario</p>
+                    <p className="font-black text-2xl uppercase italic tracking-tight">{cls.time}</p>
                   </div>
-                  <p className="text-lg leading-relaxed text-white/80">{noteText}</p>
                 </div>
-              )}
-            </motion.div>
-          )}
-
-          {activeTab === "chat" && (
-            <motion.div key="ch" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-10}} className="flex flex-col h-[60vh] bg-zinc-900 rounded-3xl border border-white/5 overflow-hidden">
-              <div className="flex-1 p-5 space-y-4 overflow-y-auto scrollbar-hide">
-                {chatMessages.map((m, i) => (
-                  <div key={i} className={clsx("flex", m.role === "user" ? "justify-end" : "justify-start")}>
-                    <div className={clsx("max-w-[85%] p-4 rounded-2xl text-lg font-medium", m.role === "user" ? "bg-white text-black" : "bg-white/10 text-white border border-white/5")}>
-                      {m.text}
-                    </div>
+                <div className="flex items-center gap-6">
+                  <div className="w-16 h-16 rounded-3xl bg-purple-500/20 flex items-center justify-center shadow-inner"><BookOpen className="text-purple-400" size={32} /></div>
+                  <div>
+                    <p className="text-white/40 text-xs font-black uppercase tracking-[0.2em] mb-1">Aula</p>
+                    <p className="font-black text-2xl uppercase italic tracking-tight">{cls.room}</p>
                   </div>
-                ))}
-                {chatLoading && <div className="flex gap-1 p-2"><div className="w-2 h-2 bg-white/20 rounded-full animate-bounce" /><div className="w-2 h-2 bg-white/20 rounded-full animate-bounce [animation-delay:0.2s]" /><div className="w-2 h-2 bg-white/20 rounded-full animate-bounce [animation-delay:0.4s]" /></div>}
+                </div>
               </div>
-              <div className="p-4 bg-black/40 border-t border-white/5 flex gap-3">
-                <input
-                  type="text"
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSendChat()}
-                  placeholder="Duda sobre la clase..."
-                  className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-white/20"
-                />
-                <button onClick={handleSendChat} disabled={!chatInput.trim() || chatLoading} className="w-14 h-14 bg-white text-black rounded-2xl flex items-center justify-center active:scale-95 transition-transform">
-                  <MessageSquare size={24} />
-                </button>
+              
+              <div className="space-y-4 px-2">
+                <h3 className="text-xl font-black uppercase italic tracking-tighter text-white/40">Temas de la Clase</h3>
+                <div className="flex flex-wrap gap-2">
+                  {cls.importantTopics.map(t => (
+                    <span key={t} className="px-6 py-3 bg-white/5 rounded-full text-sm font-black uppercase italic border border-white/10">{t}</span>
+                  ))}
+                </div>
               </div>
             </motion.div>
           )}
