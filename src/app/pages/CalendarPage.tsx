@@ -360,7 +360,7 @@ export default function CalendarPage() {
               Próximos Eventos
             </h3>
             <div className="space-y-4">
-              {allEvents
+              {events
                 .filter((e) => e.date >= todayStr)
                 .sort((a, b) => a.date.localeCompare(b.date))
                 .slice(0, 5)
