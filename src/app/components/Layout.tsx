@@ -1,6 +1,7 @@
 import { Outlet, Link, useLocation } from "react-router";
 import { LayoutDashboard, MessageCircle, User, AudioLines } from "lucide-react";
 import { clsx } from "clsx";
+import { motion } from "motion/react";
 import PWAInstallPrompt from "./PWAInstallPrompt";
 
 export default function Layout() {
