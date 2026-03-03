@@ -6,6 +6,7 @@ import { clsx } from "clsx";
 import { useState, useEffect } from "react";
 import { authService } from "../../services/auth.service";
 import { themeService } from "../../services/theme.service";
+import { profileService, UserProfile } from "../../services/profile.service";
 
 function loadProfileData() {
   const stored = localStorage.getItem('user_profile');
@@ -32,10 +33,40 @@ function saveProfileData(data: { name?: string; email?: string; phone?: string; 
 export default function Profile() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(loadProfileData());
+  const [backendProfile, setBackendProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
   const [showEditName, setShowEditName] = useState(false);
   const [editName, setEditName] = useState(profile.name);
   const [isDark, setIsDark] = useState(themeService.isDark());
   const [notifications, setNotifications] = useState(true);
+
+  // Cargar perfil del backend al montar
+  useEffect(() => {
+    const loadBackendProfile = async () => {
+      try {
+        const data = await profileService.getProfile();
+        setBackendProfile(data);
+        // Actualizar perfil local con datos del backend
+        setProfile({
+          name: data.name || data.username || profile.name,
+          email: data.email || profile.email,
+          phone: profile.phone,
+          avatar: data.avatar_url || profile.avatar,
+        });
+      } catch (error) {
+        console.error('Error loading profile:', error);
+        // Si falla, usar datos locales
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (authService.isAuthenticated()) {
+      loadBackendProfile();
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     return themeService.onChange((dark) => setIsDark(dark));
@@ -44,20 +75,30 @@ export default function Profile() {
   const stats = [
     { label: "Cursos", value: CLASSES.length.toString(), icon: Book, color: "var(--primary)", bg: "var(--primary-light)" },
     { label: "Promedio", value: "A", icon: Star, color: "var(--warning)", bg: "var(--warning-light)" },
-    { label: "Asist.", value: "98%", icon: UserIcon, color: "var(--success)", bg: "var(--success-light)" },
+    { label: "Plan", value: backendProfile?.plan_id === 1 ? "Free" : "Pro", icon: UserIcon, color: "var(--success)", bg: "var(--success-light)" },
   ];
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) return alert("Imagen demasiado grande (máx 5MB)");
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        saveProfileData({ avatar: result });
-        setProfile({ ...profile, avatar: result });
-      };
-      reader.readAsDataURL(file);
+      
+      try {
+        // Subir al backend
+        const response = await profileService.uploadAvatar(file);
+        setProfile({ ...profile, avatar: response.url });
+        saveProfileData({ avatar: response.url });
+      } catch (error) {
+        console.error('Error uploading avatar:', error);
+        // Fallback: guardar localmente
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result as string;
+          saveProfileData({ avatar: result });
+          setProfile({ ...profile, avatar: result });
+        };
+        reader.readAsDataURL(file);
+      }
     }
   };
 

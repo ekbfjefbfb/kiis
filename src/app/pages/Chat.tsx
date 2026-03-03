@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from "react";
-import { Mic, Send, Bot, StopCircle, ArrowLeft, Loader2, Play } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Mic, MicOff, Send, Bot, StopCircle, ArrowLeft, Loader2, Play, Wifi, WifiOff, Volume2, VolumeX } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate } from "react-router";
-import { aiService } from "../../services/ai.service";
+import { aiService, chatWebSocket } from "../../services/ai.service";
 import { audioService } from "../../services/audio.service";
+import { groqService } from "../../services/groq.service";
 
 interface ChatMessage {
   id?: string;
@@ -20,62 +21,100 @@ export default function ChatPage() {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [wsConnected, setWsConnected] = useState(false);
+  const [wsConnecting, setWsConnecting] = useState(true);
+  const [autoSpeak, setAutoSpeak] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [currentlyPlayingId, setCurrentlyPlayingId] = useState<string | null>(null);
+  const pendingResponseRef = useRef<string | null>(null);
+  const [audioLevel, setAudioLevel] = useState(0);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animFrameRef = useRef<number>(0);
+  const [currentTranscript, setCurrentTranscript] = useState("");
 
   // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const handleNavigationCommand = (text: string) => {
+  // Conectar WebSocket al montar
+  useEffect(() => {
+    // Usar ID anónimo si no hay usuario
+    const userId = localStorage.getItem('user_id') || 'anonymous_user';
+    
+    console.log('🔌 Chat: Conectando WebSocket...');
+    
+    chatWebSocket.connect(userId, {
+      onMessage: (data) => {
+        console.log('📨 Chat: Mensaje recibido:', data);
+        
+        // Si hay un mensaje pendiente, actualizarlo
+        if (pendingResponseRef.current) {
+          const aiResponseId = pendingResponseRef.current;
+          const cleanedText = handleNavigationCommand(data.response);
+          
+          setMessages((prev) => 
+            prev.map((m) => m.id === aiResponseId ? { ...m, content: cleanedText } : m)
+          );
+          
+          pendingResponseRef.current = null;
+          setIsTyping(false);
+          
+          // Auto-speak si está habilitado
+          if (autoSpeak && cleanedText) {
+            setIsSpeaking(true);
+            audioService.speak(cleanedText, () => setIsSpeaking(false));
+          }
+        }
+      },
+      onConnect: () => {
+        console.log('✅ Chat: WebSocket conectado');
+        setWsConnected(true);
+        setWsConnecting(false);
+      },
+      onError: (err) => {
+        console.error('❌ Chat: WebSocket error:', err);
+        setWsConnected(false);
+        setWsConnecting(false);
+      },
+      onClose: () => {
+        console.log('🔌 Chat: WebSocket desconectado');
+        setWsConnected(false);
+      },
+    });
+
+    // Cleanup
+    return () => {
+      console.log('🧹 Chat: Desconectando WebSocket...');
+      chatWebSocket.disconnect();
+      audioService.stopSpeaking();
+      cancelAnimationFrame(animFrameRef.current);
+    };
+  }, [autoSpeak]);
+
+  const handleNavigationCommand = useCallback((text: string) => {
     const navMatch = text.match(/\[NAVIGATE:(.*?)\]/);
     if (navMatch && navMatch[1]) {
       const route = navMatch[1].trim();
-      setTimeout(() => navigate(route), 1500); // 1.5s delay so user sees message
+      setTimeout(() => navigate(route), 1500);
       return text.replace(/\[NAVIGATE:.*?\]/g, "").trim();
     }
     return text;
-  };
+  }, [navigate]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isProcessing) return;
-    const userMessage = input.trim();
-    setInput("");
-    
-    // Convert current messages state to the format aiService expects
-    const historyForAi = messages.map(m => ({
-      role: m.role as "user" | "ai" | "system",
-      content: m.content
-    }));
-
-    const newMsg: ChatMessage = {
-      id: Date.now().toString(),
-      role: "user",
-      content: userMessage,
-      timestamp: Date.now(),
-    };
-    
-    setMessages((prev) => [...prev, newMsg]);
-    setIsTyping(true);
-    
+  // Fallback HTTP cuando WebSocket no está disponible
+  const sendViaHttp = async (userMessage: string, aiResponseId: string) => {
     try {
       let finalResponse = "";
-      const aiResponseId = (Date.now() + 1).toString();
       
-      setMessages((prev) => [
-        ...prev,
-        { id: aiResponseId, role: "ai", content: "", timestamp: Date.now() }
-      ]);
-
-      await aiService.chat(userMessage, historyForAi, (token) => {
+      await aiService.chat(userMessage, [], (token) => {
         finalResponse += token;
         setMessages((prev) => 
           prev.map((m) => m.id === aiResponseId ? { ...m, content: finalResponse } : m)
         );
       });
 
-      // Cleanup response text and check for navigation commands
       setMessages((prev) => 
         prev.map((m) => {
           if (m.id === aiResponseId) {
@@ -93,27 +132,126 @@ export default function ChatPage() {
         content: "Lo siento, hubo un problema al procesar tu solicitud. Intenta de nuevo.",
         timestamp: Date.now(),
       }]);
-    } finally {
+    }
+  };
+
+  const handleSend = async () => {
+    if (!input.trim() || isProcessing) return;
+    const userMessage = input.trim();
+    setInput("");
+
+    const newMsg: ChatMessage = {
+      id: Date.now().toString(),
+      role: "user",
+      content: userMessage,
+      timestamp: Date.now(),
+    };
+    
+    setMessages((prev) => [...prev, newMsg]);
+    setIsTyping(true);
+
+    const aiResponseId = (Date.now() + 1).toString();
+    
+    setMessages((prev) => [
+      ...prev,
+      { id: aiResponseId, role: "ai", content: "", timestamp: Date.now() }
+    ]);
+
+    // Usar WebSocket si está conectado, sino HTTP
+    if (chatWebSocket.isConnected()) {
+      console.log('📤 Chat: Enviando vía WebSocket...');
+      pendingResponseRef.current = aiResponseId;
+      chatWebSocket.sendMessage(userMessage);
+      
+      // Timeout de seguridad: si no hay respuesta en 30s, fallback a HTTP
+      setTimeout(() => {
+        if (pendingResponseRef.current === aiResponseId) {
+          console.log('⏱️ Chat: Timeout WebSocket, usando HTTP...');
+          pendingResponseRef.current = null;
+          sendViaHttp(userMessage, aiResponseId).finally(() => setIsTyping(false));
+        }
+      }, 30000);
+    } else {
+      console.log('📤 Chat: WebSocket offline, usando HTTP...');
+      await sendViaHttp(userMessage, aiResponseId);
       setIsTyping(false);
     }
   };
 
+  // Audio level visualization
+  const startAudioVisualization = useCallback(async (stream: MediaStream) => {
+    const ctx = new AudioContext();
+    const source = ctx.createMediaStreamSource(stream);
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 256;
+    source.connect(analyser);
+    analyserRef.current = analyser;
+
+    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+    const updateLevel = () => {
+      analyser.getByteFrequencyData(dataArray);
+      const avg = dataArray.reduce((sum, v) => sum + v, 0) / dataArray.length;
+      setAudioLevel(avg / 128);
+      animFrameRef.current = requestAnimationFrame(updateLevel);
+    };
+    updateLevel();
+  }, []);
+
   const toggleVoiceRecording = async () => {
     if (isRecording) {
+      cancelAnimationFrame(animFrameRef.current);
+      setAudioLevel(0);
+      setIsRecording(false);
+      setIsProcessing(true);
+      
       try {
         const audioBlob = await audioService.stopAudioRecording();
-        setIsRecording(false);
-        setIsProcessing(true);
         
-        // Transcripción real con Groq Whisper Large V3 Turbo
-        const { text } = await aiService.processAudio(audioBlob);
-        setInput(text);
+        // Transcribir con Groq
+        const transcript = await groqService.transcribe(audioBlob, 'es');
+        setCurrentTranscript(transcript);
+        
+        // Agregar mensaje del usuario
+        const userMsg: ChatMessage = {
+          id: Date.now().toString(),
+          role: "user",
+          content: transcript,
+          timestamp: Date.now(),
+        };
+        setMessages(prev => [...prev, userMsg]);
         setIsProcessing(false);
+        
+        // Enviar a IA
+        setIsTyping(true);
+        const aiResponseId = (Date.now() + 1).toString();
+        
+        setMessages(prev => [
+          ...prev,
+          { id: aiResponseId, role: "ai", content: "", timestamp: Date.now() }
+        ]);
+
+        // Enviar vía WebSocket o HTTP
+        if (chatWebSocket.isConnected()) {
+          pendingResponseRef.current = aiResponseId;
+          chatWebSocket.sendMessage(transcript);
+          
+          setTimeout(() => {
+            if (pendingResponseRef.current === aiResponseId) {
+              pendingResponseRef.current = null;
+              sendViaHttp(transcript, aiResponseId).finally(() => setIsTyping(false));
+            }
+          }, 30000);
+        } else {
+          await sendViaHttp(transcript, aiResponseId);
+          setIsTyping(false);
+        }
+        
+        setCurrentTranscript("");
       } catch (error: any) {
         console.error("Transcription error:", error);
-        setIsRecording(false);
         setIsProcessing(false);
-        // Mostrar error al usuario en lugar de fallar silenciosamente
+        setIsTyping(false);
         setMessages(prev => [...prev, {
           id: Date.now().toString(),
           role: "ai",
@@ -127,10 +265,20 @@ export default function ChatPage() {
       try {
         await audioService.startAudioRecording();
         setIsRecording(true);
+        setCurrentTranscript("");
+        
+        // Obtener stream para visualización
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        startAudioVisualization(stream);
       } catch (error) {
         console.error(error);
       }
     }
+  };
+
+  const stopSpeaking = () => {
+    audioService.stopSpeaking();
+    setIsSpeaking(false);
   };
 
   const handlePlayVoice = async (text: string, id: string) => {
@@ -165,7 +313,16 @@ export default function ChatPage() {
             <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-foreground border-2 border-card rounded-full" />
           </div>
           <h1 className="text-xs font-bold leading-none text-foreground">Chat</h1>
-          <p className="text-[10px] font-medium text-muted-foreground">Pregúntame lo que sea</p>
+          <div className="flex items-center gap-1">
+            <p className="text-[10px] font-medium text-muted-foreground">Pregúntame lo que sea</p>
+            {wsConnecting ? (
+              <Loader2 size={10} className="animate-spin text-muted-foreground" />
+            ) : wsConnected ? (
+              <Wifi size={10} className="text-green-500" />
+            ) : (
+              <WifiOff size={10} className="text-destructive" />
+            )}
+          </div>
         </div>
         <div className="flex-1 flex justify-end">
           {isRecording && (
@@ -188,6 +345,21 @@ export default function ChatPage() {
             <p className="text-xs text-center max-w-[220px] leading-relaxed mb-6 text-muted-foreground">
               Puedo organizar tus tareas, resumir tus clases, y moverme por la app.
             </p>
+            
+            {/* Estado de conexión */}
+            <div className={clsx(
+              "px-3 py-1.5 rounded-full text-[10px] font-medium mb-4 flex items-center gap-1.5",
+              wsConnected ? "bg-green-100 text-green-700" : 
+              wsConnecting ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"
+            )}>
+              {wsConnecting ? (
+                <><Loader2 size={10} className="animate-spin" /> Conectando...</>
+              ) : wsConnected ? (
+                <><Wifi size={10} /> En tiempo real</>
+              ) : (
+                <><WifiOff size={10} /> Modo offline (HTTP)</>
+              )}
+            </div>
             
             <div className="w-full max-w-[260px] space-y-1.5">
               <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-center mb-2">Sugerencias</p>
@@ -289,7 +461,7 @@ export default function ChatPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              placeholder={isRecording ? "Grabando..." : "Escribe tu duda o dile dónde ir..."}
+              placeholder={isRecording ? "Grabando..." : wsConnected ? "En tiempo real..." : "Escribe tu duda..."}
               disabled={isRecording || isProcessing}
               className="w-full bg-secondary border border-border rounded-2xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:ring-1 focus:ring-ring focus:bg-background text-foreground transition-all placeholder:text-muted-foreground"
             />

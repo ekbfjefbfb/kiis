@@ -79,7 +79,7 @@ export class NotesService {
     paragraphs: string[];
     due_date?: string;
   }): Promise<Blob> {
-    return await apiService.request<Blob>('/api/documents/apa7/pdf', {
+    return await apiService.request<Blob>('/api/apa7/pdf', {
       method: 'POST',
       headers: {
         'Accept': 'application/pdf',
@@ -87,7 +87,7 @@ export class NotesService {
       },
       body: JSON.stringify({
          ...payload,
-         filename: "resumen_clase.pdf"
+         filename: "apa7.pdf"
       })
     });
   }

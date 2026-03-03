@@ -2,6 +2,8 @@
 export const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
 
 class ApiService {
+  private refreshPromise: Promise<boolean> | null = null;
+
   private getHeaders(contentType: string = 'application/json') {
     const headers: Record<string, string> = {};
     if (contentType) {
@@ -16,8 +18,32 @@ class ApiService {
     return headers;
   }
 
+  private async refreshToken(): Promise<boolean> {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) return false;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('refresh_token', data.refresh_token);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      return false;
+    }
+  }
+
   // Generic request wrapper handling parsing and basic HTTP errors
-  async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  async request<T>(endpoint: string, options: RequestInit = {}, retryCount: number = 0): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
     
     // Inject headers
@@ -36,18 +62,38 @@ class ApiService {
     try {
       let response = await fetch(url, options);
 
-      // Handle 401 Unauthorized (Token refresh logic could be injected here)
-      if (response.status === 401) {
-        console.warn('Unauthorized request, attempting refresh token or force logout...');
-        // We will implement `refresh` call inside AuthService and trigger it
-        // Or dispatch an event to log the user out if refresh fails.
+      // Handle 401 Unauthorized - Intentar refresh token
+      if (response.status === 401 && retryCount === 0) {
+        console.warn('Unauthorized request, attempting token refresh...');
+        
+        // Evitar múltiples refresh simultáneos
+        if (!this.refreshPromise) {
+          this.refreshPromise = this.refreshToken();
+        }
+        
+        const refreshed = await this.refreshPromise;
+        this.refreshPromise = null;
+        
+        if (refreshed) {
+          // Reintentar la petición con el nuevo token
+          console.log('Token refreshed, retrying request...');
+          return this.request<T>(endpoint, options, retryCount + 1);
+        } else {
+          // Refresh falló, logout
+          console.error('Token refresh failed, logging out...');
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('current_user');
+          window.location.href = '/login';
+          throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.');
+        }
       }
 
       if (!response.ok) {
         let errorMessage = `HTTP Error: ${response.status}`;
         try {
           const errData = await response.json();
-          errorMessage = errData.detail || errorMessage;
+          errorMessage = errData.detail || errData.message || errorMessage;
         } catch {
            // ignore parsing error for non-json fallback
         }
