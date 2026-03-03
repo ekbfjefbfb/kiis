@@ -158,280 +158,212 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-black text-white pb-24 font-sans">
-      {/* Header */}
-      <div className="px-5 pt-6 pb-4">
+    <div className="min-h-[100dvh] bg-black text-white pb-24 font-sans selection:bg-white/30">
+      {/* Header - Ultra Minimalista y Grande */}
+      <div className="px-6 pt-10 pb-8">
         <div className="flex justify-between items-start">
-          <div>
-            <p className="text-sm text-white/60 mb-1">{today}</p>
-            <h1 className="text-3xl font-bold">
-              Hola, {(() => { try { const p = JSON.parse(localStorage.getItem('user_profile') || '{}'); return p.name?.split(' ')[0] || authService.getCurrentUser()?.displayName?.split(' ')[0] || 'Estudiante'; } catch { return 'Estudiante'; } })()}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <p className="text-lg font-medium text-white/40 mb-2 uppercase tracking-widest">{today}</p>
+            <h1 className="text-5xl font-black tracking-tight leading-none">
+              Hola,<br/>{(() => { try { const p = JSON.parse(localStorage.getItem('user_profile') || '{}'); return p.name?.split(' ')[0] || authService.getCurrentUser()?.displayName?.split(' ')[0] || 'Estudiante'; } catch { return 'Estudiante'; } })()}
             </h1>
-          </div>
+          </motion.div>
           <Link
             to="/calendar"
-            className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center active:scale-95 transition-transform"
+            className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-transform"
           >
-            <Calendar size={22} className="text-white" />
+            <Calendar size={24} className="text-white" />
           </Link>
         </div>
       </div>
 
-      <div className="px-5 space-y-6">
-        {/* Recording State */}
-        <AnimatePresence>
+      <div className="px-6 space-y-10">
+        {/* Recording States - Llamativos */}
+        <AnimatePresence mode="wait">
           {isRecording && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-red-500 rounded-3xl p-5 flex items-center justify-between"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-red-600 rounded-[40px] p-8 flex items-center justify-between shadow-[0_0_50px_-12px_rgba(220,38,38,0.5)]"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-white animate-pulse" />
-                <span className="font-semibold text-lg">Grabando...</span>
+              <div className="flex items-center gap-4">
+                <div className="w-4 h-4 rounded-full bg-white animate-ping" />
+                <span className="font-black text-2xl uppercase italic">Grabando</span>
               </div>
-              <span className="text-2xl font-mono">{formatTime(recordingTime)}</span>
+              <span className="text-4xl font-mono font-black tabular-nums">{formatTime(recordingTime)}</span>
             </motion.div>
           )}
-        </AnimatePresence>
 
-        <AnimatePresence>
           {isProcessing && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-blue-500 rounded-3xl p-5 flex items-center gap-3"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-blue-600 rounded-[40px] p-8 flex items-center gap-5 shadow-[0_0_50px_-12px_rgba(37,99,235,0.5)]"
             >
               <motion.div 
                 animate={{ rotate: 360 }} 
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
               >
-                <Sparkles size={24} />
+                <Sparkles size={32} />
               </motion.div>
-              <span className="font-semibold text-lg">Procesando con IA...</span>
+              <span className="font-black text-2xl uppercase italic text-white">IA Analizando...</span>
             </motion.div>
           )}
-        </AnimatePresence>
 
-        <AnimatePresence>
           {showSuccess && (
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="bg-green-500 rounded-3xl p-5 flex items-center gap-3"
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-green-600 rounded-[40px] p-8 flex items-center gap-5 shadow-[0_0_50px_-12px_rgba(22,163,74,0.5)]"
             >
-              <Sparkles size={24} />
-              <span className="font-semibold text-lg">¡Nota guardada!</span>
+              <Zap size={32} fill="white" />
+              <span className="font-black text-2xl uppercase italic">¡Guardado!</span>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Main Actions */}
-        <div className="grid grid-cols-2 gap-4">
+        {/* Action Buttons - Diferenciación Real */}
+        <div className="flex flex-col gap-5">
+          {/* Quick Note - Acción Inmediata */}
           <motion.button
             onClick={handleQuickRecord}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.96 }}
             className={clsx(
-              "rounded-3xl p-5 text-left transition-all",
+              "w-full rounded-[40px] p-8 text-left transition-all duration-500 flex items-center justify-between relative overflow-hidden group",
               isRecording 
-                ? "bg-red-500 text-white" 
-                : "bg-gradient-to-br from-emerald-400 to-teal-500 text-white"
+                ? "bg-red-600" 
+                : "bg-emerald-500"
             )}
           >
-            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
-              {isRecording ? <Square size={24} fill="currentColor" /> : <Zap size={24} />}
+            <div className="relative z-10">
+              <div className="w-16 h-16 rounded-3xl bg-white/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                {isRecording ? <Square size={32} fill="currentColor" /> : <Zap size={32} fill="white" />}
+              </div>
+              <p className="font-black text-3xl tracking-tight leading-none mb-2 uppercase italic">
+                {isRecording ? "Detener" : "Nota Rápida"}
+              </p>
+              <p className="text-lg text-white/70 font-medium tracking-tight">
+                {isRecording ? "Toca para terminar" : "Graba y resume al instante"}
+              </p>
             </div>
-            <p className="font-bold text-lg">
-              {isRecording ? "Detener" : "Nota Rápida"}
-            </p>
-            <p className="text-sm text-white/80">
-              {isRecording ? "Toca para guardar" : "Graba y transcribe"}
-            </p>
+            <div className="absolute -right-10 -bottom-10 opacity-10 group-hover:scale-125 transition-transform duration-700">
+               {isRecording ? <Square size={200} fill="white" /> : <Zap size={200} fill="white" />}
+            </div>
           </motion.button>
 
-          <Link to="/live">
+          {/* Record Class - Acción Completa */}
+          <Link to="/live" className="block w-full">
             <motion.div
-              whileTap={{ scale: 0.95 }}
-              className="rounded-3xl bg-gradient-to-br from-violet-500 to-purple-600 p-5 text-left h-full"
+              whileTap={{ scale: 0.96 }}
+              className="w-full rounded-[40px] bg-white text-black p-8 text-left relative overflow-hidden group border border-white/10"
             >
-              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
-                <Radio size={24} />
-              </div>
-              <p className="font-bold text-lg">Grabar Clase</p>
-              <p className="text-sm text-white/80">IA en tiempo real</p>
-            </motion.div>
-          </Link>
-        </div>
-
-        {/* Secondary Actions */}
-        <div className="grid grid-cols-3 gap-3">
-          <Link to="/voice">
-            <motion.div 
-              whileTap={{ scale: 0.95 }}
-              className="rounded-2xl bg-white/10 p-4 text-center"
-            >
-              <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center mx-auto mb-2">
-                <Brain size={20} className="text-orange-400" />
-              </div>
-              <p className="text-sm font-medium">Chat IA</p>
-            </motion.div>
-          </Link>
-          
-          <Link to="/notes">
-            <motion.div 
-              whileTap={{ scale: 0.95 }}
-              className="rounded-2xl bg-white/10 p-4 text-center"
-            >
-              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center mx-auto mb-2">
-                <FileText size={20} className="text-blue-400" />
-              </div>
-              <p className="text-sm font-medium">Mis Notas</p>
-            </motion.div>
-          </Link>
-          
-          <Link to="/chat">
-            <motion.div 
-              whileTap={{ scale: 0.95 }}
-              className="rounded-2xl bg-white/10 p-4 text-center"
-            >
-              <div className="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center mx-auto mb-2">
-                <Sparkles size={20} className="text-pink-400" />
-              </div>
-              <p className="text-sm font-medium">Asistente</p>
-            </motion.div>
-          </Link>
-        </div>
-
-        {/* Upcoming Tasks */}
-        {upcomingTasks.length > 0 && (
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Próximas Tareas</h3>
-              <Link to="/calendar" className="text-sm text-white/60">
-                Ver todo →
-              </Link>
-            </div>
-            <div className="space-y-3">
-              {upcomingTasks.map((task) => (
-                <div 
-                  key={task.id}
-                  className="bg-white/5 rounded-2xl p-4 flex items-center gap-4"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center shrink-0">
-                    <Clock size={20} className="text-yellow-400" />
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="w-16 h-16 rounded-3xl bg-black/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Radio size={32} className="text-black" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-black text-3xl tracking-tight leading-none mb-2 uppercase italic">Grabar Clase</p>
+                    <p className="text-lg text-black/50 font-medium tracking-tight">Análisis IA en tiempo real</p>
                   </div>
-                  <div className="flex-1">
-                    <p className="font-semibold">{task.title}</p>
-                    <p className="text-sm text-white/60">
-                      {new Date(task.date).toLocaleDateString("es-ES", { month: "short", day: "numeric" })}
-                    </p>
+                  <div className="w-12 h-12 rounded-full bg-black/5 flex items-center justify-center group-hover:translate-x-2 transition-transform">
+                    <ChevronRight size={24} />
                   </div>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+              </div>
+            </motion.div>
+          </Link>
+        </div>
 
-        {/* Recent Sessions */}
-        {recentSessions.length > 0 && (
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Clases Grabadas</h3>
-              <Link to="/notes" className="text-sm text-white/60">
-                Ver todo →
-              </Link>
-            </div>
-            <div className="space-y-3">
-              {recentSessions.slice(0, 3).map((session) => (
-                <Link key={session.id} to={`/session/${session.id}`}>
-                  <motion.div 
-                    whileTap={{ scale: 0.98 }}
-                    className="bg-white/5 rounded-2xl p-4 flex items-center gap-4 active:scale-95 transition-transform"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0">
-                      <Mic size={20} className="text-violet-400" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold">{session.class_name || "Clase"}</p>
-                      <p className="text-sm text-white/60">
-                        {new Date(session.session_datetime).toLocaleDateString("es-ES")}
-                      </p>
-                    </div>
-                    <ChevronRight size={20} className="text-white/40" />
-                  </motion.div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+        {/* Secondary Navigation - Compacta y Elegante */}
+        <div className="grid grid-cols-3 gap-4">
+          {[
+            { to: "/voice", icon: Brain, label: "IA Voz", color: "bg-orange-500", text: "text-orange-400" },
+            { to: "/notes", icon: FileText, label: "Notas", color: "bg-blue-500", text: "text-blue-400" },
+            { to: "/chat", icon: Sparkles, label: "Chat", color: "bg-pink-500", text: "text-pink-400" },
+          ].map((item) => (
+            <Link key={item.label} to={item.to}>
+              <motion.div 
+                whileTap={{ scale: 0.92 }}
+                className="bg-white/5 rounded-[32px] p-5 flex flex-col items-center justify-center border border-white/5 group hover:bg-white/10 transition-colors"
+              >
+                <div className={clsx("w-12 h-12 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform", `${item.color}/20`)}>
+                  <item.icon size={24} className={item.text} />
+                </div>
+                <p className="text-sm font-bold uppercase tracking-widest">{item.label}</p>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
 
-        {/* My Classes */}
+        {/* My Classes - Cards Dinámicas */}
         <section>
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold">Mis Materias</h3>
+          <div className="flex justify-between items-end mb-6">
+            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white/40">Mis Materias</h3>
             <button 
               onClick={() => setIsAddingClass(true)}
-              className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"
+              className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-[0_0_30px_-5px_rgba(255,255,255,0.3)] active:scale-90 transition-transform"
             >
-              <Plus size={18} />
+              <Plus size={24} strokeWidth={3} />
             </button>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {CLASSES.map((cls) => (
               <Link key={cls.id} to={`/class/${cls.id}`}>
                 <motion.div 
-                  whileTap={{ scale: 0.98 }}
-                  className="bg-white/5 rounded-2xl p-4 flex items-center gap-4 active:scale-95 transition-transform"
+                  whileTap={{ scale: 0.97 }}
+                  className="bg-zinc-900 rounded-[32px] p-6 flex items-center gap-5 border border-white/5 hover:border-white/20 transition-all active:scale-95"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center shrink-0">
-                    <BookOpen size={20} className="text-cyan-400" />
+                  <div className="w-16 h-16 rounded-[24px] bg-white/5 flex items-center justify-center shrink-0">
+                    <BookOpen size={28} className="text-white/80" />
                   </div>
-                  <div className="flex-1">
-                    <p className="font-semibold">{cls.name}</p>
-                    <p className="text-sm text-white/60">{cls.professor}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-black text-xl uppercase italic tracking-tight truncate leading-tight">{cls.name}</p>
+                    <p className="text-lg text-white/40 font-medium truncate">{cls.professor}</p>
                   </div>
-                  <ChevronRight size={20} className="text-white/40" />
+                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                    <ChevronRight size={20} className="text-white/20" />
+                  </div>
                 </motion.div>
               </Link>
             ))}
           </div>
         </section>
 
-        {/* Recent Notes */}
-        {recentNotes.length > 0 && (
+        {/* Tasks Row - Scroll Horizontal Elegante */}
+        {upcomingTasks.length > 0 && (
           <section>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Notas Recientes</h3>
-              <Link to="/notes" className="text-sm text-white/60">
-                Ver todo →
-              </Link>
+            <div className="flex justify-between items-end mb-6">
+              <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white/40">Pendientes</h3>
+              <Link to="/calendar" className="text-white/40 font-bold uppercase text-xs tracking-widest border-b border-white/10 pb-1">Ver todo</Link>
             </div>
-            <div className="space-y-3">
-              {recentNotes.slice(0, 3).map((note) => (
-                <Link key={note.id} to={`/note/${note.id}`}>
-                  <motion.div 
-                    whileTap={{ scale: 0.98 }}
-                    className="bg-white/5 rounded-2xl p-4 active:scale-95 transition-transform"
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <p className="font-semibold flex-1">{note.title || "Nota"}</p>
-                      <span className="text-sm text-white/40">{getTimeAgo(note.created_at)}</span>
-                    </div>
-                    <p className="text-sm text-white/60 line-clamp-2">
-                      {note.summary || note.transcript || "Sin contenido"}
-                    </p>
-                  </motion.div>
-                </Link>
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide -mx-6 px-6">
+              {upcomingTasks.map((task) => (
+                <div 
+                  key={task.id}
+                  className="bg-zinc-900/50 border border-white/5 rounded-[32px] p-6 min-w-[280px] shrink-0"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-yellow-500/10 flex items-center justify-center mb-4">
+                    <Clock size={24} className="text-yellow-500" />
+                  </div>
+                  <p className="font-black text-xl uppercase italic leading-tight mb-2 line-clamp-2">{task.title}</p>
+                  <p className="text-lg text-white/40 font-bold uppercase tracking-widest text-sm">
+                    {new Date(task.date).toLocaleDateString("es-ES", { month: "short", day: "numeric" })}
+                  </p>
+                </div>
               ))}
             </div>
           </section>
         )}
       </div>
 
-      {/* Add Class Modal */}
+      {/* Add Class Modal - Rediseñado */}
       <AnimatePresence>
         {isAddingClass && (
           <>
@@ -439,48 +371,49 @@ export default function Dashboard() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 z-40"
+              className="fixed inset-0 bg-black/90 backdrop-blur-md z-40"
               onClick={() => setIsAddingClass(false)}
             />
             <motion.div
               initial={{ opacity: 0, y: "100%" }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: "100%" }}
-              className="fixed bottom-0 left-0 right-0 bg-zinc-900 rounded-t-3xl z-50 p-6"
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 left-0 right-0 bg-zinc-900 rounded-t-[48px] z-50 p-8 pb-12"
             >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold">Nueva Materia</h2>
-                <button onClick={() => setIsAddingClass(false)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                  <X size={20} />
+              <div className="flex justify-between items-center mb-10">
+                <h2 className="text-3xl font-black uppercase italic italic">Nueva Materia</h2>
+                <button onClick={() => setIsAddingClass(false)} className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
+                  <X size={24} />
                 </button>
               </div>
-              <form onSubmit={handleCreateClass} className="space-y-4">
-                <div>
-                  <label className="block text-sm text-white/60 mb-2">Nombre</label>
+              <form onSubmit={handleCreateClass} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-[0.2em] text-white/40 ml-2">Nombre</label>
                   <input
                     type="text"
                     required
                     value={newClassName}
                     onChange={(e) => setNewClassName(e.target.value)}
-                    placeholder="Ej. Matemáticas"
-                    className="w-full bg-white/5 rounded-xl px-4 py-4 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    placeholder="Ej. MATEMÁTICAS"
+                    className="w-full bg-white/5 border border-white/10 rounded-3xl px-6 py-5 text-xl font-bold placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-white transition-all uppercase"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm text-white/60 mb-2">Profesor</label>
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-[0.2em] text-white/40 ml-2">Profesor</label>
                   <input
                     type="text"
                     required
                     value={newClassProfessor}
                     onChange={(e) => setNewClassProfessor(e.target.value)}
-                    placeholder="Nombre del profesor"
-                    className="w-full bg-white/5 rounded-xl px-4 py-4 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    placeholder="Nombre del Profe"
+                    className="w-full bg-white/5 border border-white/10 rounded-3xl px-6 py-5 text-xl font-bold placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-white transition-all uppercase"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={!newClassName.trim() || !newClassProfessor.trim()}
-                  className="w-full bg-white text-black rounded-xl py-4 font-bold mt-4 disabled:opacity-50"
+                  className="w-full bg-white text-black rounded-[32px] py-6 text-2xl font-black uppercase italic tracking-tight mt-6 disabled:opacity-30 active:scale-95 transition-transform"
                 >
                   Guardar
                 </button>
