@@ -29,22 +29,22 @@
   color: inherit;
 }
 
-html, body, #root {
-  width: 100%;
-  height: 100dvh;
-  background-color: #000000 !important;
-  color: #ffffff !important;
-  font-family: 'Plus Jakarta Sans', sans-serif !important;
+body {
+  background-color: #000000;
+  color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
+  overflow-y: auto;
 }
 
 #root {
   width: 100%;
   max-width: 420px;
+  min-height: 100vh;
   position: relative;
   background-color: #000000 !important;
 }

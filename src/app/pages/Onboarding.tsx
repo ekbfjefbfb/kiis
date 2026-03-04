@@ -36,56 +36,58 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="h-[100dvh] w-full bg-black flex flex-col items-center justify-between py-16 overflow-hidden">
-      <header className="mobile-container flex-row justify-end px-8 shrink-0">
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={installPWA}
-          className="absolute top-12 right-6 bg-white text-black text-[10px] font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-white uppercase tracking-widest shadow-xl z-50"
-        >
-          <Download size={12} strokeWidth={3} />
-          <span>Instalar_</span>
-        </motion.button>
-      </header>
+    <div className="min-h-[100dvh] w-full bg-black flex flex-col items-center py-12 relative overflow-y-auto">
+      <div className="mobile-container flex flex-col flex-1">
+        <header className="flex justify-end pt-4 pb-8 shrink-0">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={installPWA}
+            className="bg-white/10 hover:bg-white/20 text-white text-[10px] font-black px-4 py-2 rounded-full flex items-center gap-2 border border-white/10 uppercase tracking-widest transition-all"
+          >
+            <Download size={12} strokeWidth={3} />
+            <span>Instalar_</span>
+          </motion.button>
+        </header>
 
-      <main className="mobile-container flex-1 flex flex-col justify-center space-y-20">
-        <div className="text-center space-y-12">
-          <div className="w-24 h-24 rounded-[36px] bg-zinc-900 border border-zinc-800 mx-auto flex items-center justify-center shadow-2xl relative mb-4">
-            <div className="absolute inset-0 bg-white/5 rounded-[36px] blur-3xl animate-pulse" />
-            <div className="relative text-white scale-75">{STEPS[currentStep].icon}</div>
+        <main className="flex-1 flex flex-col justify-center space-y-16 pb-12">
+          <div className="text-center space-y-10">
+            <div className="w-24 h-24 rounded-[36px] bg-zinc-900 border border-zinc-800 mx-auto flex items-center justify-center shadow-2xl relative">
+              <div className="absolute inset-0 bg-white/5 rounded-[36px] blur-3xl animate-pulse" />
+              <div className="relative text-white scale-75">{STEPS[currentStep].icon}</div>
+            </div>
+            
+            <div className="space-y-6 px-4">
+              <h1 className="text-3xl font-black tracking-tighter leading-none uppercase italic text-white">
+                {STEPS[currentStep].title}
+              </h1>
+              <p className="text-zinc-500 text-[11px] font-black tracking-[0.2em] uppercase max-w-[260px] mx-auto leading-relaxed italic">
+                {STEPS[currentStep].description}
+              </p>
+            </div>
           </div>
-          
-          <div className="space-y-6 px-4">
-            <h1 className="text-2xl font-black tracking-tighter leading-none mb-2 uppercase italic">
-              {STEPS[currentStep].title}
-            </h1>
-            <p className="text-zinc-500 text-[10px] font-black tracking-[0.2em] uppercase max-w-[240px] mx-auto leading-relaxed italic">
-              {STEPS[currentStep].description}
-            </p>
+        </main>
+
+        <footer className="space-y-10 pb-8 shrink-0">
+          <div className="flex justify-center gap-3">
+            {STEPS.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1 rounded-full transition-all duration-300 ${
+                  i === currentStep ? 'w-8 bg-white' : 'w-2 bg-zinc-800'
+                }`}
+              />
+            ))}
           </div>
-        </div>
-      </main>
 
-      <footer className="mobile-container gap-12 shrink-0 pb-8">
-        <div className="flex justify-center gap-3 mb-12">
-          {STEPS.map((_, i) => (
-            <div
-              key={i}
-              className={`h-1 rounded-full transition-all duration-300 ${
-                i === currentStep ? 'w-8 bg-white' : 'w-2 bg-zinc-800'
-              }`}
-            />
-          ))}
-        </div>
-
-        <button
-          onClick={next}
-          className="btn-massive w-full bg-white text-black shadow-[0_20px_60px_rgba(255,255,255,0.1)] border-none"
-        >
-          <span>{currentStep === STEPS.length - 1 ? "Empezar_" : "Siguiente_"}</span>
-          <ArrowRight size={24} strokeWidth={3} />
-        </button>
-      </footer>
+          <button
+            onClick={next}
+            className="btn-massive bg-white text-black shadow-[0_20px_60px_rgba(255,255,255,0.1)]"
+          >
+            <span>{currentStep === STEPS.length - 1 ? "Empezar_" : "Siguiente_"}</span>
+            <ArrowRight size={20} strokeWidth={3} />
+          </button>
+        </footer>
+      </div>
     </div>
   );
 }
