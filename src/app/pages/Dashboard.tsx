@@ -18,12 +18,12 @@ export default function Dashboard() {
   }).toUpperCase();
 
   return (
-    <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col pb-10 overflow-x-hidden" style={{ backgroundColor: '#000000' }}>
+    <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col pb-10 overflow-x-hidden" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
       {/* Header - Ingeniería Minimalista con Jerarquía Definida */}
       <header className="px-8 pt-20 pb-12 flex justify-between items-start sticky top-0 bg-black/80 backdrop-blur-xl z-30">
         <div className="space-y-2">
           <p className="text-[10px] font-bold tracking-[0.6em] text-zinc-600 uppercase">Hoy_</p>
-          <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none">
+          <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none text-white">
             {today}
           </h1>
         </div>
@@ -49,11 +49,11 @@ export default function Dashboard() {
                 <Mic size={32} className="text-white" />
               </div>
               <div className="text-left">
-                <h2 className="text-3xl font-black italic uppercase tracking-tighter leading-none">Grabar_Ahora_</h2>
-                <p className="text-[11px] font-bold uppercase tracking-[0.4em] opacity-40 mt-2.5">Inteligencia_Realtime_</p>
+                <h2 className="text-3xl font-black italic uppercase tracking-tighter leading-none text-black">Grabar_Ahora_</h2>
+                <p className="text-[11px] font-bold uppercase tracking-[0.4em] opacity-40 mt-2.5 text-black">Inteligencia_Realtime_</p>
               </div>
             </div>
-            <ChevronRight size={36} strokeWidth={3} className="opacity-10 group-hover:opacity-100 transition-opacity" />
+            <ChevronRight size={36} strokeWidth={3} className="opacity-10 group-hover:opacity-100 transition-opacity text-black" />
           </button>
         </section>
 
