@@ -13,9 +13,62 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <style>
+    :root { --bg: #000000; --fg: #ffffff; }
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); color: var(--fg); font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
+    #pwa-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; transition: opacity 0.5s ease; }
+    .logo-container { width: 80px; height: 80px; background: var(--fg); border-radius: 22px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem; box-shadow: 0 0 40px rgba(255,255,255,0.1); animation: pulse 2s infinite ease-in-out; }
+    .logo-text { color: var(--bg); font-size: 2rem; font-weight: 800; }
+    .install-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; letter-spacing: -0.02em; }
+    .install-desc { color: #666; font-size: 1rem; font-weight: 500; line-height: 1.5; max-width: 260px; margin-bottom: 3rem; }
+    .install-btn { background: var(--fg); color: var(--bg); border: none; padding: 1rem 3rem; border-radius: 100px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: transform 0.2s; }
+    .install-btn:active { transform: scale(0.96); }
+    .ios-hint { margin-top: 2rem; color: #444; font-size: 0.85rem; font-weight: 600; display: none; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.95); opacity: 0.8; } }
+    .hidden { opacity: 0; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div id="pwa-overlay">
+    <div className="logo-container">
+      <span className="logo-text">K</span>
+    </div>
+    <h1 className="install-title">Descarga KIIS</h1>
+    <p className="install-desc">Para la mejor experiencia académica, instala la app en tu pantalla de inicio.</p>
+    <button id="install-button" className="install-btn">Instalar App</button>
+    <div id="ios-hint" className="ios-hint">Toca <img src="https://img.icons8.com/ios/50/ffffff/upload.png" style="width:16px;vertical-align:middle;filter:invert(1)"/> y luego "Añadir a pantalla de inicio"</div>
+  </div>
+  <div id="root"></div>
+  <script>
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    const overlay = document.getElementById('pwa-overlay');
+    const installBtn = document.getElementById('install-button');
+    const iosHint = document.getElementById('ios-hint');
+    
+    if (isStandalone) {
+      overlay.classList.add('hidden');
+      setTimeout(() => overlay.style.display = 'none', 500);
+    }
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS && !isStandalone) {
+      installBtn.style.display = 'none';
+      iosHint.style.display = 'block';
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      let deferredPrompt = e;
+      installBtn.addEventListener('click', () => {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            overlay.classList.add('hidden');
+          }
+        });
+      });
+    });
+  </script>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
 </html>
