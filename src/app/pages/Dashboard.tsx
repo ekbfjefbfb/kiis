@@ -31,7 +31,7 @@ export default function Dashboard() {
     }
 
     // Redirigir al login si no está autenticado
-    if (!isAuthenticated) {
+    if (!authService.isAuthenticated()) {
       navigate("/login", { replace: true });
       return;
     }
