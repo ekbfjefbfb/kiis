@@ -125,21 +125,21 @@ export default function ClassDetailPage() {
   const allTasks = sessions.flatMap(s => s.tasks.map(t => ({ ...t, sessionId: s.id })));
 
   return (
-    <div className="h-[100dvh] w-full bg-black text-white font-sans overflow-hidden flex flex-col relative selection:bg-white/20">
+    <div className="h-[100dvh] w-full bg-black text-white font-sans selection:bg-white/20 overflow-hidden flex flex-col relative">
       <header className="px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] pt-[max(env(safe-area-inset-top,2rem),3rem)] pb-6 flex justify-between items-end border-b border-white/5 bg-black/80 backdrop-blur-xl sticky top-0 z-20 shrink-0">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
             <ArrowLeft size={18} />
           </button>
           <div>
-            <p className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-1 text-left">Materia_</p>
-            <h1 className="text-xl font-extrabold uppercase italic tracking-tighter leading-none">{classInfo.name}</h1>
+            <p className="text-[9px] font-medium text-zinc-600 uppercase tracking-[0.2em] mb-1 text-left">Materia_</p>
+            <h1 className="text-xl font-bold uppercase italic tracking-tighter leading-none text-white">{classInfo.name}</h1>
           </div>
         </div>
         {isRecording && (
           <div className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 flex items-center gap-1.5 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
             <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-[8px] font-black uppercase tracking-widest text-red-500">Live_</span>
+            <span className="text-[8px] font-bold uppercase tracking-widest text-red-500">Live_</span>
           </div>
         )}
       </header>
@@ -149,7 +149,7 @@ export default function ClassDetailPage() {
         <button 
           onClick={() => setActiveTab("recording")}
           className={clsx(
-            "pb-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative",
+            "pb-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-all relative",
             activeTab === "recording" ? "text-white" : "text-zinc-600"
           )}
         >
@@ -159,7 +159,7 @@ export default function ClassDetailPage() {
         <button 
           onClick={() => setActiveTab("agenda")}
           className={clsx(
-            "pb-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative",
+            "pb-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-all relative",
             activeTab === "agenda" ? "text-white" : "text-zinc-600"
           )}
         >
@@ -180,7 +180,7 @@ export default function ClassDetailPage() {
                   {isProcessing ? (
                     <motion.div key="proc" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-4">
                       <Loader2 size={32} className="animate-spin text-white/20" />
-                      <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20 italic">Sintetizando_</p>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 italic">Sintetizando_</p>
                     </motion.div>
                   ) : (
                     <motion.div key="rec" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-6 w-full">
@@ -198,38 +198,38 @@ export default function ClassDetailPage() {
                         )}
                       </motion.button>
                       <div className="text-center space-y-1">
-                        <p className="text-[11px] font-extrabold uppercase italic tracking-widest text-zinc-400">
+                        <p className="text-[11px] font-bold uppercase italic tracking-widest text-zinc-400">
                           {isRecording ? "Capturando Clase_" : "Grabar Sesión_"}
                         </p>
-                        {isRecording && <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">IA Escuchando_</p>}
+                        {isRecording && <p className="text-[9px] font-medium text-zinc-600 uppercase tracking-widest">IA Escuchando_</p>}
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </section>
 
-              {/* Resultado de Sesión Reciente (Inmediato) */}
+              {/* Resultado de Sesión Reciente */}
               <AnimatePresence>
                 {lastResult && (
                   <motion.section initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4">
                     <div className="flex items-center gap-3 ml-2 text-emerald-500/40">
                       <Sparkles size={16} />
-                      <h3 className="text-[10px] font-black uppercase tracking-[0.4em]">Sesión Generada_</h3>
+                      <h3 className="text-[10px] font-bold uppercase tracking-[0.4em]">Sesión Generada_</h3>
                     </div>
                     <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-[40px] p-8 space-y-6 shadow-2xl relative overflow-hidden">
                       <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500/20" />
                       <div>
-                        <p className="text-[9px] font-black text-emerald-500/40 uppercase tracking-widest mb-2">{lastResult.date}</p>
-                        <h4 className="text-2xl font-extrabold uppercase italic text-white tracking-tighter leading-tight mb-4">{lastResult.topic}</h4>
-                        <p className="text-lg font-bold leading-relaxed text-zinc-300 italic tracking-tight">{lastResult.summary}</p>
+                        <p className="text-[9px] font-bold text-emerald-500/40 uppercase tracking-widest mb-2">{lastResult.date}</p>
+                        <h4 className="text-2xl font-bold uppercase italic text-white tracking-tighter leading-tight mb-4">{lastResult.topic}</h4>
+                        <p className="text-lg font-medium leading-relaxed text-zinc-300 italic tracking-tight">{lastResult.summary}</p>
                       </div>
                       {lastResult.tasks.length > 0 && (
                         <div className="pt-4 border-t border-white/5 space-y-3">
-                          <p className="text-[10px] font-black text-emerald-500/40 uppercase tracking-widest">Tareas_</p>
+                          <p className="text-[10px] font-bold text-emerald-500/40 uppercase tracking-widest">Tareas_</p>
                           {lastResult.tasks.map(t => (
                             <div key={t.id} className="flex items-center gap-4 py-2 opacity-70">
                               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/40" />
-                              <p className="text-sm font-extrabold uppercase italic tracking-tight">{t.title}</p>
+                              <p className="text-sm font-bold uppercase italic tracking-tight">{t.title}</p>
                             </div>
                           ))}
                         </div>
@@ -249,7 +249,7 @@ export default function ClassDetailPage() {
                   <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/5 shadow-xl">
                     <Brain size={20} className="text-white/40" />
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] italic">Resumen_Global</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] italic">Resumen_Global</p>
                 </motion.button>
 
                 <motion.button
@@ -260,7 +260,7 @@ export default function ClassDetailPage() {
                   <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/5 shadow-xl">
                     <History size={20} className="text-white/40" />
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] italic">Historial_</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] italic">Historial_</p>
                 </motion.button>
               </div>
             </motion.div>
@@ -269,16 +269,16 @@ export default function ClassDetailPage() {
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-3 text-zinc-600">
                   <ListTodo size={16} />
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.5em] italic text-zinc-600">Compromisos_</h3>
+                  <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] italic text-zinc-600">Compromisos_</h3>
                 </div>
-                <span className="text-[9px] font-black text-zinc-800 uppercase tracking-widest">{allTasks.filter(t => !t.completed).length} Pendientes</span>
+                <span className="text-[9px] font-bold text-zinc-800 uppercase tracking-widest">{allTasks.filter(t => !t.completed).length} Pendientes</span>
               </div>
 
               <div className="space-y-3">
                 {allTasks.length === 0 ? (
                   <div className="bg-zinc-900/10 border border-dashed border-white/5 rounded-[32px] p-12 text-center space-y-4 opacity-10">
                     <Calendar size={40} className="mx-auto" strokeWidth={1} />
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em]">Sin tareas_</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.4em]">Sin tareas_</p>
                   </div>
                 ) : (
                   allTasks.map((task) => (
@@ -300,12 +300,12 @@ export default function ClassDetailPage() {
                         </div>
                         <div className="min-w-0">
                           <p className={clsx(
-                            "text-sm font-extrabold uppercase italic tracking-tight truncate",
+                            "text-sm font-bold uppercase italic tracking-tight truncate",
                             task.completed ? "line-through text-zinc-700" : "text-zinc-200"
                           )}>
                             {task.title}
                           </p>
-                          <p className="text-[9px] font-black text-zinc-700 uppercase mt-1.5 tracking-widest">{task.dueDate}</p>
+                          <p className="text-[9px] font-medium text-zinc-700 uppercase mt-1.5 tracking-widest">{task.dueDate}</p>
                         </div>
                       </div>
                     </motion.button>
@@ -319,29 +319,29 @@ export default function ClassDetailPage() {
         {/* Info Materia */}
         <section className="bg-zinc-900/10 border border-white/5 rounded-[32px] p-6 grid grid-cols-2 gap-6 mt-4">
           <div className="space-y-1.5">
-            <p className="text-[8px] font-black text-zinc-800 uppercase tracking-widest">Profesor_</p>
-            <p className="text-xs font-extrabold uppercase italic truncate text-zinc-400">{classInfo.professor}</p>
+            <p className="text-[8px] font-bold text-zinc-800 uppercase tracking-widest">Profesor_</p>
+            <p className="text-xs font-bold uppercase italic truncate text-zinc-400">{classInfo.professor}</p>
           </div>
           <div className="space-y-1.5">
-            <p className="text-[8px] font-black text-zinc-800 uppercase tracking-widest">Aula_</p>
-            <p className="text-xs font-extrabold uppercase italic truncate text-zinc-400">{classInfo.room || "—"}</p>
+            <p className="text-[8px] font-bold text-zinc-800 uppercase tracking-widest">Aula_</p>
+            <p className="text-xs font-bold uppercase italic truncate text-zinc-400">{classInfo.room || "—"}</p>
           </div>
         </section>
       </main>
 
-      {/* Modales Inmersivos */}
+      {/* Modales */}
       <AnimatePresence>
         {showGeneralSummary && (
           <motion.div initial={{ opacity: 0, y: "100%" }} animate={{ y: 0, opacity: 1 }} exit={{ y: "100%", opacity: 0 }} className="fixed inset-0 z-50 bg-black flex flex-col p-6 pt-20">
             <div className="max-w-2xl mx-auto w-full flex flex-col h-full">
               <div className="flex justify-between items-start mb-10">
-                <h2 className="text-3xl font-extrabold uppercase italic tracking-tighter">Global_</h2>
+                <h2 className="text-3xl font-bold uppercase italic tracking-tighter text-white">Global_</h2>
                 <button onClick={() => setShowGeneralSummary(false)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform shadow-lg"><Plus size={24} className="rotate-45 text-white/60" /></button>
               </div>
               <div className="bg-zinc-900/40 border border-white/5 rounded-[48px] p-10 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-white/5" />
                 <p className="text-2xl font-bold leading-relaxed text-white/90 italic tracking-tight">
-                  SÍNTESIS INTELIGENTE DE TODAS LAS SESIONES DE {classInfo.name.toUpperCase()}. SE HAN IDENTIFICADO LOS EJES TEMÁTICOS Y OBJETIVOS CLAVE PARA ASEGURAR TU DOMINIO DE LA MATERIA.
+                  SÍNTESIS INTELIGENTE DE TODAS LAS SESIONES DE {classInfo.name.toUpperCase()}.
                 </p>
               </div>
             </div>
@@ -352,15 +352,15 @@ export default function ClassDetailPage() {
           <motion.div initial={{ opacity: 0, x: "100%" }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: "100%" }} transition={{ type: "spring", damping: 30, stiffness: 300 }} className="fixed inset-0 z-50 bg-black flex flex-col p-6 pt-20">
             <div className="max-w-2xl mx-auto w-full flex flex-col h-full">
               <div className="flex justify-between items-start mb-12">
-                <h2 className="text-3xl font-extrabold uppercase italic tracking-tighter">Archivo_</h2>
+                <h2 className="text-3xl font-bold uppercase italic tracking-tighter text-white">Archivo_</h2>
                 <button onClick={() => setShowHistory(false)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform shadow-lg"><Plus size={24} className="rotate-45 text-white/60" /></button>
               </div>
               <div className="flex-1 overflow-y-auto scrollbar-hide space-y-4 pb-10">
                 {sessions.map((s) => (
                   <div key={s.id} className="bg-zinc-900/40 border border-white/5 rounded-[40px] p-10 space-y-6 relative overflow-hidden group">
                     <div className="absolute top-0 left-0 w-1 h-full bg-white/5" />
-                    <p className="text-[10px] font-black text-zinc-700 uppercase tracking-widest">{s.date}</p>
-                    <h4 className="text-2xl font-extrabold uppercase italic text-white leading-none tracking-tighter">{s.topic || "Sesión"}</h4>
+                    <p className="text-[10px] font-bold text-zinc-700 uppercase tracking-widest">{s.date}</p>
+                    <h4 className="text-2xl font-bold uppercase italic text-white leading-none tracking-tighter">{s.topic || "Sesión"}</h4>
                     <p className="text-[15px] text-zinc-500 italic leading-relaxed tracking-tight line-clamp-4">{s.summary}</p>
                   </div>
                 ))}
