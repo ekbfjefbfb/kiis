@@ -111,13 +111,12 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* Floating IA Controller - Premium Position */}
-      <button 
-        onClick={() => navigate("/chat")}
-        className="fixed bottom-8 right-6 w-14 h-14 rounded-full bg-white text-black flex items-center justify-center shadow-[0_20px_60px_rgba(255,255,255,0.2)] active:scale-[0.9] transition-all z-50 border-[5px] border-black"
-      >
-        <MessageSquare size={24} fill="currentColor" />
-      </button>
+          <button 
+            onClick={() => navigate("/chat")}
+            className="fixed bottom-6 right-6 w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 flex items-center justify-center shadow-lg active:scale-95 transition-all z-50"
+          >
+            <MessageSquare size={20} />
+          </button>
 
       {showAddClass && <AddClassModal isOpen={showAddClass} onClose={() => setShowAddClass(false)} />}
     </div>

@@ -37,7 +37,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 placeholder="Email"
-                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-zinc-700 focus:outline-none focus:border-zinc-600 transition-all font-medium text-sm"
+                className="w-full bg-[#09090b] border border-zinc-800 rounded-lg py-3 pl-11 pr-4 text-white placeholder:text-zinc-700 focus:outline-none focus:border-zinc-600 transition-all font-medium text-sm"
                 required
               />
             </div>
@@ -46,7 +46,7 @@ export default function LoginPage() {
               <input
                 type="password"
                 placeholder="Contraseña"
-                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-zinc-700 focus:outline-none focus:border-zinc-600 transition-all font-medium text-sm"
+                className="w-full bg-[#09090b] border border-zinc-800 rounded-lg py-3 pl-11 pr-4 text-white placeholder:text-zinc-700 focus:outline-none focus:border-zinc-600 transition-all font-medium text-sm"
                 required
               />
             </div>
