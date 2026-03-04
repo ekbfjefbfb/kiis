@@ -55,7 +55,7 @@ export default function LoginPage() {
           <button 
             disabled={loading}
             type="submit"
-            className="w-full bg-white text-black py-3.5 rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-all font-bold text-sm"
+            className="btn-primary mt-4"
           >
             {loading ? <Loader2 className="animate-spin" size={18} /> : (
               <>

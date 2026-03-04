@@ -57,27 +57,51 @@ html, body {
 .text-zinc-600 { color: #52525b !important; }
 .text-black { color: #000000 !important; }
 
-/* Premium Button Sizing - Compact & Elegant */
+/* Technical Button System - Subtle & Functional */
 .btn-massive {
   width: 100%;
-  background-color: #ffffff;
-  color: #000000;
-  padding: 0.85rem 1.25rem;
+  background-color: #18181b;
+  color: #a1a1aa;
+  padding: 0.75rem 1rem;
   border-radius: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.8rem;
-  border: none;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.9rem;
+  border: 1px solid #27272a;
   cursor: pointer;
 }
 
 .btn-massive:active {
+  transform: scale(0.98);
+  background-color: #27272a;
+  color: #ffffff;
+}
+
+/* Specific White Action Button (e.g. Next/Login) */
+.btn-primary {
+  width: 100%;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:active {
   transform: scale(0.98);
 }
 

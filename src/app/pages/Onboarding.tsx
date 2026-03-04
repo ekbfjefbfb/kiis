@@ -80,11 +80,9 @@ export default function Onboarding() {
 
           <button
             onClick={next}
-            className="w-full bg-white text-black py-3.5 rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+            className="btn-primary"
           >
-            <span className="font-bold text-sm">
-              {currentStep === STEPS.length - 1 ? "Empezar" : "Siguiente"}
-            </span>
+            <span>{currentStep === STEPS.length - 1 ? "Empezar" : "Siguiente"}</span>
             <ArrowRight size={18} />
           </button>
         </footer>
