@@ -80,23 +80,23 @@ export default function ClassDetail() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.05 }}
-                className="h-full flex flex-col items-center justify-center space-y-14 py-10"
+                className="h-full flex flex-col items-center justify-center space-y-10 py-10"
               >
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-white/5 rounded-[80px] blur-[100px] animate-pulse" />
+                  <div className="absolute inset-0 bg-white/5 rounded-3xl blur-2xl animate-pulse" />
                   <button 
                     onClick={() => navigate("/live")}
-                    className="relative w-64 h-64 rounded-[80px] bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-[0_40px_100px_rgba(0,0,0,0.5)] active:scale-[0.95] transition-all"
+                    className="relative w-40 h-40 rounded-3xl bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-[0.98] transition-all"
                   >
-                    <div className="w-28 h-24 rounded-full bg-white flex items-center justify-center shadow-[0_0_60px_rgba(255,255,255,0.25)]">
-                      <Mic size={48} className="text-black" fill="currentColor" />
+                    <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shadow-lg">
+                      <Mic size={32} className="text-black" fill="currentColor" />
                     </div>
                   </button>
                 </div>
-                <div className="text-center space-y-6">
-                  <h2 className="text-3xl font-black uppercase italic tracking-tighter text-white">Iniciar_Terminal_</h2>
-                  <p className="text-[12px] font-black text-zinc-500 uppercase tracking-[0.6em] leading-relaxed max-w-[260px] mx-auto">
-                    Captura audio y genera inteligencia de clase instantánea
+                <div className="text-center space-y-3">
+                  <h2 className="text-xl font-bold text-white">Capturar clase</h2>
+                  <p className="text-[11px] font-medium text-zinc-500 uppercase tracking-widest max-w-[220px] mx-auto">
+                    Inicia el motor de inteligencia para procesar la sesión
                   </p>
                 </div>
               </motion.div>
@@ -105,20 +105,32 @@ export default function ClassDetail() {
             {activeTab === 'resumen' && (
               <motion.div 
                 key="resumen"
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-10"
+                className="space-y-6"
               >
-                <div className="bg-zinc-900/40 border border-white/[0.03] rounded-[56px] p-12 space-y-10 shadow-2xl">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-[20px] bg-white/5 flex items-center justify-center border border-white/10">
-                      <Zap size={22} className="text-white" />
+                <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-6 space-y-6 shadow-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-zinc-800 flex items-center justify-center border border-zinc-700/50">
+                      <Sparkles size={16} className="text-zinc-400" />
                     </div>
-                    <span className="text-[11px] font-black uppercase tracking-[0.8em] text-zinc-400">Estado_Global_</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Síntesis Académica</span>
                   </div>
-                  <p className="text-lg text-zinc-400 italic leading-relaxed font-medium">
-                    Aún no hay suficientes datos para generar un resumen global. Inicia una grabación para activar el motor IA.
-                  </p>
+                  <div className="space-y-4">
+                    <p className="text-sm text-zinc-300 leading-relaxed font-medium">
+                      Aún no hay suficientes datos para generar un resumen global de esta materia. Realiza tu primera grabación para activar el análisis.
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/50">
+                        <p className="text-[8px] font-bold text-zinc-600 uppercase mb-1">Clases</p>
+                        <p className="text-lg font-bold text-white">0</p>
+                      </div>
+                      <div className="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/50">
+                        <p className="text-[8px] font-bold text-zinc-600 uppercase mb-1">Tareas</p>
+                        <p className="text-lg font-bold text-white">0</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -126,26 +138,26 @@ export default function ClassDetail() {
             {activeTab === 'historial' && (
               <motion.div 
                 key="historial"
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-4"
+                className="space-y-3"
               >
                 {history.length === 0 ? (
-                  <div className="py-32 flex flex-col items-center justify-center text-center space-y-8 opacity-20">
-                    <History size={80} strokeWidth={1} />
-                    <p className="text-[12px] font-black uppercase tracking-[0.8em]">Sin_Registros_Terminales_</p>
+                  <div className="py-24 flex flex-col items-center justify-center text-center space-y-6 opacity-20">
+                    <History size={48} strokeWidth={1.5} />
+                    <p className="text-[10px] font-bold uppercase tracking-widest">Sin registros previos</p>
                   </div>
                 ) : (
                   history.map((session: any) => (
                     <button
                       key={session.id}
-                      className="w-full bg-zinc-900/30 border border-white/[0.03] p-10 rounded-[48px] flex items-center justify-between group active:bg-zinc-800/40 transition-all"
+                      className="w-full bg-zinc-900/30 border border-zinc-800/50 p-5 rounded-2xl flex items-center justify-between group active:bg-zinc-800/40 transition-all"
                     >
-                      <div className="flex flex-col items-start gap-3">
-                        <span className="text-[11px] font-black text-zinc-600 uppercase tracking-widest">{session.date}</span>
-                        <h4 className="text-2xl font-black uppercase italic tracking-tight text-white leading-tight">{session.topic}</h4>
+                      <div className="flex flex-col items-start gap-1">
+                        <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">{session.date}</span>
+                        <h4 className="text-base font-bold text-white leading-tight">{session.topic}</h4>
                       </div>
-                      <ChevronRight size={24} className="text-zinc-800 group-hover:text-zinc-500 transition-all" />
+                      <ChevronRight size={16} className="text-zinc-800 group-hover:text-zinc-500 transition-all" />
                     </button>
                   ))
                 )}
