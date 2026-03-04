@@ -125,21 +125,21 @@ export default function ChatAssistant() {
           </div>
         )}
         
-        <div className="space-y-10">
+        <div className="space-y-8">
           {messages.map((m) => (
             <motion.div 
               key={m.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className={`max-w-[90%] p-8 rounded-[40px] shadow-2xl relative ${
+              <div className={`max-w-[85%] p-5 rounded-[28px] shadow-lg relative ${
                 m.role === 'user' 
-                  ? 'bg-white text-black font-black italic border-none rounded-br-[12px]' 
-                  : 'bg-zinc-900 border border-white/5 text-zinc-100 rounded-bl-[12px]'
+                  ? 'bg-white text-black font-black italic border-none rounded-br-[8px]' 
+                  : 'bg-zinc-900 border border-white/5 text-zinc-100 rounded-bl-[8px]'
               }`}>
-                <p className="text-[16px] leading-relaxed tracking-tight">{m.content}</p>
-                <span className={`absolute bottom-[-24px] text-[9px] font-black uppercase tracking-widest text-zinc-600 ${m.role === 'user' ? 'right-4' : 'left-4'}`}>
+                <p className="text-[14px] leading-relaxed tracking-tight">{m.content}</p>
+                <span className={`absolute bottom-[-20px] text-[8px] font-black uppercase tracking-widest text-zinc-600 ${m.role === 'user' ? 'right-2' : 'left-2'}`}>
                   {m.role === 'user' ? 'User_Terminal' : 'IA_Response'}
                 </span>
               </div>
@@ -157,34 +157,34 @@ export default function ChatAssistant() {
         )}
       </main>
 
-      <footer className="w-full max-w-2xl p-6 bg-black/90 backdrop-blur-2xl border-t border-white/5 pb-10">
-        <div className="flex items-center gap-4">
+      <footer className="w-full max-w-2xl p-5 bg-black/90 backdrop-blur-2xl border-t border-white/5 pb-8">
+        <div className="flex items-center gap-3">
           <div className="flex-1 relative">
             <input 
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Terminal prompt..."
-              className="w-full bg-[#121212] border-2 border-zinc-800 rounded-[32px] pl-8 pr-16 py-6 text-base font-bold focus:outline-none focus:border-white transition-all italic text-white placeholder:text-zinc-700 shadow-inner"
+              className="w-full bg-[#121212] border-2 border-zinc-800 rounded-[24px] pl-6 pr-14 py-4 text-sm font-bold focus:outline-none focus:border-white transition-all italic text-white placeholder:text-zinc-700 shadow-inner"
             />
             <button 
               onClick={() => handleSend()}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white flex items-center justify-center active:scale-90 transition-transform shadow-xl"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white flex items-center justify-center active:scale-90 transition-transform shadow-lg"
             >
-              <Send size={20} className="text-black" />
+              <Send size={18} className="text-black" />
             </button>
           </div>
           
           <button 
             onClick={isRecording ? stopVoice : startVoice}
-            className={`w-20 h-20 rounded-full flex flex-col items-center justify-center border-4 transition-all shadow-2xl relative ${
+            className={`w-16 h-16 rounded-full flex flex-col items-center justify-center border-4 transition-all shadow-xl relative ${
               isRecording 
                 ? 'bg-red-500 border-black animate-pulse' 
                 : 'bg-zinc-900 border-zinc-800'
             }`}
           >
-            {isRecording ? <StopCircle size={32} /> : <Mic size={32} className="text-white" />}
-            <span className="absolute -bottom-6 text-[9px] font-black uppercase tracking-widest text-zinc-500 italic">Hablar_</span>
+            {isRecording ? <StopCircle size={28} /> : <Mic size={28} className="text-white" />}
+            <span className="absolute -bottom-5 text-[8px] font-black uppercase tracking-widest text-zinc-500 italic">Hablar_</span>
           </button>
         </div>
       </footer>
