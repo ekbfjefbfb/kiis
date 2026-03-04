@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Paperclip, Copy, Share2, ThumbsUp, AudioLines, Plus, X } from "lucide-react";
+import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Paperclip, Copy, Share2, ThumbsUp, AudioLines } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate } from "react-router";
 import { aiService, chatWebSocket } from "../../services/ai.service";
 import { audioService } from "../../services/audio.service";
 import { groqService } from "../../services/groq.service";
-import AddClassModal from "../components/AddClassModal";
 
 interface ChatMessage {
   id?: string;
@@ -25,7 +24,6 @@ export default function ChatPage() {
   const [autoSpeak, setAutoSpeak] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pendingResponseRef = useRef<string | null>(null);
-  const [isAddingClass, setIsAddingClass] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -128,23 +126,21 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="h-[100dvh] bg-[#0a0a0a] text-white font-sans flex flex-col overflow-hidden selection:bg-white/10">
+    <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden selection:bg-white/10">
       {/* Header Minimalista */}
-      <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-[#0a0a0a]/80 backdrop-blur-xl shrink-0 z-20">
+      <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-20">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
             <ArrowLeft size={18} />
           </button>
           <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Asistente</h1>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
-            {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/30" />}
-          </button>
-        </div>
+        <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+          {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/30" />}
+        </button>
       </div>
 
-      {/* Messages - Área de scroll */}
+      {/* Messages - Área de scroll limpia */}
       <div className="flex-1 px-6 space-y-8 overflow-y-auto scrollbar-hide pt-6 pb-40">
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center opacity-[0.02]">
@@ -195,8 +191,8 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Brutal Input Area - Inspirada en la imagen */}
-      <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent z-20">
+      {/* Input Zone - Brutal y Compacta */}
+      <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-black via-black to-transparent z-20">
         <div className="max-w-2xl mx-auto">
           <div className="bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex flex-col gap-2 shadow-2xl">
             <div className="px-4 py-2">
@@ -219,11 +215,6 @@ export default function ChatPage() {
                 <button className="w-10 h-10 rounded-full flex items-center justify-center text-white/40 hover:text-white active:bg-white/5 transition-all">
                   <Paperclip size={20} />
                 </button>
-                <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full border border-white/[0.03]">
-                  <Sparkles size={14} className="text-white/40" />
-                  <span className="text-[11px] font-bold text-white/60 uppercase tracking-widest">Auto</span>
-                  <X size={10} className="text-white/20" />
-                </div>
               </div>
 
               <div className="flex items-center gap-2">
@@ -265,8 +256,6 @@ export default function ChatPage() {
           </div>
         </div>
       </div>
-
-      <AddClassModal isOpen={isAddingClass} onClose={() => setIsAddingClass(false)} />
     </div>
   );
 }
