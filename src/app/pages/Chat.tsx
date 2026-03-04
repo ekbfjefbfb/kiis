@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, AudioLines, Sparkles, Loader2, BookOpen } from "lucide-react";
+import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, BookOpen, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate } from "react-router";
@@ -125,83 +125,93 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden">
-      {/* Header Compacto */}
+    <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden selection:bg-white/20">
+      {/* Header Minimalista Extremo */}
       <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-20">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
-            <ArrowLeft size={16} />
+          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            <ArrowLeft size={18} />
           </button>
-          <h1 className="text-xl font-black uppercase italic tracking-tighter">IA Chat</h1>
+          <div className="flex flex-col">
+            <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Asistente</h1>
+            <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Chat + Voz</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setIsAddingClass(true)} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
-            <BookOpen size={16} />
+          <button onClick={() => setIsAddingClass(true)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            <Plus size={18} />
           </button>
-          <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
-            {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/40" />}
+          <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/30" />}
           </button>
         </div>
       </div>
 
-      <div className="flex-1 px-4 space-y-4 overflow-y-auto scrollbar-hide pt-4 pb-4">
+      {/* Messages - Área de scroll limpia */}
+      <div className="flex-1 px-4 space-y-6 overflow-y-auto scrollbar-hide pt-6 pb-32">
         {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center opacity-10">
-            <AudioLines size={60} strokeWidth={1} />
-            <p className="mt-2 text-sm font-black uppercase italic tracking-widest text-center">IA Unificada</p>
+          <div className="h-full flex flex-col items-center justify-center opacity-5">
+            <Sparkles size={80} strokeWidth={1} />
+            <p className="mt-4 text-sm font-black uppercase italic tracking-widest text-center">IA Unificada</p>
           </div>
         )}
         
         {messages.map((msg, i) => (
           <motion.div
             key={msg.id || i}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             className={clsx("flex flex-col", msg.role === "user" ? "items-end" : "items-start")}
           >
             <div className={clsx(
-              "max-w-[85%] p-4 rounded-2xl text-base font-medium leading-snug shadow-lg",
-              msg.role === "user" ? "bg-emerald-500 text-white rounded-tr-sm" : "bg-zinc-900 text-white rounded-tl-sm border border-white/5"
+              "max-w-[88%] p-5 rounded-[28px] text-[15px] font-medium leading-snug shadow-2xl transition-all",
+              msg.role === "user" 
+                ? "bg-zinc-800 text-white rounded-tr-sm border border-white/5" 
+                : "bg-white text-black rounded-tl-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]"
             )}>
               {msg.content || (
                 <div className="flex gap-1.5 p-1">
-                  <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" />
-                  <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.2s]" />
-                  <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.4s]" />
+                  <div className="w-1.5 h-1.5 bg-black/20 rounded-full animate-bounce" />
+                  <div className="w-1.5 h-1.5 bg-black/20 rounded-full animate-bounce [animation-delay:0.2s]" />
+                  <div className="w-1.5 h-1.5 bg-black/20 rounded-full animate-bounce [animation-delay:0.4s]" />
                 </div>
               )}
             </div>
+            <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest mt-2 px-2">
+              {msg.role === "user" ? "Tú" : "IA"}
+            </span>
           </motion.div>
         ))}
         {isProcessing && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 px-2">
-            <Loader2 size={14} className="animate-spin text-blue-500" />
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">IA Procesando</span>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3 px-4 py-2 bg-zinc-900/50 border border-white/5 rounded-full w-fit">
+            <Loader2 size={12} className="animate-spin text-white/40" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Procesando</span>
           </motion.div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="shrink-0 p-4 bg-black border-t border-white/5 pb-10">
-        <div className="max-w-md mx-auto flex gap-2 items-end">
+      {/* Input Zone - Flotante y Minimalista */}
+      <div className="shrink-0 p-6 bg-gradient-to-t from-black via-black/90 to-transparent pb-10">
+        <div className="max-w-md mx-auto flex gap-3 items-end">
           <motion.button
             onClick={toggleVoiceRecording}
             whileTap={{ scale: 0.9 }}
             className={clsx(
-              "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 shrink-0 shadow-lg",
-              isRecording ? "bg-red-600 animate-pulse shadow-[0_0_20px_rgba(220,38,38,0.3)]" : "bg-zinc-900 border border-white/10"
+              "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shrink-0 shadow-2xl",
+              isRecording ? "bg-red-600 animate-pulse" : "bg-zinc-900 border border-white/10"
             )}
           >
-            {isRecording ? <StopCircle size={18} fill="white" /> : <Mic size={18} />}
+            {isRecording ? <StopCircle size={24} fill="white" /> : <Mic size={24} />}
           </motion.button>
 
-          <div className="flex-1 relative flex items-center">
+          <div className="flex-1 relative flex items-center group">
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               rows={1}
               placeholder={isRecording ? "Escuchando..." : "Hablemos?"}
-              className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-1 focus:ring-white/20 resize-none overflow-hidden min-h-[48px] max-h-[120px] placeholder:text-white/10"
+              className="w-full bg-zinc-900 border border-white/10 rounded-2xl px-5 py-4 text-[15px] font-medium focus:outline-none focus:ring-1 focus:ring-white/20 resize-none overflow-hidden min-h-[56px] max-h-[120px] placeholder:text-white/10 transition-all"
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
                 target.style.height = 'auto';
@@ -215,9 +225,9 @@ export default function ChatPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   onClick={() => handleSend()}
-                  className="absolute right-1.5 bottom-1.5 w-9 h-9 bg-white text-black rounded-lg flex items-center justify-center active:scale-90 transition-transform"
+                  className="absolute right-2 bottom-2 w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center active:scale-90 transition-transform shadow-lg"
                 >
-                  <Send size={16} />
+                  <Send size={18} />
                 </motion.button>
               )}
             </AnimatePresence>
