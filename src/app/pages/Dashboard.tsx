@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Sparkles } from "lucide-react";
 import { classManager, Class, Task } from "../../services/class-manager";
+import { authService } from "../../services/auth.service";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ export default function Dashboard() {
     weekday: "long", month: "long", day: "numeric"
   });
 
+  const isAuthenticated = authService.isAuthenticated();
+
   useEffect(() => {
     // Check onboarding
     try {
@@ -25,6 +28,12 @@ export default function Dashboard() {
       }
     } catch (e) {
       console.error("Storage error:", e);
+    }
+
+    // Redirigir al login si no está autenticado
+    if (!isAuthenticated) {
+      navigate("/login", { replace: true });
+      return;
     }
 
     const refreshData = () => {
