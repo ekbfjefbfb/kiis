@@ -1,135 +1,114 @@
-import { useState, useEffect } from "react";
-import {
-  Calendar, ChevronRight, Plus, BookOpen, Brain, Radio, User, Clock, FileText
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { 
+  Mic, Plus, Calendar, User, ChevronRight, 
+  BookOpen, Sparkles, Clock, LayoutGrid
 } from "lucide-react";
-import { Link } from "react-router";
+import { motion } from "motion/react";
 import { CLASSES } from "../data/mock";
-import { notesService, BackendNote } from "../../services/notes.service";
 import AddClassModal from "../components/AddClassModal";
 
 export default function Dashboard() {
-  const [recentNotes, setRecentNotes] = useState<BackendNote[]>([]);
-  const [isAddingClass, setIsAddingClass] = useState(false);
-
-  const today = new Date().toLocaleDateString("es-ES", {
-    weekday: "long", month: "long", day: "numeric",
-  });
-
-  useEffect(() => {
-    loadRecentNotes();
-  }, []);
-
-  const loadRecentNotes = async () => {
-    try {
-       const backendNotes = await notesService.listNotes(3, 0);
-       setRecentNotes(backendNotes);
-    } catch (e) { console.error(e); }
-  };
+  const navigate = useNavigate();
+  const [showAddClass, setShowAddClass] = useState(false);
+  
+  const today = new Date().toLocaleDateString('es-ES', { 
+    weekday: 'long', 
+    day: 'numeric', 
+    month: 'long' 
+  }).toUpperCase();
 
   return (
-    <div 
-      className="h-[100dvh] w-full bg-black text-white font-sans overflow-hidden flex flex-col relative"
-      style={{ backgroundColor: '#000000', color: '#ffffff' }}
-    >
-      <header className="px-6 pt-12 pb-6 flex justify-between items-end border-b border-zinc-800 bg-black sticky top-0 z-20 shrink-0">
-        <div style={{ opacity: 1, visibility: 'visible' }}>
-          <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-[0.3em] mb-1.5">Hoy_</p>
-          <h1 className="text-2xl font-bold uppercase italic tracking-tighter leading-none text-white">{today}</h1>
+    <div className="min-h-screen w-full bg-black text-white font-sans flex flex-col pb-10" style={{ backgroundColor: '#000000' }}>
+      {/* Header Minimalista - Jerarquía Nivel 1 */}
+      <header className="px-6 pt-14 pb-6 flex justify-between items-start sticky top-0 bg-black/80 backdrop-blur-md z-30">
+        <div className="space-y-1">
+          <p className="text-[10px] font-bold tracking-[0.4em] text-zinc-500 uppercase">Hoy_</p>
+          <h1 className="text-2xl font-black italic tracking-tighter uppercase leading-none">
+            {today}
+          </h1>
         </div>
         <div className="flex gap-3">
-          <Link to="/calendar" className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+          <button onClick={() => navigate("/calendar")} className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all">
             <Calendar size={18} className="text-zinc-400" />
-          </Link>
-          <Link to="/profile" className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+          </button>
+          <button onClick={() => navigate("/profile")} className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all">
             <User size={18} className="text-zinc-400" />
-          </Link>
+          </button>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-5 pt-8 max-w-2xl mx-auto w-full pb-20 space-y-12 bg-black">
-        <section className="grid grid-cols-1 gap-4">
-          <Link to="/live" className="block">
-            <div className="bg-zinc-900 border border-zinc-800 rounded-[32px] p-6 flex items-center justify-between relative overflow-hidden" style={{ opacity: 1, visibility: 'visible' }}>
-              <div className="absolute top-0 left-0 w-1 h-full bg-white/10" />
-              <div className="flex items-center gap-5">
-                <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center shrink-0 border border-zinc-700">
-                  <Radio size={24} className="text-white" />
-                </div>
-                <div>
-                  <p className="text-lg font-bold uppercase italic leading-none tracking-tight text-white">Grabar_Ahora</p>
-                  <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-widest mt-2">Captura IA instantánea</p>
-                </div>
+      <main className="flex-1 px-6 space-y-10">
+        {/* Acción Principal - Jerarquía Nivel 2 */}
+        <section>
+          <button 
+            onClick={() => navigate("/live")}
+            className="w-full bg-white text-black p-6 rounded-[32px] flex items-center justify-between group active:scale-[0.98] transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+          >
+            <div className="flex items-center gap-5">
+              <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center">
+                <Mic size={28} className="text-white" />
               </div>
-              <ChevronRight size={20} className="text-zinc-600" />
+              <div className="text-left">
+                <h2 className="text-xl font-black italic uppercase tracking-tighter leading-none">Grabar Ahora_</h2>
+                <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mt-1">IA en tiempo real</p>
+              </div>
             </div>
-          </Link>
+            <ChevronRight size={24} />
+          </button>
         </section>
 
-        <section className="space-y-6">
-          <div className="flex justify-between items-center px-2">
-            <div className="flex items-center gap-3 text-zinc-500">
-              <BookOpen size={16} />
-              <h3 className="text-[11px] font-bold uppercase tracking-[0.4em] italic">Materias_</h3>
+        {/* Lista de Materias - Jerarquía Nivel 3 */}
+        <section className="space-y-4">
+          <div className="flex justify-between items-end px-2">
+            <div className="flex items-center gap-2 text-zinc-500">
+              <BookOpen size={14} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Materias_</span>
             </div>
             <button 
-              onClick={() => setIsAddingClass(true)} 
-              className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500"
-              style={{ opacity: 1, visibility: 'visible' }}
+              onClick={() => setShowAddClass(true)}
+              className="text-[10px] font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors"
             >
-              <Plus size={16} />
+              + Añadir
             </button>
           </div>
-          <div className="grid grid-cols-1 gap-3">
+          
+          <div className="grid grid-cols-1 gap-2.5">
             {CLASSES.map((cls) => (
-              <Link key={cls.id} to={`/class/${cls.id}`} className="block">
-                <div className="bg-zinc-900 border border-zinc-800 rounded-[32px] p-5 flex items-center gap-5 relative overflow-hidden" style={{ opacity: 1, visibility: 'visible' }}>
-                  <div className="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center shrink-0">
-                    <BookOpen size={18} className="text-zinc-500" />
+              <button
+                key={cls.id}
+                onClick={() => navigate(`/class/${cls.id}`)}
+                className="w-full bg-zinc-900/50 border border-zinc-800/50 p-5 rounded-[24px] flex items-center justify-between group active:bg-zinc-800 transition-all"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center group-active:bg-zinc-700">
+                    <LayoutGrid size={18} className="text-zinc-500" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-base font-bold uppercase italic tracking-tighter truncate leading-none mb-1 text-white">{cls.name}</p>
-                    <p className="text-[10px] text-zinc-500 font-medium uppercase truncate tracking-[0.2em]">{cls.professor}</p>
+                  <div className="text-left">
+                    <h3 className="font-bold uppercase italic tracking-tight text-zinc-200">{cls.name}</h3>
+                    <p className="text-[9px] font-medium text-zinc-600 uppercase tracking-widest mt-0.5">{cls.professor}</p>
                   </div>
-                  <ChevronRight size={20} className="text-zinc-600 shrink-0" />
                 </div>
-              </Link>
+                <ChevronRight size={16} className="text-zinc-700 group-hover:translate-x-1 transition-transform" />
+              </button>
             ))}
           </div>
         </section>
 
-        <section className="space-y-6">
-          <div className="flex justify-between items-center px-2">
-            <div className="flex items-center gap-3 text-zinc-500">
-              <FileText size={16} />
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] italic">Recientes_</h3>
-            </div>
+        {/* Estado Reciente - Jerarquía Nivel 4 */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2 text-zinc-500 px-2">
+            <Clock size={14} />
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Recientes_</span>
           </div>
-          <div className="space-y-3">
-            {recentNotes.length === 0 ? (
-              <div className="bg-zinc-900/50 border border-dashed border-zinc-800 rounded-[32px] p-10 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-700">Sin actividad</p>
-              </div>
-            ) : (
-              recentNotes.slice(0, 2).map((n) => (
-                <Link key={n.id} to={`/note/${n.id}`} className="block">
-                  <div className="bg-zinc-900 border border-zinc-800 rounded-[24px] p-5 flex items-center justify-between text-left" style={{ opacity: 1, visibility: 'visible' }}>
-                    <div className="min-w-0 flex-1 pr-6">
-                      <p className="text-[14px] font-bold uppercase italic truncate tracking-tight text-white leading-none mb-2">{n.title || "Nota"}</p>
-                      <p className="text-[11px] text-zinc-500 font-medium truncate italic tracking-tight">{n.summary || "Detalles de sesión"}</p>
-                    </div>
-                    <ChevronRight size={16} className="text-zinc-600 shrink-0" />
-                  </div>
-                </Link>
-              ))
-            )}
+          <div className="bg-zinc-900/20 border border-dashed border-zinc-800 rounded-[24px] p-8 flex flex-col items-center justify-center text-center space-y-2">
+            <Sparkles size={20} className="text-zinc-800" />
+            <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-700 italic">Sin actividad reciente_</p>
           </div>
         </section>
       </main>
 
-      <AddClassModal 
-        isOpen={isAddingClass} 
-        onClose={() => setIsAddingClass(false)} 
-      />
+      {showAddClass && <AddClassModal isOpen={showAddClass} onClose={() => setShowAddClass(false)} />}
     </div>
   );
 }
