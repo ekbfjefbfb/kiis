@@ -80,23 +80,22 @@ export default function ClassDetail() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.05 }}
-                className="h-full flex flex-col items-center justify-center space-y-10 py-10"
+                className="h-full flex flex-col items-center justify-center space-y-8 py-10"
               >
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-white/5 rounded-3xl blur-2xl animate-pulse" />
                   <button 
                     onClick={() => navigate("/live")}
-                    className="relative w-40 h-40 rounded-3xl bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-[0.98] transition-all"
+                    className="relative w-32 h-32 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-[0.98] transition-all"
                   >
-                    <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shadow-lg">
-                      <Mic size={32} className="text-black" fill="currentColor" />
+                    <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center border border-zinc-700">
+                      <Mic size={24} className="text-zinc-400" fill="none" />
                     </div>
                   </button>
                 </div>
-                <div className="text-center space-y-3">
-                  <h2 className="text-xl font-bold text-white">Capturar clase</h2>
-                  <p className="text-[11px] font-medium text-zinc-500 uppercase tracking-widest max-w-[220px] mx-auto">
-                    Inicia el motor de inteligencia para procesar la sesión
+                <div className="text-center space-y-2">
+                  <h2 className="text-lg font-bold text-zinc-200">Grabar clase</h2>
+                  <p className="text-[11px] font-medium text-zinc-500 uppercase tracking-widest max-w-[200px] mx-auto">
+                    Captura el audio de la sesión actual
                   </p>
                 </div>
               </motion.div>
@@ -107,27 +106,25 @@ export default function ClassDetail() {
                 key="resumen"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
+                className="space-y-4"
               >
-                <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-6 space-y-6 shadow-xl">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-zinc-800 flex items-center justify-center border border-zinc-700/50">
-                      <Sparkles size={16} className="text-zinc-400" />
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Síntesis Académica</span>
+                <div className="bg-zinc-900 border border-zinc-800/50 rounded-xl p-5 space-y-5">
+                  <div className="flex items-center gap-3 text-zinc-500">
+                    <Sparkles size={14} />
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Análisis de Materia</span>
                   </div>
                   <div className="space-y-4">
-                    <p className="text-sm text-zinc-300 leading-relaxed font-medium">
-                      Aún no hay suficientes datos para generar un resumen global de esta materia. Realiza tu primera grabación para activar el análisis.
+                    <p className="text-sm text-zinc-400 leading-relaxed font-medium">
+                      Inicia una grabación para generar el resumen inteligente y las tareas de esta clase.
                     </p>
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/50">
+                      <div className="bg-zinc-950 p-3 rounded-lg border border-zinc-800/50">
                         <p className="text-[8px] font-bold text-zinc-600 uppercase mb-1">Clases</p>
-                        <p className="text-lg font-bold text-white">0</p>
+                        <p className="text-lg font-bold text-zinc-300">0</p>
                       </div>
-                      <div className="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/50">
+                      <div className="bg-zinc-950 p-3 rounded-lg border border-zinc-800/50">
                         <p className="text-[8px] font-bold text-zinc-600 uppercase mb-1">Tareas</p>
-                        <p className="text-lg font-bold text-white">0</p>
+                        <p className="text-lg font-bold text-zinc-300">0</p>
                       </div>
                     </div>
                   </div>
@@ -140,24 +137,24 @@ export default function ClassDetail() {
                 key="historial"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-3"
+                className="space-y-2"
               >
                 {history.length === 0 ? (
-                  <div className="py-24 flex flex-col items-center justify-center text-center space-y-6 opacity-20">
-                    <History size={48} strokeWidth={1.5} />
-                    <p className="text-[10px] font-bold uppercase tracking-widest">Sin registros previos</p>
+                  <div className="py-20 flex flex-col items-center justify-center text-center space-y-4 opacity-20">
+                    <History size={40} strokeWidth={1.5} />
+                    <p className="text-[10px] font-bold uppercase tracking-widest">Sin grabaciones</p>
                   </div>
                 ) : (
                   history.map((session: any) => (
                     <button
                       key={session.id}
-                      className="w-full bg-zinc-900/30 border border-zinc-800/50 p-5 rounded-2xl flex items-center justify-between group active:bg-zinc-800/40 transition-all"
+                      className="w-full bg-zinc-900 border border-zinc-800/50 p-4 rounded-xl flex items-center justify-between group active:bg-zinc-800/40 transition-all text-left"
                     >
-                      <div className="flex flex-col items-start gap-1">
+                      <div className="space-y-1">
                         <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">{session.date}</span>
-                        <h4 className="text-base font-bold text-white leading-tight">{session.topic}</h4>
+                        <h4 className="text-sm font-bold text-zinc-200 leading-tight">{session.topic}</h4>
                       </div>
-                      <ChevronRight size={16} className="text-zinc-800 group-hover:text-zinc-500 transition-all" />
+                      <ChevronRight size={14} className="text-zinc-700" />
                     </button>
                   ))
                 )}
