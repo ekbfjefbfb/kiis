@@ -17,10 +17,14 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Check onboarding
-    const onboardingComplete = localStorage.getItem("onboarding_complete");
-    if (!onboardingComplete) {
-      navigate("/onboarding");
-      return;
+    try {
+      const onboardingComplete = localStorage.getItem("onboarding_complete");
+      if (!onboardingComplete) {
+        navigate("/onboarding", { replace: true });
+        return;
+      }
+    } catch (e) {
+      console.error("Storage error:", e);
     }
 
     const refreshData = () => {

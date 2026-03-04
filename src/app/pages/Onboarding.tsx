@@ -30,7 +30,13 @@ export default function Onboarding() {
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
-      navigate("/register");
+      try {
+        localStorage.setItem("onboarding_complete", "true");
+        navigate("/register", { replace: true });
+      } catch (e) {
+        console.error("LS Error:", e);
+        navigate("/register", { replace: true });
+      }
     }
   };
 
