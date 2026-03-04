@@ -126,8 +126,13 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden selection:bg-white/10">
-      {/* Header Unificado y Sutil - Única Navegación */}
+    <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden selection:bg-white/10 relative">
+      {/* Estrella al fondo con opacidad ultra baja */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.01]">
+        <Sparkles size={120} strokeWidth={0.5} className="text-white" />
+      </div>
+
+      {/* Header Unificado y Sutil */}
       <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-20">
         <div className="flex items-center gap-4">
           <Link to="/dashboard" className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
@@ -148,55 +153,50 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 px-6 space-y-8 overflow-y-auto scrollbar-hide pt-6 pb-40">
-        {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center opacity-[0.02]">
-            <Sparkles size={100} strokeWidth={0.5} />
-          </div>
-        )}
-        
-        {messages.map((msg, i) => (
-          <motion.div
-            key={msg.id || i}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={clsx("flex flex-col", msg.role === "user" ? "items-end" : "items-start")}
-          >
-            {msg.role === "user" ? (
-              <div className="bg-[#1a1a1a] text-white/90 px-5 py-3 rounded-[24px] text-[15px] font-medium max-w-[85%] border border-white/[0.03]">
-                {msg.content}
-              </div>
-            ) : (
-              <div className="space-y-4 max-w-full">
-                <div className="text-[16px] leading-relaxed text-white/90 font-medium">
-                  {msg.content || (
-                    <div className="flex gap-1.5 p-1">
-                      <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" />
-                      <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.2s]" />
-                      <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.4s]" />
+      {/* Messages Area */}
+      <div className="flex-1 px-6 space-y-8 overflow-y-auto scrollbar-hide pt-6 pb-40 z-10 relative">
+        <AnimatePresence mode="popLayout">
+          {messages.map((msg, i) => (
+            <motion.div
+              key={msg.id || i}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={clsx("flex flex-col", msg.role === "user" ? "items-end" : "items-start")}
+            >
+              {msg.role === "user" ? (
+                <div className="bg-[#1a1a1a] text-white/90 px-5 py-3 rounded-[24px] text-[15px] font-medium max-w-[85%] border border-white/[0.03]">
+                  {msg.content}
+                </div>
+              ) : (
+                <div className="space-y-4 max-w-full">
+                  <div className="text-[16px] leading-relaxed text-white/90 font-medium">
+                    {msg.content || (
+                      <div className="flex gap-1.5 p-1">
+                        <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" />
+                        <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.2s]" />
+                        <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.4s]" />
+                      </div>
+                    )}
+                  </div>
+                  {msg.content && (
+                    <div className="flex items-center gap-4 text-white/20">
+                      <button onClick={() => navigator.clipboard.writeText(msg.content)} className="hover:text-white transition-colors"><Copy size={14} /></button>
+                      <button className="hover:text-white transition-colors"><Share2 size={14} /></button>
+                      <button className="hover:text-white transition-colors"><ThumbsUp size={14} /></button>
                     </div>
                   )}
                 </div>
-                {msg.content && (
-                  <div className="flex items-center gap-4 text-white/20">
-                    <button onClick={() => navigator.clipboard.writeText(msg.content)} className="hover:text-white transition-colors"><Copy size={14} /></button>
-                    <button className="hover:text-white transition-colors"><Share2 size={14} /></button>
-                    <button className="hover:text-white transition-colors"><ThumbsUp size={14} /></button>
-                  </div>
-                )}
-              </div>
-            )}
-          </motion.div>
-        ))}
+              )}
+            </motion.div>
+          ))}
+        </AnimatePresence>
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Zone - Compacto y Sin Borde Azul */}
+      {/* Input Zone - Rediseño Compacto */}
       <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-black via-black to-transparent z-20">
         <div className="max-w-2xl mx-auto">
-          <div className="bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex items-center gap-2 shadow-2xl">
-            
+          <div className="bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex items-center gap-2 shadow-2xl relative">
             <div className="flex-1 flex items-center px-4 py-2 min-h-[44px]">
               {!isRecording ? (
                 <textarea
@@ -204,8 +204,8 @@ export default function ChatPage() {
                   onChange={(e) => setInput(e.target.value)}
                   rows={1}
                   placeholder="Escribe o habla_"
-                  className="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2 scrollbar-hide outline-none ring-0 shadow-none selection:bg-white/20"
-                  style={{ outline: 'none', boxShadow: 'none' }}
+                  className="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2 scrollbar-hide outline-none ring-0 shadow-none appearance-none"
+                  style={{ outline: 'none', border: 'none', boxShadow: 'none' }}
                   onInput={(e) => {
                     const target = e.target as HTMLTextAreaElement;
                     target.style.height = 'auto';
@@ -261,7 +261,7 @@ export default function ChatPage() {
                 ) : isProcessing ? (
                   <Loader2 size={18} className="animate-spin text-black" />
                 ) : input.trim() ? (
-                  <Send size={18} />
+                  <Send size={18} className="text-black" />
                 ) : (
                   <>
                     <div className="flex gap-0.5 items-end h-3 mr-1 text-black">
