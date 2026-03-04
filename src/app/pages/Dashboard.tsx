@@ -44,18 +44,18 @@ export default function Dashboard() {
           <section className="mb-10">
             <button 
               onClick={() => navigate("/live")}
-              className="w-full bg-white text-black p-6 rounded-[28px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.15)] border-none"
+              className="w-full bg-white text-black p-10 rounded-[40px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.15)] border-none"
             >
-              <div className="flex items-center gap-6">
-                <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shadow-2xl">
-                  <Mic size={24} className="text-white" />
+              <div className="flex items-center gap-8">
+                <div className="w-16 h-16 rounded-[24px] bg-black flex items-center justify-center shadow-2xl">
+                  <Mic size={32} className="text-white" />
                 </div>
                 <div className="text-left space-y-1">
-                  <h2 className="text-lg font-black italic uppercase tracking-tighter leading-none">Grabar_Ahora_</h2>
-                  <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">IA_Realtime_</p>
+                  <h2 className="text-2xl font-black uppercase tracking-tight leading-none">Grabar_Ahora_</h2>
+                  <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">IA_Realtime_Engine_</p>
                 </div>
               </div>
-              <ChevronRight size={24} strokeWidth={3} className="opacity-10 group-hover:opacity-100 transition-opacity" />
+              <ChevronRight size={32} strokeWidth={3} className="opacity-10 group-hover:opacity-100 transition-opacity" />
             </button>
           </section>
 

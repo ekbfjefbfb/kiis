@@ -49,18 +49,18 @@ export default function Onboarding() {
           </motion.button>
         </header>
 
-        <main className="flex-1 flex flex-col justify-center space-y-12 pb-10">
-          <div className="text-center space-y-8">
-            <div className="w-24 h-24 rounded-[36px] bg-zinc-900 border border-zinc-800 mx-auto flex items-center justify-center shadow-2xl relative">
-              <div className="absolute inset-0 bg-white/5 rounded-[36px] blur-3xl animate-pulse" />
-              <div className="relative text-white scale-75">{STEPS[currentStep].icon}</div>
+        <main className="flex-1 flex flex-col justify-center space-y-20 py-12">
+          <div className="text-center space-y-12">
+            <div className="w-32 h-32 rounded-[48px] bg-zinc-900 border border-zinc-800 mx-auto flex items-center justify-center shadow-2xl relative mb-4">
+              <div className="absolute inset-0 bg-white/5 rounded-[48px] blur-3xl animate-pulse" />
+              <div className="relative text-white scale-110">{STEPS[currentStep].icon}</div>
             </div>
             
-            <div className="space-y-5 px-4">
-              <h1 className="text-[28px] font-black tracking-tighter leading-none uppercase italic text-white">
+            <div className="space-y-6 px-4">
+              <h1 className="text-4xl font-black tracking-tight leading-tight uppercase text-white">
                 {STEPS[currentStep].title}
               </h1>
-              <p className="text-zinc-500 text-[11px] font-black tracking-[0.2em] uppercase max-w-[260px] mx-auto leading-relaxed italic">
+              <p className="text-zinc-400 text-sm font-medium max-w-[280px] mx-auto leading-relaxed">
                 {STEPS[currentStep].description}
               </p>
             </div>

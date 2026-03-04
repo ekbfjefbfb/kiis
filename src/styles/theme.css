@@ -57,27 +57,40 @@ html, body {
 .text-zinc-600 { color: #52525b !important; }
 .text-black { color: #000000 !important; }
 
-/* Premium Button Sizing */
+/* Premium Button Sizing - Brutalist & Tactile */
 .btn-massive {
   width: 100%;
-  background-color: white;
-  color: black;
-  padding: 1.05rem 1.25rem;
-  border-radius: 1.15rem;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 1.5rem 2rem;
+  border-radius: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.7rem;
-  transition: all 0.2s;
-  font-weight: 900;
+  gap: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  font-size: 1rem;
   border: none;
+  box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
 }
 
 .btn-massive:active {
-  transform: scale(0.95);
+  transform: scale(0.96);
+  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.05);
+}
+
+/* Typography for Eye Comfort */
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+p {
+  line-height: 1.6;
+  letter-spacing: 0.01em;
 }
 
 /* Brutalist Inputs */
