@@ -196,7 +196,7 @@ export default function ChatPage() {
                 onChange={(e) => setInput(e.target.value)}
                 rows={1}
                 disabled={isRecording}
-                placeholder={isRecording ? "Escuchando..." : "Pregunta cualquier cosa"}
+                placeholder={isRecording ? "Te escucho..." : "Pregunta cualquier cosa"}
                 className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2 disabled:opacity-50"
                 onInput={(e) => {
                   const target = e.target as HTMLTextAreaElement;
@@ -243,9 +243,9 @@ export default function ChatPage() {
                 ) : (
                   <>
                     <div className="flex gap-0.5 items-end h-3 mr-1">
-                      <div className="w-[2px] h-2 bg-white/60 rounded-full" />
+                      <div className="w-[2px] h-2 bg-white rounded-full" />
                       <div className="w-[2px] h-3 bg-white rounded-full" />
-                      <div className="w-[2px] h-2 bg-white/60 rounded-full" />
+                      <div className="w-[2px] h-2 bg-white rounded-full" />
                     </div>
                     <span className="text-[13px] font-black uppercase italic tracking-tighter">Hablar</span>
                   </>
