@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, BookOpen, Plus } from "lucide-react";
+import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Plus, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate } from "react-router";
@@ -26,6 +26,7 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pendingResponseRef = useRef<string | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
+  const [isVoiceMode, setIsVoiceMode] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -42,7 +43,11 @@ export default function ChatPage() {
           pendingResponseRef.current = null;
           setIsTyping(false);
           if (autoSpeak && cleanedText) {
-            audioService.speak(cleanedText, () => {});
+            audioService.speak(cleanedText, () => {
+              if (isVoiceMode) {
+                // Opcional: auto-activar micro después de que hable la IA en modo voz pura
+              }
+            });
           }
         }
       },
@@ -54,7 +59,7 @@ export default function ChatPage() {
       chatWebSocket.disconnect();
       audioService.stopSpeaking();
     };
-  }, [autoSpeak]);
+  }, [autoSpeak, isVoiceMode]);
 
   const handleNavigationCommand = useCallback((text: string) => {
     const navMatch = text.match(/\[NAVIGATE:(.*?)\]/);
@@ -75,6 +80,9 @@ export default function ChatPage() {
       });
       const cleaned = handleNavigationCommand(finalResponse);
       setMessages(prev => prev.map(m => m.id === aiResponseId ? { ...m, content: cleaned } : m));
+      if (autoSpeak && cleaned) {
+        audioService.speak(cleaned, () => {});
+      }
     } catch (error) {
       console.error(error);
     }
@@ -111,13 +119,13 @@ export default function ChatPage() {
         await handleSend(transcript);
       } catch (error) {
         console.error(error);
-      } finally {
         setIsProcessing(false);
       }
     } else {
       const ok = await audioService.requestPermissions();
       if (!ok) return;
       try {
+        audioService.stopSpeaking();
         await audioService.startAudioRecording();
         setIsRecording(true);
       } catch (e) { console.error(e); }
@@ -126,112 +134,153 @@ export default function ChatPage() {
 
   return (
     <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden selection:bg-white/20">
-      {/* Header Minimalista Extremo */}
+      {/* Header Minimalista */}
       <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-20">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
             <ArrowLeft size={18} />
           </button>
           <div className="flex flex-col">
-            <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Asistente</h1>
-            <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Chat + Voz</p>
+            <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">IA Chat</h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setIsVoiceMode(!isVoiceMode)} 
+            className={clsx(
+              "px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all",
+              isVoiceMode ? "bg-white text-black border-white" : "bg-zinc-900 text-white/40 border-white/10"
+            )}
+          >
+            {isVoiceMode ? "Voz Pura" : "Modo Dual"}
+          </button>
           <button onClick={() => setIsAddingClass(true)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
             <Plus size={18} />
-          </button>
-          <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
-            {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/30" />}
           </button>
         </div>
       </div>
 
-      {/* Messages - Área de scroll limpia */}
-      <div className="flex-1 px-4 space-y-6 overflow-y-auto scrollbar-hide pt-6 pb-32">
+      {/* Messages - Más Compacto */}
+      <div className={clsx(
+        "flex-1 px-4 space-y-4 overflow-y-auto scrollbar-hide pt-4 transition-all duration-500",
+        isVoiceMode ? "opacity-20 blur-sm pointer-events-none" : "opacity-100"
+      )}>
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center opacity-5">
-            <Sparkles size={80} strokeWidth={1} />
-            <p className="mt-4 text-sm font-black uppercase italic tracking-widest text-center">IA Unificada</p>
+            <Sparkles size={60} strokeWidth={1} />
           </div>
         )}
         
         {messages.map((msg, i) => (
           <motion.div
             key={msg.id || i}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             className={clsx("flex flex-col", msg.role === "user" ? "items-end" : "items-start")}
           >
             <div className={clsx(
-              "max-w-[88%] p-5 rounded-[28px] text-[15px] font-medium leading-snug shadow-2xl transition-all",
+              "max-w-[90%] p-4 rounded-[22px] text-[14px] font-medium leading-snug transition-all shadow-xl",
               msg.role === "user" 
                 ? "bg-zinc-800 text-white rounded-tr-sm border border-white/5" 
-                : "bg-white text-black rounded-tl-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                : "bg-white text-black rounded-tl-sm"
             )}>
-              {msg.content || (
-                <div className="flex gap-1.5 p-1">
-                  <div className="w-1.5 h-1.5 bg-black/20 rounded-full animate-bounce" />
-                  <div className="w-1.5 h-1.5 bg-black/20 rounded-full animate-bounce [animation-delay:0.2s]" />
-                  <div className="w-1.5 h-1.5 bg-black/20 rounded-full animate-bounce [animation-delay:0.4s]" />
-                </div>
-              )}
+              {msg.content || "..."}
             </div>
-            <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest mt-2 px-2">
-              {msg.role === "user" ? "Tú" : "IA"}
-            </span>
           </motion.div>
         ))}
-        {isProcessing && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3 px-4 py-2 bg-zinc-900/50 border border-white/5 rounded-full w-fit">
-            <Loader2 size={12} className="animate-spin text-white/40" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Procesando</span>
-          </motion.div>
+        {isTyping && (
+           <div className="flex gap-1.5 p-2 bg-white/5 w-fit rounded-full px-4 border border-white/5">
+              <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" />
+              <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.2s]" />
+              <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.4s]" />
+           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Zone - Flotante y Minimalista */}
-      <div className="shrink-0 p-6 bg-gradient-to-t from-black via-black/90 to-transparent pb-10">
-        <div className="max-w-md mx-auto flex gap-3 items-end">
+      {/* Modo Voz Pura Overlay */}
+      <AnimatePresence>
+        {isVoiceMode && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/60 backdrop-blur-md"
+          >
+            <div className="relative">
+              <motion.div 
+                animate={isRecording ? { scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] } : {}}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+                className="absolute inset-0 bg-white/10 rounded-full blur-2xl"
+              />
+              <Sparkles size={100} className={clsx("transition-all duration-700", isRecording ? "text-white scale-110" : "text-white/10")} />
+            </div>
+            <p className="mt-8 text-sm font-black uppercase italic tracking-[0.3em] text-white/40">
+              {isRecording ? "Escuchando..." : isProcessing ? "Procesando..." : "Modo Solo Voz"}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Input Zone - Compacta y Eficiente */}
+      <div className="shrink-0 p-4 bg-black border-t border-white/5 pb-10 z-20">
+        <div className="max-w-md mx-auto flex gap-3 items-center">
           <motion.button
             onClick={toggleVoiceRecording}
             whileTap={{ scale: 0.9 }}
             className={clsx(
-              "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shrink-0 shadow-2xl",
-              isRecording ? "bg-red-600 animate-pulse" : "bg-zinc-900 border border-white/10"
+              "w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 shrink-0 shadow-2xl",
+              isRecording ? "bg-red-600 shadow-[0_0_30px_rgba(220,38,38,0.4)]" : "bg-white text-black"
             )}
           >
-            {isRecording ? <StopCircle size={24} fill="white" /> : <Mic size={24} />}
+            {isRecording ? <StopCircle size={28} fill="white" /> : <Mic size={28} />}
           </motion.button>
 
-          <div className="flex-1 relative flex items-center group">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              rows={1}
-              placeholder={isRecording ? "Escuchando..." : "Hablemos?"}
-              className="w-full bg-zinc-900 border border-white/10 rounded-2xl px-5 py-4 text-[15px] font-medium focus:outline-none focus:ring-1 focus:ring-white/20 resize-none overflow-hidden min-h-[56px] max-h-[120px] placeholder:text-white/10 transition-all"
-              onInput={(e) => {
-                const target = e.target as HTMLTextAreaElement;
-                target.style.height = 'auto';
-                target.style.height = `${target.scrollHeight}px`;
-              }}
-            />
-            <AnimatePresence>
-              {input.trim() && !isRecording && (
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  onClick={() => handleSend()}
-                  className="absolute right-2 bottom-2 w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center active:scale-90 transition-transform shadow-lg"
-                >
-                  <Send size={18} />
-                </motion.button>
-              )}
-            </AnimatePresence>
-          </div>
+          {!isVoiceMode && (
+            <div className="flex-1 relative flex items-center">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                rows={1}
+                placeholder="Escribe..."
+                className="w-full bg-zinc-900 border border-white/10 rounded-2xl px-5 py-4 text-[15px] font-medium focus:outline-none focus:ring-1 focus:ring-white/20 resize-none overflow-hidden min-h-[56px] max-h-[120px] placeholder:text-white/10 transition-all text-white"
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = 'auto';
+                  target.style.height = `${target.scrollHeight}px`;
+                }}
+              />
+              <AnimatePresence>
+                {input.trim() && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => handleSend()}
+                    className="absolute right-2 bottom-2 w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center active:scale-90 shadow-lg"
+                  >
+                    <Send size={18} />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+          
+          {isVoiceMode && (
+             <div className="flex-1 flex flex-col justify-center">
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">Toca el micro para hablar</p>
+                <div className="flex gap-1 mt-2 ml-2">
+                   {[1,2,3,4].map(i => (
+                     <motion.div 
+                        key={i}
+                        animate={isRecording ? { height: [4, 12, 4] } : { height: 4 }}
+                        transition={{ repeat: Infinity, duration: 0.5, delay: i*0.1 }}
+                        className="w-1 bg-white/20 rounded-full"
+                     />
+                   ))}
+                </div>
+             </div>
+          )}
         </div>
       </div>
 
