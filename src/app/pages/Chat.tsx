@@ -126,17 +126,17 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden selection:bg-white/10 relative">
+    <div className="h-[100dvh] w-full bg-black text-white font-sans flex flex-col overflow-hidden selection:bg-white/10 relative">
       {/* Estrella al fondo con opacidad ultra baja */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.01]">
         <Sparkles size={120} strokeWidth={0.5} className="text-white" />
       </div>
 
-      {/* Header Unificado y Sutil */}
-      <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-20">
+      {/* Header Adaptativo - Safe Area Aware */}
+      <header className="px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] pt-[max(env(safe-area-inset-top,2rem),3rem)] pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-20">
         <div className="flex items-center gap-4">
-          <Link to="/dashboard" className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
-            <ArrowLeft size={18} />
+          <Link to="/dashboard" className="w-11 h-11 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            <ArrowLeft size={20} />
           </Link>
           <div className="flex flex-col">
             <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Asistente</h1>
@@ -144,17 +144,17 @@ export default function ChatPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
-            {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/30" />}
+          <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-11 h-11 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            {autoSpeak ? <Volume2 size={20} /> : <VolumeX size={20} className="text-white/30" />}
           </button>
-          <Link to="/profile" className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
-            <User size={18} className="text-white/60" />
+          <Link to="/profile" className="w-11 h-11 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            <User size={20} className="text-white/60" />
           </Link>
         </div>
-      </div>
+      </header>
 
-      {/* Messages Area */}
-      <div className="flex-1 px-6 space-y-8 overflow-y-auto scrollbar-hide pt-6 pb-40 z-10 relative">
+      {/* Messages Area - Con Safe Areas */}
+      <div className="flex-1 px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] space-y-8 overflow-y-auto scrollbar-hide pt-6 pb-40 z-10 relative">
         <AnimatePresence mode="popLayout">
           {messages.map((msg, i) => (
             <motion.div
@@ -180,9 +180,9 @@ export default function ChatPage() {
                   </div>
                   {msg.content && (
                     <div className="flex items-center gap-4 text-white/20">
-                      <button onClick={() => navigator.clipboard.writeText(msg.content)} className="hover:text-white transition-colors"><Copy size={14} /></button>
-                      <button className="hover:text-white transition-colors"><Share2 size={14} /></button>
-                      <button className="hover:text-white transition-colors"><ThumbsUp size={14} /></button>
+                      <button onClick={() => navigator.clipboard.writeText(msg.content)} className="hover:text-white transition-colors p-1"><Copy size={14} /></button>
+                      <button className="hover:text-white transition-colors p-1"><Share2 size={14} /></button>
+                      <button className="hover:text-white transition-colors p-1"><ThumbsUp size={14} /></button>
                     </div>
                   )}
                 </div>
@@ -193,10 +193,11 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Zone - Rediseño Compacto */}
-      <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-black via-black to-transparent z-20">
+      {/* Input Zone Adaptativa - Con Safe Area en la base */}
+      <div className="shrink-0 px-[env(safe-area-inset-left,1rem)] pr-[env(safe-area-inset-right,1rem)] pb-[max(env(safe-area-inset-bottom,1.5rem),2.5rem)] bg-gradient-to-t from-black via-black to-transparent z-20">
         <div className="max-w-2xl mx-auto">
           <div className="bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex items-center gap-2 shadow-2xl relative">
+            
             <div className="flex-1 flex items-center px-4 py-2 min-h-[44px]">
               {!isRecording ? (
                 <textarea
@@ -261,15 +262,15 @@ export default function ChatPage() {
                 ) : isProcessing ? (
                   <Loader2 size={18} className="animate-spin text-black" />
                 ) : input.trim() ? (
-                  <Send size={18} className="text-black" />
+                  <Send size={18} />
                 ) : (
                   <>
-                    <div className="flex gap-0.5 items-end h-3 mr-1 text-black">
+                    <div className="flex gap-0.5 items-end h-3 mr-1">
                       <div className="w-[2px] h-2 bg-black rounded-full" />
                       <div className="w-[2px] h-3 bg-black rounded-full" />
                       <div className="w-[2px] h-2 bg-black rounded-full" />
                     </div>
-                    <span className="text-[13px] font-black uppercase italic tracking-tighter">Hablar</span>
+                    <span className="text-[13px] font-black uppercase italic tracking-tighter text-black">Hablar</span>
                   </>
                 )}
               </motion.button>
