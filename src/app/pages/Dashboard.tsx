@@ -19,8 +19,8 @@ export default function Dashboard() {
   return (
     <div className="h-[100dvh] w-full bg-black flex flex-col overflow-hidden relative" style={{ backgroundColor: '#000000' }}>
       {/* Header - Engineering Minimal Apple/Tesla Style */}
-      <header className="w-full bg-black/80 backdrop-blur-xl z-30 pt-16 pb-10 shrink-0">
-        <div className="mobile-container flex-row justify-between items-center px-8">
+      <header className="w-full bg-black/80 backdrop-blur-xl z-30 pt-12 pb-8 shrink-0">
+        <div className="mobile-container flex-row justify-between items-center">
           <header className="mb-10">
             <p className="text-[10px] font-black tracking-[0.3em] text-zinc-500 uppercase mb-2">Hoy</p>
             <h1 className="text-4xl font-black tracking-tighter leading-none uppercase">
@@ -28,10 +28,10 @@ export default function Dashboard() {
             </h1>
           </header>
           <div className="flex gap-4">
-            <button onClick={() => navigate("/calendar")} className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all shadow-lg">
+            <button onClick={() => navigate("/calendar")} className="w-11 h-11 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all shadow-lg">
               <Calendar size={20} className="text-zinc-400" />
             </button>
-            <button onClick={() => navigate("/profile")} className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all shadow-lg">
+            <button onClick={() => navigate("/profile")} className="w-11 h-11 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all shadow-lg">
               <User size={20} className="text-zinc-400" />
             </button>
           </div>
@@ -41,14 +41,14 @@ export default function Dashboard() {
       <main className="flex-1 overflow-y-auto scrollbar-hide py-10">
         <div className="mobile-container space-y-16">
           {/* Main Action - Centered & Massive Impact */}
-          <section className="px-2 mb-10">
+          <section className="mb-10">
             <button 
               onClick={() => navigate("/live")}
-              className="w-full bg-white text-black p-8 rounded-[32px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.15)] border-none"
+              className="w-full bg-white text-black p-6 rounded-[28px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.15)] border-none"
             >
               <div className="flex items-center gap-6">
-                <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center shadow-2xl">
-                  <Mic size={28} className="text-white" />
+                <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shadow-2xl">
+                  <Mic size={24} className="text-white" />
                 </div>
                 <div className="text-left space-y-1">
                   <h2 className="text-lg font-black italic uppercase tracking-tighter leading-none">Grabar_Ahora_</h2>
@@ -61,7 +61,7 @@ export default function Dashboard() {
 
           {/* Agenda Section */}
           <section className="mb-10">
-            <div className="flex items-center justify-between mb-4 px-1">
+            <div className="flex items-center justify-between mb-4">
               <h2 className="text-[10px] font-black tracking-[0.3em] text-zinc-500 uppercase flex items-center gap-2">
                 <BookOpen size={12} strokeWidth={3} />
                 Agenda_
@@ -73,15 +73,15 @@ export default function Dashboard() {
                 <Plus size={16} strokeWidth={3} />
               </button>
             </div>
-            <div className="grid grid-cols-1 gap-4 px-2">
+            <div className="grid grid-cols-1 gap-4">
               {CLASSES.map((cls) => (
                 <button
                   key={cls.id}
                   onClick={() => navigate(`/class/${cls.id}`)}
-                  className="w-full bg-zinc-900/30 border border-white/[0.03] p-6 rounded-[28px] flex items-center justify-between group active:bg-zinc-800/40 transition-all hover:border-white/10"
+                  className="w-full bg-zinc-900/30 border border-white/[0.03] p-5 rounded-[26px] flex items-center justify-between group active:bg-zinc-800/40 transition-all hover:border-white/10"
                 >
                   <div className="flex items-center gap-5">
-                    <div className="w-14 h-14 rounded-2xl bg-zinc-900/50 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
+                    <div className="w-12 h-12 rounded-2xl bg-zinc-900/50 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
                       <LayoutGrid size={24} className="text-zinc-700 group-hover:text-zinc-400 transition-colors" />
                     </div>
                     <div className="text-left space-y-1">
@@ -112,9 +112,9 @@ export default function Dashboard() {
       {/* Floating IA Controller - Premium Position */}
       <button 
         onClick={() => navigate("/chat")}
-        className="fixed bottom-12 right-8 w-18 h-18 rounded-full bg-white text-black flex items-center justify-center shadow-[0_20px_60px_rgba(255,255,255,0.2)] active:scale-[0.85] transition-all z-50 border-[6px] border-black"
+        className="fixed bottom-8 right-6 w-14 h-14 rounded-full bg-white text-black flex items-center justify-center shadow-[0_20px_60px_rgba(255,255,255,0.2)] active:scale-[0.9] transition-all z-50 border-[5px] border-black"
       >
-        <MessageSquare size={32} fill="currentColor" />
+        <MessageSquare size={24} fill="currentColor" />
       </button>
 
       {showAddClass && <AddClassModal isOpen={showAddClass} onClose={() => setShowAddClass(false)} />}

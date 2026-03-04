@@ -36,28 +36,28 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-[100dvh] w-full bg-black flex flex-col items-center py-12 relative overflow-y-auto">
+    <div className="min-h-[100dvh] w-full bg-black flex flex-col items-center py-10 relative">
       <div className="mobile-container flex flex-col flex-1">
-        <header className="flex justify-end pt-4 pb-8 shrink-0">
+        <header className="flex justify-end pt-3 pb-6 shrink-0">
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={installPWA}
-            className="bg-white/10 hover:bg-white/20 text-white text-[10px] font-black px-4 py-2 rounded-full flex items-center gap-2 border border-white/10 uppercase tracking-widest transition-all"
+            className="bg-white/10 hover:bg-white/20 text-white text-[10px] font-black px-3 py-1.5 rounded-full flex items-center gap-2 border border-white/10 uppercase tracking-widest transition-all"
           >
             <Download size={12} strokeWidth={3} />
             <span>Instalar_</span>
           </motion.button>
         </header>
 
-        <main className="flex-1 flex flex-col justify-center space-y-16 pb-12">
-          <div className="text-center space-y-10">
+        <main className="flex-1 flex flex-col justify-center space-y-12 pb-10">
+          <div className="text-center space-y-8">
             <div className="w-24 h-24 rounded-[36px] bg-zinc-900 border border-zinc-800 mx-auto flex items-center justify-center shadow-2xl relative">
               <div className="absolute inset-0 bg-white/5 rounded-[36px] blur-3xl animate-pulse" />
               <div className="relative text-white scale-75">{STEPS[currentStep].icon}</div>
             </div>
             
-            <div className="space-y-6 px-4">
-              <h1 className="text-3xl font-black tracking-tighter leading-none uppercase italic text-white">
+            <div className="space-y-5 px-4">
+              <h1 className="text-[28px] font-black tracking-tighter leading-none uppercase italic text-white">
                 {STEPS[currentStep].title}
               </h1>
               <p className="text-zinc-500 text-[11px] font-black tracking-[0.2em] uppercase max-w-[260px] mx-auto leading-relaxed italic">
@@ -67,7 +67,7 @@ export default function Onboarding() {
           </div>
         </main>
 
-        <footer className="space-y-10 pb-8 shrink-0">
+        <footer className="space-y-8 pb-6 shrink-0">
           <div className="flex justify-center gap-3">
             {STEPS.map((_, i) => (
               <div
