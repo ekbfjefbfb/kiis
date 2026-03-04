@@ -44,18 +44,18 @@ export default function Dashboard() {
           <section className="px-2 mb-10">
             <button 
               onClick={() => navigate("/live")}
-              className="w-full bg-white text-black p-10 rounded-[56px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.15)] border-none"
+              className="w-full bg-white text-black p-6 rounded-[32px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.15)] border-none"
             >
-              <div className="flex items-center gap-8">
-                <div className="w-18 h-18 rounded-[28px] bg-black flex items-center justify-center shadow-2xl">
-                  <Mic size={36} className="text-white" />
+              <div className="flex items-center gap-6">
+                <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shadow-2xl">
+                  <Mic size={24} className="text-white" />
                 </div>
-                <div className="text-left space-y-1">
-                  <h2 className="text-2xl font-black italic uppercase tracking-tighter leading-none">Grabar_Ahora_</h2>
-                  <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-40">Captura_IA_Total_</p>
+                <div className="text-left space-y-0.5">
+                  <h2 className="text-lg font-black italic uppercase tracking-tighter leading-none">Grabar_Ahora_</h2>
+                  <p className="text-[8px] font-black text-zinc-400 uppercase tracking-widest">IA_Realtime_</p>
                 </div>
               </div>
-              <ChevronRight size={36} strokeWidth={3} className="opacity-10 group-hover:opacity-100 transition-opacity" />
+              <ChevronRight size={24} strokeWidth={3} className="opacity-10 group-hover:opacity-100 transition-opacity" />
             </button>
           </section>
 
@@ -78,18 +78,18 @@ export default function Dashboard() {
                 <button
                   key={cls.id}
                   onClick={() => navigate(`/class/${cls.id}`)}
-                  className="w-full bg-zinc-900/30 border border-white/[0.03] p-8 rounded-[44px] flex items-center justify-between group active:bg-zinc-800/40 transition-all hover:border-white/10"
+                  className="w-full bg-zinc-900/30 border border-white/[0.03] p-5 rounded-[28px] flex items-center justify-between group active:bg-zinc-800/40 transition-all hover:border-white/10"
                 >
-                  <div className="flex items-center gap-7">
-                    <div className="w-16 h-16 rounded-[24px] bg-zinc-900/50 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
-                      <LayoutGrid size={24} className="text-zinc-700 group-hover:text-zinc-400 transition-colors" />
+                  <div className="flex items-center gap-5">
+                    <div className="w-12 h-12 rounded-2xl bg-zinc-900/50 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
+                      <LayoutGrid size={20} className="text-zinc-700 group-hover:text-zinc-400 transition-colors" />
                     </div>
-                    <div className="text-left space-y-1.5">
-                      <h3 className="text-xl font-black uppercase italic tracking-tight text-zinc-100 leading-none">{cls.name}</h3>
-                      <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] opacity-60">{cls.professor}</p>
+                    <div className="text-left">
+                      <h3 className="text-sm font-black text-white uppercase tracking-tight group-hover:text-white transition-colors leading-none mb-1">{cls.name}</h3>
+                      <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors">{cls.teacher}</p>
                     </div>
                   </div>
-                  <ChevronRight size={22} className="text-zinc-900 group-hover:text-zinc-600 group-hover:translate-x-1 transition-all" />
+                  <ChevronRight size={16} className="text-zinc-800 group-hover:text-zinc-600 transition-all" strokeWidth={3} />
                 </button>
               ))}
             </div>

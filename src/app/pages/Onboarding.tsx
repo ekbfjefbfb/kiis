@@ -49,8 +49,8 @@ export default function Onboarding() {
 
       <main className="mobile-container flex-1 justify-center space-y-16 py-8">
         <div className="text-center space-y-12">
-          <div className="w-36 h-36 rounded-[56px] bg-zinc-900 border border-zinc-800 mx-auto flex items-center justify-center shadow-2xl relative">
-            <div className="absolute inset-0 bg-white/5 rounded-[56px] blur-3xl animate-pulse" />
+          <div className="w-28 h-28 rounded-[42px] bg-zinc-900 border border-zinc-800 mx-auto flex items-center justify-center shadow-2xl relative">
+            <div className="absolute inset-0 bg-white/5 rounded-[42px] blur-3xl animate-pulse" />
             <div className="relative text-white">{STEPS[currentStep].icon}</div>
           </div>
           
