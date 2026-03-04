@@ -374,7 +374,7 @@ export default function ClassDetailPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/70 z-40"
+              className="fixed inset-0 bg-black/90 backdrop-blur-md z-40"
               onClick={() => setActiveTask(null)}
             />
             <motion.div
@@ -383,29 +383,48 @@ export default function ClassDetailPage() {
               exit={{ opacity: 0, y: 24 }}
               className="fixed left-4 right-4 bottom-6 z-50 max-w-md mx-auto"
             >
-              <div className="bg-zinc-900 border border-white/10 rounded-[28px] p-5 shadow-2xl">
-                <div className="flex items-start justify-between gap-3 mb-3">
+              <div className="bg-zinc-900 border border-white/10 rounded-[32px] p-7 shadow-2xl overflow-hidden relative">
+                {/* Decoración de fondo sutil */}
+                <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+                
+                <div className="flex items-start justify-between gap-4 mb-8 relative z-10">
                   <div className="min-w-0">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Tarea</p>
-                    <h3 className="text-[18px] font-black uppercase italic tracking-tight leading-snug">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="px-2 py-0.5 rounded-md bg-white/10 text-[9px] font-black uppercase tracking-[0.2em] text-white/50">
+                        Tarea
+                      </span>
+                      <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                        • {new Date(activeTask.date + "T12:00:00").toLocaleDateString("es-ES", { day: 'numeric', month: 'short' })}
+                      </span>
+                    </div>
+                    <h3 className="text-2xl font-black uppercase italic tracking-tighter leading-[1.1] text-white">
                       {activeTask.title}
                     </h3>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTask(null)}
-                    className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-white/70"
-                    aria-label="Cerrar"
+                  <button 
+                    onClick={() => setActiveTask(null)} 
+                    className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 active:scale-90 transition-all shrink-0"
                   >
-                    <X size={18} />
+                    <X size={20} />
                   </button>
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Qué tienes que hacer</p>
-                  <p className="text-[14px] text-white/80 leading-relaxed whitespace-pre-wrap">
-                    {(activeTask.description || activeTask.details || activeTask.note || activeTask.title || "").toString()}
-                  </p>
+                <div className="space-y-4 relative z-10">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 italic">Instrucciones</p>
+                    <div className="bg-white/5 border border-white/5 rounded-2xl p-4 mt-1">
+                      <p className="text-[15px] text-white/80 leading-relaxed font-medium">
+                        {(activeTask.description || activeTask.details || activeTask.note || activeTask.title || "Sin detalles adicionales para esta tarea.").toString()}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <button 
+                    onClick={() => setActiveTask(null)}
+                    className="w-full bg-white text-black rounded-2xl py-4 text-sm font-black uppercase italic tracking-widest active:scale-[0.98] transition-all mt-2"
+                  >
+                    Entendido
+                  </button>
                 </div>
               </div>
             </motion.div>
