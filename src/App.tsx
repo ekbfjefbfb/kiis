@@ -15,7 +15,7 @@ export default function App() {
   const isAuthenticated = true; 
 
   return (
-    <div style={{ backgroundColor: '#000000', minHeight: '100vh', color: '#ffffff' }}>
+    <div style={{ backgroundColor: '#000000', minHeight: '100vh', color: '#ffffff', opacity: 1, visibility: 'visible' }}>
       <Routes>
         <Route path="/" element={<Onboarding />} />
         <Route path="/login" element={<LoginPage />} />
