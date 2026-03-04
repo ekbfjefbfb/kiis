@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, Send, Bot, StopCircle, Loader2, Play, Volume2, VolumeX, X, Zap, Sparkles, AudioLines } from "lucide-react";
+import { Mic, Send, Bot, StopCircle, Loader2, Play, Volume2, VolumeX, X, Zap, Sparkles, AudioLines, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate } from "react-router";
@@ -23,7 +23,6 @@ export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [currentlyPlayingId, setCurrentlyPlayingId] = useState<string | null>(null);
   const pendingResponseRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -125,20 +124,25 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-[100dvh] bg-black text-white font-sans flex flex-col">
-      {/* Header Minimalista y Grande */}
-      <div className="px-6 pt-10 pb-6 flex justify-between items-center bg-black/80 backdrop-blur-xl sticky top-0 z-20">
-        <h1 className="text-4xl font-black uppercase italic tracking-tighter">IA VOZ</h1>
-        <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
-          {autoSpeak ? <Volume2 size={24} /> : <VolumeX size={24} className="text-white/40" />}
+      {/* Header Compacto */}
+      <div className="px-6 pt-8 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl sticky top-0 z-20">
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate(-1)} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+            <ArrowLeft size={16} />
+          </button>
+          <h1 className="text-xl font-black uppercase italic tracking-tighter">Asistente IA</h1>
+        </div>
+        <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+          {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/40" />}
         </button>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 px-6 space-y-6 overflow-y-auto scrollbar-hide pb-40 pt-4">
+      <div className="flex-1 px-6 space-y-4 overflow-y-auto scrollbar-hide pb-32 pt-2">
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full opacity-20">
-            <AudioLines size={80} strokeWidth={1} />
-            <p className="mt-4 text-xl font-bold uppercase italic tracking-widest text-center">Hablemos...</p>
+          <div className="flex flex-col items-center justify-center h-full opacity-10">
+            <AudioLines size={60} strokeWidth={1} />
+            <p className="mt-2 text-sm font-black uppercase italic tracking-widest text-center">IA Unificada</p>
           </div>
         )}
         
@@ -150,14 +154,14 @@ export default function ChatPage() {
             className={clsx("flex flex-col", msg.role === "user" ? "items-end" : "items-start")}
           >
             <div className={clsx(
-              "max-w-[90%] p-6 rounded-[32px] text-xl font-medium leading-tight shadow-2xl",
+              "max-w-[85%] p-4 rounded-2xl text-base font-medium leading-snug",
               msg.role === "user" ? "bg-emerald-500 text-white rounded-tr-sm" : "bg-zinc-900 text-white rounded-tl-sm border border-white/5"
             )}>
               {msg.content || (
-                <div className="flex gap-1.5 p-1">
-                  <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce [animation-delay:0.2s]" />
-                  <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce [animation-delay:0.4s]" />
+                <div className="flex gap-1 p-1">
+                  <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" />
+                  <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.2s]" />
+                  <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.4s]" />
                 </div>
               )}
             </div>
@@ -166,29 +170,27 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Action Zone Gigante para Teléfono */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black to-transparent z-30">
-        <div className="max-w-md mx-auto flex gap-3 items-end">
-          {/* Botón de Voz Gigante */}
+      {/* Input Zone - Ajustada para escala móvil real */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black to-transparent z-30">
+        <div className="max-w-md mx-auto flex gap-2 items-end">
           <motion.button
             onClick={toggleVoiceRecording}
             whileTap={{ scale: 0.9 }}
             className={clsx(
-              "w-24 h-24 rounded-[35px] flex items-center justify-center transition-all duration-500 shadow-2xl shrink-0",
-              isRecording ? "bg-red-600 animate-pulse" : "bg-zinc-900 border border-white/10"
+              "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 shrink-0",
+              isRecording ? "bg-red-600 shadow-lg" : "bg-zinc-900 border border-white/10"
             )}
           >
-            {isRecording ? <Square size={36} fill="white" /> : <Mic size={36} />}
+            {isRecording ? <Square size={20} fill="white" /> : <Mic size={20} />}
           </motion.button>
 
-          {/* Area de Texto Unificada */}
           <div className="flex-1 relative">
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               rows={1}
-              placeholder={isRecording ? "Grabando..." : "Hablamos?"}
-              className="w-full bg-zinc-900 border border-white/10 rounded-[35px] px-8 py-8 text-xl font-medium focus:outline-none focus:ring-2 focus:ring-white/20 resize-none overflow-hidden h-[96px] placeholder:text-white/10"
+              placeholder={isRecording ? "Escuchando..." : "Escribe o habla..."}
+              className="w-full bg-zinc-900 border border-white/10 rounded-2xl px-5 py-4 text-base font-medium focus:outline-none focus:ring-1 focus:ring-white/20 resize-none overflow-hidden h-14 placeholder:text-white/10"
             />
             <AnimatePresence>
               {input.trim() && !isRecording && (
@@ -197,9 +199,9 @@ export default function ChatPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   onClick={() => handleSend()}
-                  className="absolute right-4 bottom-4 w-16 h-16 bg-white text-black rounded-3xl flex items-center justify-center active:scale-90 transition-transform"
+                  className="absolute right-2 bottom-2 w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center active:scale-90 transition-transform"
                 >
-                  <Send size={28} />
+                  <Send size={18} />
                 </motion.button>
               )}
             </AnimatePresence>
