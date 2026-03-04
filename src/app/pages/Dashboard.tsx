@@ -87,17 +87,17 @@ export default function Dashboard() {
           </Link>
 
           <Link to="/chat" className="block group">
-            <motion.div whileTap={{ scale: 0.98 }} className="bg-white text-black rounded-[24px] p-5 flex items-center justify-between transition-all active:opacity-90 shadow-xl">
+            <motion.div whileTap={{ scale: 0.98 }} className="bg-zinc-900/50 border border-white/5 rounded-[24px] p-5 flex items-center justify-between transition-all active:bg-zinc-800">
               <div className="flex items-center gap-4">
-                <div className="w-11 h-11 rounded-2xl bg-black/5 flex items-center justify-center">
-                  <Brain size={20} />
+                <div className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center">
+                  <Brain size={20} className="text-white/70" />
                 </div>
                 <div>
                   <p className="text-sm font-black uppercase italic leading-none">Asistente IA</p>
-                  <p className="text-[10px] text-black/40 font-bold uppercase tracking-widest mt-1">Chat y voz unificados.</p>
+                  <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest mt-1">Chat y voz unificados.</p>
                 </div>
               </div>
-              <ChevronRight size={16} className="text-black/20" />
+              <ChevronRight size={16} className="text-white/10" />
             </motion.div>
           </Link>
         </div>
