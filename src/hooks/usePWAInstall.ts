@@ -6,17 +6,14 @@ export function usePWAInstall() {
 
   useEffect(() => {
     const handler = (e: any) => {
-      // Prevenir que el navegador muestre su propio prompt
       e.preventDefault();
-      // Guardar el evento para dispararlo luego
       setDeferredPrompt(e);
       setIsInstallable(true);
-      console.log('PWA: Evento beforeinstallprompt capturado');
+      console.log('PWA: beforeinstallprompt event captured');
     };
 
     window.addEventListener('beforeinstallprompt', handler);
 
-    // Verificar si ya está en modo standalone
     if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
       setIsInstallable(false);
     }
@@ -26,22 +23,18 @@ export function usePWAInstall() {
 
   const installPWA = async () => {
     if (!deferredPrompt) {
-      // Guía manual para iOS y navegadores que no soportan el prompt automático
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
       if (isIOS) {
-        alert('PARA INSTALAR EN IPHONE:\n1. Pulsa el botón "Compartir" (el icono del cuadrado con flecha abajo).\n2. Desliza hacia abajo y pulsa "Añadir a pantalla de inicio".');
+        alert('PARA INSTALAR EN IPHONE:\n1. Pulsa el botón "Compartir" (el icono del cuadrado con flecha).\n2. Desliza hacia abajo y pulsa "Añadir a pantalla de inicio".');
       } else {
         alert('PARA INSTALAR:\nPulsa los tres puntos del navegador y selecciona "Instalar aplicación" o "Añadir a pantalla de inicio".');
       }
       return;
     }
     
-    // Mostrar el prompt nativo guardado
     deferredPrompt.prompt();
-    
-    // Esperar a la elección del usuario
     const { outcome } = await deferredPrompt.userChoice;
-    console.log(`PWA: El usuario eligió ${outcome}`);
+    console.log(`PWA: User choice: ${outcome}`);
     
     if (outcome === 'accepted') {
       setDeferredPrompt(null);
