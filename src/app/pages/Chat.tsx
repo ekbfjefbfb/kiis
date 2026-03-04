@@ -184,46 +184,55 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Zone - Lógica Estructurada */}
+      {/* Input Zone - Lógica Estructurada y Compacta */}
       <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-black via-black to-transparent z-20">
         <div className="max-w-2xl mx-auto">
           <div className="bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex items-center gap-2 shadow-2xl">
             
             {/* Input con Placeholder Lógico */}
             <div className="flex-1 flex items-center px-4 py-2 min-h-[44px]">
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                rows={1}
-                disabled={isRecording}
-                placeholder={isRecording ? "Te escucho..." : "Pregunta cualquier cosa"}
-                className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2 disabled:opacity-50"
-                onInput={(e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  target.style.height = 'auto';
-                  target.style.height = `${target.scrollHeight}px`;
-                }}
-              />
+              {!isRecording ? (
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  rows={1}
+                  placeholder="Pregunta cualquier cosa"
+                  className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2"
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = `${target.scrollHeight}px`;
+                  }}
+                />
+              ) : (
+                <div className="flex-1 flex items-center gap-1.5 h-[44px]">
+                  {[...Array(16)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{ height: [4, Math.random() * 16 + 4, 4] }}
+                      transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.03 }}
+                      className="w-[3px] bg-white/30 rounded-full"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Botones con Funciones Máximas y Definidas */}
+            {/* Botones con Funciones Máximas */}
             <div className="flex items-center gap-2 pr-1">
-              {/* Botón Micrófono: Solo visible cuando NO se graba y el input está vacío */}
               {!isRecording && !input.trim() && (
                 <button 
                   onClick={toggleVoiceRecording}
-                  aria-label="Iniciar grabación de voz"
+                  aria-label="Micro"
                   className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-white active:bg-white/10 transition-all shrink-0"
                 >
                   <Mic size={20} />
                 </button>
               )}
               
-              {/* Botón Dinámico: Hablar / Detener / Enviar */}
               <motion.button
                 onClick={isRecording ? toggleVoiceRecording : isProcessing ? undefined : (input.trim() ? () => handleSend() : toggleVoiceRecording)}
                 whileTap={{ scale: 0.95 }}
-                aria-label={isRecording ? "Detener grabación" : input.trim() ? "Enviar mensaje" : "Hablar con IA"}
                 className={clsx(
                   "h-11 flex items-center justify-center gap-2 px-5 rounded-full transition-all duration-300 font-bold shrink-0",
                   isRecording 
@@ -239,7 +248,7 @@ export default function ChatPage() {
                 ) : isProcessing ? (
                   <Loader2 size={18} className="animate-spin" />
                 ) : input.trim() ? (
-                  <Send size={18} className="text-white" />
+                  <Send size={18} />
                 ) : (
                   <>
                     <div className="flex gap-0.5 items-end h-3 mr-1">
