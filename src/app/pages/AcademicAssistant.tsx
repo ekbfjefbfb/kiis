@@ -136,7 +136,7 @@ export default function AcademicAssistant() {
         <div className="flex items-center gap-4 mb-6">
           <button 
             onClick={() => navigate("/")}
-            className="w-10 h-10 bg-zinc-900 rounded-full flex items-center justify-center active:scale-90 transition-transform"
+            className="h-10 px-3 bg-zinc-900 rounded-2xl flex items-center justify-center active:scale-95 transition-transform"
           >
             <ArrowLeft size={20} />
           </button>
@@ -209,7 +209,7 @@ export default function AcademicAssistant() {
           <button
             onClick={() => sendMessage(input)}
             disabled={!input.trim() || isProcessing}
-            className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${
+            className={`h-14 px-4 rounded-2xl flex items-center justify-center transition-all ${
               isProcessing ? 'bg-zinc-900 animate-pulse' : 'bg-white text-black'
             }`}
           >
