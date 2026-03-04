@@ -60,38 +60,48 @@ export default function SmartRecording() {
   };
 
   const stopRecording = async () => {
+    if (phase !== 'recording') return;
     setPhase('processing');
+    
     try {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+
       const audioBlob = await audioService.stopAudioRecording();
+      if (!audioBlob) {
+        throw new Error("No audio captured");
+      }
+
       const result = await agendaService.transcribeAudio(audioBlob);
       
-      if (result.text) {
+      if (result && result.text) {
         agendaService.sendTranscriptChunk(result.text);
       }
 
-      // Esperar un momento para que el WebSocket reciba el estado final
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Esperar un momento para recibir el estado final del WebSocket
+      await new Promise(resolve => setTimeout(resolve, 2500));
 
-      // Auto-extracción y guardado real
       if (agendaState?.state) {
         const { summary, tasks, key_points } = agendaState.state;
-        
-        // Guardar grabación en el sistema
         classManager.addRecording({
           classId: currentClass?.id || "unknown",
           date: new Date().toISOString(),
           duration: recordingTime,
-          summary: summary || "Sin resumen",
+          summary: summary || "Sin resumen disponible",
           tasks: tasks || [],
           keyPoints: key_points || [],
-          notes: result.text || ""
+          notes: result?.text || ""
         });
       }
       
       agendaService.disconnect();
       setPhase('done');
     } catch (e) {
-      console.error(e);
+      console.error("Recording error:", e);
+      // Limpieza de emergencia
+      agendaService.disconnect();
       setPhase('ready');
     }
   };
