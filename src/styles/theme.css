@@ -48,7 +48,6 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   height: 100%;
-  justify-content: center;
 }
 
 body {
@@ -56,7 +55,7 @@ body {
   color: #ffffff;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
   margin: 0;
 }
@@ -64,10 +63,9 @@ body {
 #root {
   width: 100%;
   max-width: 420px;
-  height: 100vh;
+  height: 100dvh;
   position: relative;
   background: #000000;
-  overflow: hidden;
 }
 
 /* Premium Button Sizing */
