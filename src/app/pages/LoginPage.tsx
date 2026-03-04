@@ -31,28 +31,23 @@ export default function LoginPage() {
 
         {/* Formulario Estructurado y Centrado */}
         <form onSubmit={handleSubmit} className="w-full space-y-6">
-          <div className="space-y-4">
+          <div className="space-y-4 mb-10">
             <div className="relative group">
-              <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-white transition-colors">
-                <Mail size={20} />
-              </div>
-              <input 
-                required
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 transition-colors group-focus-within:text-white" size={18} strokeWidth={2.5} />
+              <input
                 type="email"
-                placeholder="EMAIL_"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-[28px] py-6 pl-16 pr-8 text-xs font-black uppercase tracking-widest focus:outline-none focus:border-white focus:bg-zinc-800 transition-all placeholder:text-zinc-700"
+                placeholder="MAIL_"
+                className="w-full bg-zinc-900/50 border-2 border-zinc-800 rounded-2xl py-5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-white transition-all font-bold tracking-tight"
+                required
               />
             </div>
-
             <div className="relative group">
-              <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-white transition-colors">
-                <Lock size={20} />
-              </div>
-              <input 
-                required
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 transition-colors group-focus-within:text-white" size={18} strokeWidth={2.5} />
+              <input
                 type="password"
                 placeholder="CONTRASEÑA_"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-[28px] py-6 pl-16 pr-8 text-xs font-black uppercase tracking-widest focus:outline-none focus:border-white focus:bg-zinc-800 transition-all placeholder:text-zinc-700"
+                className="w-full bg-zinc-900/50 border-2 border-zinc-800 rounded-2xl py-5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-white transition-all font-bold tracking-tight"
+                required
               />
             </div>
           </div>

@@ -37,13 +37,14 @@ export default function Onboarding() {
   return (
     <div className="h-[100dvh] w-full bg-black flex flex-col items-center justify-between py-16 overflow-hidden">
       <header className="mobile-container flex-row justify-end px-8 shrink-0">
-        <button
+        <motion.button
+          whileTap={{ scale: 0.95 }}
           onClick={installPWA}
-          className="flex items-center gap-2.5 px-6 py-3 bg-white text-black rounded-full active:scale-95 transition-all shadow-[0_10px_40px_rgba(255,255,255,0.2)] border-none"
+          className="absolute top-12 right-6 bg-white text-black text-[10px] font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-white uppercase tracking-widest shadow-xl z-50"
         >
-          <Download size={18} strokeWidth={3} />
-          <span className="text-[11px] font-black uppercase tracking-widest">Instalar_App_</span>
-        </button>
+          <Download size={12} strokeWidth={3} />
+          <span>Instalar_</span>
+        </motion.button>
       </header>
 
       <main className="mobile-container flex-1 justify-center space-y-16 py-8">
@@ -54,10 +55,10 @@ export default function Onboarding() {
           </div>
           
           <div className="space-y-6 px-4">
-            <h1 className="text-4xl font-black uppercase italic tracking-tighter leading-none text-white">
+            <h1 className="text-3xl font-black tracking-tighter leading-none mb-2">
               {STEPS[currentStep].title}
             </h1>
-            <p className="text-[13px] font-bold text-zinc-500 uppercase tracking-[0.3em] leading-relaxed max-w-[280px] mx-auto">
+            <p className="text-zinc-500 text-xs font-bold tracking-widest uppercase max-w-[280px] mx-auto leading-relaxed">
               {STEPS[currentStep].description}
             </p>
           </div>
@@ -65,11 +66,13 @@ export default function Onboarding() {
       </main>
 
       <footer className="mobile-container gap-12 shrink-0 pb-8">
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-3 mb-12">
           {STEPS.map((_, i) => (
-            <div 
-              key={i} 
-              className={`h-1.5 rounded-full transition-all duration-500 ${i === currentStep ? 'w-12 bg-white' : 'w-2 bg-zinc-800'}`} 
+            <div
+              key={i}
+              className={`h-1 rounded-full transition-all duration-300 ${
+                i === currentStep ? 'w-8 bg-white' : 'w-2 bg-zinc-800'
+              }`}
             />
           ))}
         </div>

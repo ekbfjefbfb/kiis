@@ -16,18 +16,17 @@ export default function Dashboard() {
     day: 'numeric', 
     month: 'long' 
   }).toUpperCase();
-
   return (
     <div className="h-[100dvh] w-full bg-black flex flex-col overflow-hidden relative" style={{ backgroundColor: '#000000' }}>
       {/* Header - Engineering Minimal Apple/Tesla Style */}
       <header className="w-full bg-black/80 backdrop-blur-xl z-30 pt-16 pb-10 shrink-0">
         <div className="mobile-container flex-row justify-between items-center px-8">
-          <div className="space-y-1.5">
-            <p className="text-[10px] font-black tracking-[0.6em] text-zinc-600 uppercase leading-none">Hoy_</p>
-            <h1 className="text-3xl font-black italic tracking-tighter uppercase leading-none text-white">
-              {today}
+          <header className="mb-10">
+            <p className="text-[10px] font-black tracking-[0.3em] text-zinc-500 uppercase mb-2">Hoy</p>
+            <h1 className="text-4xl font-black tracking-tighter leading-none uppercase">
+              {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
             </h1>
-          </div>
+          </header>
           <div className="flex gap-4">
             <button onClick={() => navigate("/calendar")} className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all shadow-lg">
               <Calendar size={20} className="text-zinc-400" />
@@ -42,7 +41,7 @@ export default function Dashboard() {
       <main className="flex-1 overflow-y-auto scrollbar-hide py-10">
         <div className="mobile-container space-y-16">
           {/* Main Action - Centered & Massive Impact */}
-          <section className="px-2">
+          <section className="px-2 mb-10">
             <button 
               onClick={() => navigate("/live")}
               className="w-full bg-white text-black p-10 rounded-[56px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.15)] border-none"
@@ -61,20 +60,19 @@ export default function Dashboard() {
           </section>
 
           {/* Agenda Section */}
-          <section className="space-y-8">
-            <div className="flex justify-between items-center px-6">
-              <div className="flex items-center gap-3 text-zinc-600">
-                <BookOpen size={18} className="opacity-40" />
-                <span className="text-[11px] font-black uppercase tracking-[0.8em]">Agenda_</span>
-              </div>
+          <section className="mb-10">
+            <div className="flex items-center justify-between mb-4 px-1">
+              <h2 className="text-[10px] font-black tracking-[0.3em] text-zinc-500 uppercase flex items-center gap-2">
+                <BookOpen size={12} strokeWidth={3} />
+                Agenda_
+              </h2>
               <button 
                 onClick={() => setShowAddClass(true)}
-                className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all group"
+                className="p-2 bg-zinc-900 rounded-full border border-zinc-800 text-white"
               >
-                <Plus size={20} className="text-zinc-500 group-hover:text-white transition-colors" />
+                <Plus size={16} strokeWidth={3} />
               </button>
             </div>
-            
             <div className="grid grid-cols-1 gap-4 px-2">
               {CLASSES.map((cls) => (
                 <button
