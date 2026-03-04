@@ -19,7 +19,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col pb-24 overflow-x-hidden relative" style={{ backgroundColor: '#000000' }}>
-      {/* Header - Minimalismo Apple/Tesla Style */}
+      {/* Header - Apple/Tesla Style */}
       <header className="px-8 pt-20 pb-12 flex justify-between items-start sticky top-0 bg-black/80 backdrop-blur-xl z-30">
         <div className="space-y-2">
           <p className="text-[10px] font-bold tracking-[0.6em] text-zinc-600 uppercase">Hoy_</p>
@@ -37,12 +37,12 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="flex-1 px-8 space-y-16 flex flex-col">
-        {/* Acción Principal - Centrada y con Impacto */}
-        <section className="flex justify-center">
+      <main className="flex-1 px-8 space-y-16 flex flex-col items-center">
+        {/* Acción Principal - Centrada */}
+        <section className="w-full max-w-[400px]">
           <button 
             onClick={() => navigate("/live")}
-            className="w-full max-w-[400px] bg-white text-black p-10 rounded-[48px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_30px_70px_rgba(255,255,255,0.1)]"
+            className="w-full bg-white text-black p-10 rounded-[48px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_30px_70px_rgba(255,255,255,0.1)]"
           >
             <div className="flex items-center gap-8">
               <div className="w-16 h-16 rounded-[24px] bg-black flex items-center justify-center shadow-lg">
@@ -57,9 +57,9 @@ export default function Dashboard() {
           </button>
         </section>
 
-        {/* Agenda / Materias - Centrada y Limpia */}
-        <section className="space-y-8 flex flex-col items-center">
-          <div className="w-full max-w-[400px] flex justify-between items-center px-4">
+        {/* Agenda - Centrada */}
+        <section className="w-full max-w-[400px] space-y-8">
+          <div className="flex justify-between items-center px-4">
             <div className="flex items-center gap-3 text-zinc-600">
               <BookOpen size={16} className="opacity-40" />
               <span className="text-[11px] font-bold uppercase tracking-[0.7em]">Agenda_</span>
@@ -72,7 +72,7 @@ export default function Dashboard() {
             </button>
           </div>
           
-          <div className="w-full max-w-[400px] grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {CLASSES.map((cls) => (
               <button
                 key={cls.id}
@@ -94,20 +94,20 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Recientes - Estética Brutalista Centrada */}
-        <section className="space-y-8 flex flex-col items-center pb-10">
-          <div className="w-full max-w-[400px] flex items-center gap-3 text-zinc-600 px-4">
+        {/* Recientes - Brutalista Centrado */}
+        <section className="w-full max-w-[400px] space-y-8 pb-10">
+          <div className="flex items-center gap-3 text-zinc-600 px-4">
             <Clock size={16} className="opacity-40" />
             <span className="text-[11px] font-bold uppercase tracking-[0.7em]">Recientes_</span>
           </div>
-          <div className="w-full max-w-[400px] bg-zinc-900/10 border border-dashed border-zinc-800/20 rounded-[48px] p-24 flex flex-col items-center justify-center text-center space-y-6">
+          <div className="bg-zinc-900/10 border border-dashed border-zinc-800/20 rounded-[48px] p-24 flex flex-col items-center justify-center text-center space-y-6">
             <Sparkles size={32} className="text-zinc-900" />
             <p className="text-[11px] font-bold uppercase tracking-[0.7em] text-zinc-900 italic">No_Activity_</p>
           </div>
         </section>
       </main>
 
-      {/* Floating Chat IA - Premium & Inteligente */}
+      {/* Floating Chat IA - Premium */}
       <button 
         onClick={() => navigate("/chat")}
         className="fixed bottom-10 right-8 w-16 h-16 rounded-full bg-white text-black flex items-center justify-center shadow-[0_20px_50px_rgba(255,255,255,0.2)] active:scale-90 transition-all z-50 border-4 border-black"
