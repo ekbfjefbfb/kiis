@@ -48,18 +48,18 @@ export default function Onboarding() {
         </motion.button>
       </header>
 
-      <main className="mobile-container flex-1 justify-center space-y-16 py-8">
-        <div className="text-center space-y-12">
-          <div className="w-28 h-28 rounded-[42px] bg-zinc-900 border border-zinc-800 mx-auto flex items-center justify-center shadow-2xl relative">
-            <div className="absolute inset-0 bg-white/5 rounded-[42px] blur-3xl animate-pulse" />
-            <div className="relative text-white">{STEPS[currentStep].icon}</div>
+      <main className="mobile-container flex-1 flex flex-col justify-center space-y-12">
+        <div className="text-center space-y-8">
+          <div className="w-24 h-24 rounded-[36px] bg-zinc-900 border border-zinc-800 mx-auto flex items-center justify-center shadow-2xl relative">
+            <div className="absolute inset-0 bg-white/5 rounded-[36px] blur-3xl animate-pulse" />
+            <div className="relative text-white scale-75">{STEPS[currentStep].icon}</div>
           </div>
           
-          <div className="space-y-6 px-4">
-            <h1 className="text-3xl font-black tracking-tighter leading-none mb-2">
+          <div className="space-y-4 px-4">
+            <h1 className="text-2xl font-black tracking-tighter leading-none mb-1 uppercase italic">
               {STEPS[currentStep].title}
             </h1>
-            <p className="text-zinc-500 text-xs font-bold tracking-widest uppercase max-w-[280px] mx-auto leading-relaxed">
+            <p className="text-zinc-500 text-[10px] font-black tracking-[0.2em] uppercase max-w-[240px] mx-auto leading-relaxed italic">
               {STEPS[currentStep].description}
             </p>
           </div>

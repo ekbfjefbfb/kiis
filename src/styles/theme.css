@@ -47,6 +47,27 @@ html, body, #root {
   padding: 0 24px;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  justify-content: center;
+}
+
+body {
+  background-color: #000000;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+#root {
+  width: 100%;
+  max-width: 420px;
+  height: 100vh;
+  position: relative;
+  background: #000000;
+  overflow: hidden;
 }
 
 /* Premium Button Sizing */

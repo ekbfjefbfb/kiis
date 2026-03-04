@@ -23,9 +23,9 @@ export default function RegisterPage() {
           <div className="w-24 h-24 bg-white rounded-[32px] flex items-center justify-center shadow-[0_0_50px_rgba(255,255,255,0.2)]">
             <span className="text-black text-4xl font-black italic">K</span>
           </div>
-          <div className="text-center space-y-3">
-            <h1 className="text-5xl font-black uppercase italic tracking-tighter text-white">Únete_</h1>
-            <p className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em]">Terminal_de_Ingeniería_</p>
+          <div className="text-center space-y-2 mb-8">
+            <h1 className="text-4xl font-black uppercase italic tracking-tighter text-white">Únete_</h1>
+            <p className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic">Terminal_de_Ingeniería_</p>
           </div>
         </div>
 
