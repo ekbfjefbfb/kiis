@@ -19,37 +19,30 @@ export default function LoginPage() {
     <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center justify-center py-8">
       <main className="mobile-container flex-1 justify-center space-y-10">
         {/* Branding Simple */}
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg">
-            <span className="text-black text-2xl font-bold">K</span>
+          <div className="flex flex-col items-center space-y-3">
+            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
+              <span className="text-black text-xl font-black">K</span>
+            </div>
+            <div className="text-center">
+              <h1 className="text-lg font-bold text-white uppercase tracking-widest">Acceso</h1>
+            </div>
           </div>
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-white">Hola</h1>
-            <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest mt-1">Acceso a terminal</p>
-          </div>
-        </div>
 
         {/* Formulario Simple */}
         <form onSubmit={handleSubmit} className="w-full space-y-4">
-          <div className="space-y-3 mb-6">
-            <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full bg-[#09090b] border border-zinc-800 rounded-lg py-3 pl-11 pr-4 text-white placeholder:text-zinc-700 focus:outline-none focus:border-zinc-600 transition-all font-medium text-sm"
-                required
-              />
-            </div>
-            <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
-              <input
-                type="password"
-                placeholder="Contraseña"
-                className="w-full bg-[#09090b] border border-zinc-800 rounded-lg py-3 pl-11 pr-4 text-white placeholder:text-zinc-700 focus:outline-none focus:border-zinc-600 transition-all font-medium text-sm"
-                required
-              />
-            </div>
+          <div className="space-y-2 mb-6">
+            <input
+              type="email"
+              placeholder="EMAIL"
+              className="w-full bg-[#09090b] border border-zinc-900 rounded py-2.5 px-4 text-white placeholder:text-zinc-800 focus:outline-none focus:border-zinc-700 transition-all font-bold text-xs tracking-widest"
+              required
+            />
+            <input
+              type="password"
+              placeholder="PASSWORD"
+              className="w-full bg-[#09090b] border border-zinc-900 rounded py-2.5 px-4 text-white placeholder:text-zinc-800 focus:outline-none focus:border-zinc-700 transition-all font-bold text-xs tracking-widest"
+              required
+            />
           </div>
 
           <button 

@@ -19,20 +19,19 @@ export default function Dashboard() {
   return (
     <div className="h-[100dvh] w-full bg-black flex flex-col overflow-hidden relative" style={{ backgroundColor: '#000000' }}>
       {/* Header - Engineering Minimal Apple/Tesla Style */}
-      <header className="w-full bg-black pt-8 pb-4 shrink-0 border-b border-zinc-900">
-        <div className="mobile-container flex-row justify-between items-end pb-2">
+      <header className="w-full bg-black pt-6 pb-2 shrink-0">
+        <div className="mobile-container flex-row justify-between items-center">
           <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em] mb-0.5">Terminal</span>
-            <h1 className="text-lg font-black text-white tracking-tight uppercase">
+            <h1 className="text-sm font-black text-white tracking-widest uppercase">
               {new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
             </h1>
           </div>
-          <div className="flex gap-1.5">
-            <button onClick={() => navigate("/calendar")} className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
-              <Calendar size={14} className="text-zinc-500" />
+          <div className="flex gap-1">
+            <button onClick={() => navigate("/calendar")} className="w-7 h-7 rounded bg-zinc-900 border border-zinc-800/30 flex items-center justify-center active:scale-95 transition-all">
+              <Calendar size={12} className="text-zinc-600" />
             </button>
-            <button onClick={() => navigate("/profile")} className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
-              <User size={14} className="text-zinc-500" />
+            <button onClick={() => navigate("/profile")} className="w-7 h-7 rounded bg-zinc-900 border border-zinc-800/30 flex items-center justify-center active:scale-95 transition-all">
+              <User size={12} className="text-zinc-600" />
             </button>
           </div>
         </div>
@@ -40,19 +39,17 @@ export default function Dashboard() {
 
       <main className="flex-1 overflow-y-auto scrollbar-hide py-10">
         <div className="mobile-container space-y-16">
-          {/* Main Action - Intelligence Engine */}
+          {/* Main Action - Pure Utility */}
           <section>
             <button 
               onClick={() => navigate("/live")}
-              className="w-full bg-zinc-900 border border-zinc-800 py-3.5 px-4 rounded-xl flex items-center justify-between active:scale-[0.98] transition-all group"
+              className="w-full bg-zinc-900/30 border border-zinc-800/20 py-3 px-4 rounded-lg flex items-center justify-between active:scale-[0.99] transition-all group"
             >
               <div className="flex items-center gap-3">
-                <Mic size={16} className="text-zinc-500" />
-                <span className="text-sm font-bold text-zinc-300">Iniciar captura</span>
+                <Mic size={14} className="text-zinc-600" />
+                <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Capturar audio</span>
               </div>
-              <div className="px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
-                <span className="text-[8px] font-black text-blue-500 uppercase tracking-widest">IA_LIVE</span>
-              </div>
+              <ChevronRight size={12} className="text-zinc-800" />
             </button>
           </section>
 
@@ -112,9 +109,9 @@ export default function Dashboard() {
 
           <button 
             onClick={() => navigate("/chat")}
-            className="fixed bottom-6 right-6 w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 flex items-center justify-center shadow-lg active:scale-95 transition-all z-50"
+            className="fixed bottom-4 right-4 w-9 h-9 rounded bg-zinc-900 border border-zinc-800 text-zinc-600 flex items-center justify-center active:scale-95 transition-all z-50"
           >
-            <MessageSquare size={20} />
+            <MessageSquare size={16} />
           </button>
 
       {showAddClass && <AddClassModal isOpen={showAddClass} onClose={() => setShowAddClass(false)} />}
