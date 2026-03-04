@@ -14,6 +14,11 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//],
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon.svg'],
     }),
