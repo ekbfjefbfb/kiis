@@ -13,7 +13,7 @@ export default function LoginPage() {
   // Redirigir si ya está autenticado
   useEffect(() => {
     if (authService.isAuthenticated()) {
-      navigate("/dashboard", { replace: true });
+      navigate("/", { replace: true });
     }
   }, [navigate]);
 
@@ -25,7 +25,7 @@ export default function LoginPage() {
     try {
       const success = await authService.login(email, password);
       if (success) {
-        navigate("/dashboard");
+        navigate("/", { replace: true });
       } else {
         setError("Correo o contraseña incorrectos");
       }

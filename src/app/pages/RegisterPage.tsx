@@ -14,7 +14,7 @@ export default function RegisterPage() {
   // Redirigir si ya está autenticado
   useEffect(() => {
     if (authService.isAuthenticated()) {
-      navigate("/dashboard", { replace: true });
+      navigate("/", { replace: true });
     }
   }, [navigate]);
 
@@ -24,8 +24,12 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      await authService.register(email, password, name);
-      navigate("/dashboard", { replace: true });
+      const success = await authService.register(email, password, name);
+      if (!success) {
+        setError("No se pudo crear la cuenta. Revisa tu conexión e intenta de nuevo.");
+        return;
+      }
+      navigate("/", { replace: true });
     } catch (err: any) {
       setError(err.message || "Error al crear la cuenta");
     } finally {
