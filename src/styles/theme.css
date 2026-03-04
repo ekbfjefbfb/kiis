@@ -75,6 +75,7 @@ html, body {
   font-size: 1rem;
   border: none;
   box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
+  cursor: pointer;
 }
 
 .btn-massive:active {
@@ -82,41 +83,46 @@ html, body {
   box-shadow: 0 10px 20px rgba(255, 255, 255, 0.05);
 }
 
-/* Typography for Eye Comfort */
-h1, h2, h3 {
-  letter-spacing: -0.02em;
+/* Typography for Eye Comfort - Plus Jakarta Sans */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  letter-spacing: -0.03em;
   line-height: 1.1;
+  font-weight: 800;
 }
 
-p {
+p, span, label, input {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
   line-height: 1.6;
   letter-spacing: 0.01em;
 }
 
-/* Brutalist Inputs */
+/* Brutalist Inputs - Premium Touch */
 input {
-  background-color: #18181b !important;
-  border: 1px solid #27272a !important;
-  border-radius: 1.05rem !important;
-  padding: 1rem 1.1rem !important;
+  background-color: #121212 !important;
+  border: 2px solid #27272a !important;
+  border-radius: 1.25rem !important;
+  padding: 1.25rem 1.5rem !important;
   color: #ffffff !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.1em !important;
-  font-size: 0.72rem !important;
-  transition: all 0.2s ease !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   width: 100%;
-}
-
-input::placeholder {
-  color: #52525b !important;
-  opacity: 1 !important;
 }
 
 input:focus {
   border-color: #ffffff !important;
   background-color: #18181b !important;
   outline: none !important;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05) !important;
+}
+
+input::placeholder {
+  color: #52525b !important;
+  font-weight: 500 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
 }
 
 /* Scrollbar reset */
