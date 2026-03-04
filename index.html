@@ -2,255 +2,33 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    
-    <!-- Viewport optimizado para PWA -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
-    
-    <!-- PWA Meta Tags -->
-    <meta name="application-name" content="Notdeer" />
-    <meta name="description" content="Graba clases, obtén resúmenes automáticos con IA, gestiona tareas y estudia mejor" />
-    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#000000" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#000000" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
-    
-    <!-- iOS Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Notdeer" />
-    <meta name="format-detection" content="telephone=no" />
-    
-    <!-- Android Meta Tags -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    
-    <!-- Microsoft Meta Tags -->
-    <meta name="msapplication-TileColor" content="#4f46e5" />
-    <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="msapplication-config" content="/browserconfig.xml" />
-    
-    <!-- SEO -->
-    <meta name="keywords" content="estudiantes, notas, IA, grabación, clases, resumen, tareas, educación" />
-    <meta name="author" content="Notdeer" />
-    <meta name="robots" content="index, follow" />
-    
-    <!-- Open Graph -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Notdeer - Asistente Estudiantil IA" />
-    <meta property="og:description" content="Graba clases, obtén resúmenes automáticos con IA" />
-    <meta property="og:image" content="/icon-512.png" />
-    <meta property="og:url" content="https://tudominio.com" />
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Notdeer - Asistente Estudiantil IA" />
-    <meta name="twitter:description" content="Graba clases, obtén resúmenes automáticos con IA" />
-    <meta name="twitter:image" content="/icon-512.png" />
-    
-    <title>Notdeer - Asistente Estudiantil IA</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Icons -->
-    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/icon-16.png" />
-    
-    <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="/icon-152.png" />
-    <link rel="apple-touch-icon" sizes="144x144" href="/icon-144.png" />
-    <link rel="apple-touch-icon" sizes="120x120" href="/icon-120.png" />
-    <link rel="apple-touch-icon" sizes="114x114" href="/icon-114.png" />
-    <link rel="apple-touch-icon" sizes="76x76" href="/icon-76.png" />
-    <link rel="apple-touch-icon" sizes="72x72" href="/icon-72.png" />
-    <link rel="apple-touch-icon" sizes="60x60" href="/icon-60.png" />
-    <link rel="apple-touch-icon" sizes="57x57" href="/icon-57.png" />
-    
-    <!-- Apple Splash Screens -->
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash-iphone-14-pro-max.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash-iphone-14-pro.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash-iphone-13-pro-max.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash-iphone-13-pro.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash-iphone-x.png" />
-    
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>KIIS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,800;1,400;1,800&display=swap" rel="stylesheet">
     <style>
-      /* Prevenir zoom en inputs en iOS */
-      @supports (-webkit-touch-callout: none) {
-        input, select, textarea {
-          font-size: 16px !important;
-        }
+      :root {
+        font-family: 'Plus Jakarta Sans', sans-serif;
       }
-      
-      /* Prevenir selección de texto accidental */
-      * {
-        -webkit-tap-highlight-color: transparent;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        user-select: none;
-      }
-      
-      /* Permitir selección en inputs y textos */
-      input, textarea, [contenteditable] {
-        -webkit-user-select: text;
-        user-select: text;
-      }
-      
-      /* Smooth scroll */
-      html {
-        scroll-behavior: smooth;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        overscroll-behavior: none;
-      }
-      
-      /* Safe area para notch - respeta barra de estado del sistema */
       body {
+        background-color: #000000;
         margin: 0;
-        padding: 0;
-        padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
-        padding-left: env(safe-area-inset-left);
-        padding-right: env(safe-area-inset-right);
-        overscroll-behavior: none;
-        -webkit-overflow-scrolling: touch;
+        -webkit-tap-highlight-color: transparent;
+        overscroll-behavior-y: none;
       }
-      
-      /* Asegurar que el root también respete safe-area */
-      #root {
-        min-height: 100vh;
-        min-height: 100dvh;
-      }
-      
-      /* Prevenir pull-to-refresh en Chrome Android */
-      body {
-        overscroll-behavior-y: contain;
-      }
-      
-      /* Loading screen */
-      #loading-screen {
-        position: fixed;
-        inset: 0;
-        background: #ffffff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: opacity 0.3s ease;
-      }
-      
-      #loading-screen.hidden {
-        opacity: 0;
-        pointer-events: none;
-      }
-      
-      .loader {
-        width: 48px;
-        height: 48px;
-        border: 3px solid #e5e7eb;
-        border-top-color: #4f46e5;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-      
-      /* Hide scrollbar but keep functionality */
-      .scrollbar-hide::-webkit-scrollbar {
-        display: none;
-      }
-      .scrollbar-hide {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+      /* Prevent text size adjustment on orientation change */
+      html {
+        -webkit-text-size-adjust: 100%;
       }
     </style>
   </head>
-
   <body>
-    <!-- Loading Screen -->
-    <div id="loading-screen">
-      <div class="loader"></div>
-    </div>
-    
     <div id="root"></div>
-    
     <script type="module" src="/src/main.tsx"></script>
-    
-    <script>
-      // Hide loading screen when app loads
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const loader = document.getElementById('loading-screen');
-          if (loader) {
-            loader.classList.add('hidden');
-            setTimeout(() => loader.remove(), 300);
-          }
-        }, 500);
-      });
-      
-      // Register Service Worker
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js', { scope: '/' })
-            .then(reg => {
-              console.log('✅ Service Worker registrado:', reg.scope);
-              
-              // Check for updates
-              reg.addEventListener('updatefound', () => {
-                const newWorker = reg.installing;
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // New version available
-                    if (confirm('Nueva versión disponible. ¿Actualizar ahora?')) {
-                      window.location.reload();
-                    }
-                  }
-                });
-              });
-            })
-            .catch(err => console.error('❌ Error al registrar SW:', err));
-        });
-      }
-      
-      // PWA Install Prompt
-      let deferredPrompt;
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        // Show install button/banner
-        window.dispatchEvent(new CustomEvent('pwa-installable'));
-      });
-      
-      window.addEventListener('appinstalled', () => {
-        console.log('✅ PWA instalada');
-        deferredPrompt = null;
-      });
-      
-      // Prevent accidental back navigation
-      history.pushState(null, null, location.href);
-      window.addEventListener('popstate', () => {
-        history.pushState(null, null, location.href);
-      });
-      
-      // Disable pinch zoom
-      document.addEventListener('gesturestart', (e) => e.preventDefault());
-      document.addEventListener('gesturechange', (e) => e.preventDefault());
-      document.addEventListener('gestureend', (e) => e.preventDefault());
-      
-      // Performance monitoring
-      if ('performance' in window) {
-        window.addEventListener('load', () => {
-          const perfData = performance.getEntriesByType('navigation')[0];
-          console.log('⚡ Load time:', Math.round(perfData.loadEventEnd - perfData.fetchStart), 'ms');
-        });
-      }
-    </script>
   </body>
 </html>
