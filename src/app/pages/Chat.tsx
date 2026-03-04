@@ -191,31 +191,19 @@ export default function ChatPage() {
             
             {/* Input con Placeholder Lógico */}
             <div className="flex-1 flex items-center px-4 py-2 min-h-[44px]">
-              {!isRecording ? (
-                <textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  rows={1}
-                  placeholder="Pregunta cualquier cosa"
-                  className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2"
-                  onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = 'auto';
-                    target.style.height = `${target.scrollHeight}px`;
-                  }}
-                />
-              ) : (
-                <div className="flex-1 flex items-center gap-1.5 h-[44px]">
-                  {[...Array(16)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      animate={{ height: [4, Math.random() * 16 + 4, 4] }}
-                      transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.03 }}
-                      className="w-[3px] bg-white/30 rounded-full"
-                    />
-                  ))}
-                </div>
-              )}
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                rows={1}
+                disabled={isRecording}
+                placeholder={isRecording ? "Te escucho..." : "Pregunta cualquier cosa_"}
+                className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2 disabled:opacity-50"
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = 'auto';
+                  target.style.height = `${target.scrollHeight}px`;
+                }}
+              />
             </div>
 
             {/* Botones con Funciones Máximas y Definidas */}
@@ -238,8 +226,8 @@ export default function ChatPage() {
                 className={clsx(
                   "h-11 flex items-center justify-center gap-2 px-5 rounded-full transition-all duration-300 font-bold shrink-0",
                   isRecording 
-                    ? "bg-white text-black shadow-lg" 
-                    : "bg-[#0a0a0a] text-white border border-white/10 active:bg-white/5"
+                    ? "bg-white text-black shadow-lg w-32" 
+                    : "bg-white text-black active:bg-white/90"
                 )}
               >
                 {isRecording ? (
@@ -248,17 +236,17 @@ export default function ChatPage() {
                     <span className="text-[13px] font-black uppercase italic tracking-tighter">Detener</span>
                   </>
                 ) : isProcessing ? (
-                  <Loader2 size={18} className="animate-spin" />
+                  <Loader2 size={18} className="animate-spin text-black" />
                 ) : input.trim() ? (
-                  <Send size={18} className="text-white" />
+                  <Send size={18} className="text-black" />
                 ) : (
                   <>
                     <div className="flex gap-0.5 items-end h-3 mr-1">
-                      <div className="w-[2px] h-2 bg-white/60 rounded-full" />
-                      <div className="w-[2px] h-3 bg-white rounded-full" />
-                      <div className="w-[2px] h-2 bg-white/60 rounded-full" />
+                      <div className="w-[2px] h-2 bg-black rounded-full" />
+                      <div className="w-[2px] h-3 bg-black rounded-full" />
+                      <div className="w-[2px] h-2 bg-black rounded-full" />
                     </div>
-                    <span className="text-[13px] font-black uppercase italic tracking-tighter">Hablar</span>
+                    <span className="text-[13px] font-black uppercase italic tracking-tighter text-black">Hablar</span>
                   </>
                 )}
               </motion.button>
