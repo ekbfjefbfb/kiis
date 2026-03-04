@@ -18,9 +18,9 @@ export default function ClassDetail() {
   return (
     <div className="h-[100dvh] w-full bg-black flex flex-col overflow-hidden relative">
       {/* Premium Header */}
-      <header className="w-full bg-black/80 backdrop-blur-xl z-30 pt-16 pb-10 border-b border-white/5 shrink-0">
-        <div className="mobile-container space-y-10">
-          <div className="flex justify-between items-center px-4">
+      <header className="w-full bg-black/80 backdrop-blur-xl z-30 pt-12 pb-8 border-b border-white/5 shrink-0">
+        <div className="mobile-container space-y-8">
+          <div className="flex justify-between items-center">
             <button onClick={() => navigate("/dashboard")} className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all shadow-lg">
               <ArrowLeft size={20} className="text-zinc-400" />
             </button>
@@ -30,7 +30,7 @@ export default function ClassDetail() {
             </div>
           </div>
 
-          <div className="space-y-3 px-4">
+          <div className="space-y-3">
             <div className="flex items-center gap-3 text-zinc-600">
               <BookOpen size={16} className="opacity-40" />
               <span className="text-[11px] font-black uppercase tracking-[0.8em]">Materia_</span>
@@ -48,8 +48,8 @@ export default function ClassDetail() {
       </header>
 
       {/* Strategic Navigation */}
-      <nav className="w-full bg-black shrink-0 py-8 border-b border-white/5">
-        <div className="mobile-container flex-row gap-4 overflow-x-auto scrollbar-hide px-6">
+      <nav className="w-full bg-black shrink-0 py-6 border-b border-white/5">
+        <div className="mobile-container flex-row gap-3 overflow-x-auto scrollbar-hide">
           {[
             { id: 'grabar', label: 'Grabar_', icon: <Mic size={16} /> },
             { id: 'resumen', label: 'Resumen_', icon: <Sparkles size={16} /> },
@@ -58,7 +58,7 @@ export default function ClassDetail() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-3 px-8 py-5 rounded-[28px] font-black uppercase italic tracking-tight text-xs transition-all whitespace-nowrap border-none ${
+              className={`flex items-center gap-2.5 px-6 py-4 rounded-[22px] font-black uppercase italic tracking-tight text-xs transition-all whitespace-nowrap border-none ${
                 activeTab === tab.id 
                   ? 'bg-white text-black shadow-[0_15px_40px_rgba(255,255,255,0.2)]' 
                   : 'bg-zinc-900/50 text-zinc-500 hover:text-zinc-300'
@@ -71,8 +71,8 @@ export default function ClassDetail() {
         </div>
       </nav>
 
-      <main className="flex-1 overflow-y-auto scrollbar-hide py-12">
-        <div className="mobile-container h-full px-8">
+      <main className="flex-1 overflow-y-auto scrollbar-hide py-10">
+        <div className="mobile-container h-full">
           <AnimatePresence mode="wait">
             {activeTab === 'grabar' && (
               <motion.div 
@@ -80,7 +80,7 @@ export default function ClassDetail() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.05 }}
-                className="h-full flex flex-col items-center justify-center space-y-20 py-16"
+                className="h-full flex flex-col items-center justify-center space-y-14 py-10"
               >
                 <div className="relative group">
                   <div className="absolute inset-0 bg-white/5 rounded-[80px] blur-[100px] animate-pulse" />
