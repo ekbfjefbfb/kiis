@@ -196,7 +196,7 @@ export default function ChatPage() {
                 onChange={(e) => setInput(e.target.value)}
                 rows={1}
                 disabled={isRecording}
-                placeholder={isRecording ? "Te escucho..." : "Pregunta cualquier cosa_"}
+                placeholder={isRecording ? "Te escucho..." : "Escribe o habla_"}
                 className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2 disabled:opacity-50"
                 onInput={(e) => {
                   const target = e.target as HTMLTextAreaElement;
@@ -206,9 +206,8 @@ export default function ChatPage() {
               />
             </div>
 
-            {/* Botones con Funciones Máximas y Definidas */}
+            {/* Botones con Funciones Definidas */}
             <div className="flex items-center gap-2 pr-1">
-              {/* Botón Micrófono: Solo visible cuando NO se graba y el input está vacío */}
               {!isRecording && !input.trim() && (
                 <button 
                   onClick={toggleVoiceRecording}
@@ -219,7 +218,6 @@ export default function ChatPage() {
                 </button>
               )}
               
-              {/* Botón Dinámico: Hablar / Detener / Enviar */}
               <motion.button
                 onClick={isRecording ? toggleVoiceRecording : isProcessing ? undefined : (input.trim() ? () => handleSend() : toggleVoiceRecording)}
                 whileTap={{ scale: 0.95 }}
