@@ -192,30 +192,40 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Zone - Rediseño Compacto sin Bottom Nav */}
+      {/* Input Zone - Compacto y Sin Borde Azul */}
       <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-black via-black to-transparent z-20">
         <div className="max-w-2xl mx-auto">
           <div className="bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex items-center gap-2 shadow-2xl">
             
-            {/* Input Área: Sin scroll, sin borde azul (outline-none) */}
             <div className="flex-1 flex items-center px-4 py-2 min-h-[44px]">
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                rows={1}
-                disabled={isRecording}
-                placeholder={isRecording ? "Te escucho..." : "Escribe o habla_"}
-                className="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2 scrollbar-hide appearance-none"
-                style={{ outline: 'none', boxShadow: 'none' }}
-                onInput={(e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  target.style.height = 'auto';
-                  target.style.height = `${target.scrollHeight}px`;
-                }}
-              />
+              {!isRecording ? (
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  rows={1}
+                  placeholder="Escribe o habla_"
+                  className="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2 scrollbar-hide outline-none ring-0 shadow-none selection:bg-white/20"
+                  style={{ outline: 'none', boxShadow: 'none' }}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = `${target.scrollHeight}px`;
+                  }}
+                />
+              ) : (
+                <div className="flex-1 flex items-center gap-1.5 h-[44px]">
+                  {[...Array(16)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{ height: [4, Math.random() * 20 + 4, 4] }}
+                      transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.03 }}
+                      className="w-[3px] bg-white/30 rounded-full"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Acciones de Voz y Envío: Feedback Táctil Brutal */}
             <div className="flex items-center gap-2 pr-1">
               {!isRecording && !input.trim() && (
                 <motion.button 
@@ -254,7 +264,7 @@ export default function ChatPage() {
                   <Send size={18} />
                 ) : (
                   <>
-                    <div className="flex gap-0.5 items-end h-3 mr-1">
+                    <div className="flex gap-0.5 items-end h-3 mr-1 text-black">
                       <div className="w-[2px] h-2 bg-black rounded-full" />
                       <div className="w-[2px] h-3 bg-black rounded-full" />
                       <div className="w-[2px] h-2 bg-black rounded-full" />
