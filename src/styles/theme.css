@@ -30,7 +30,7 @@ html, body {
 h1 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; }
 h2 { font-size: 1rem; font-weight: 700; color: #a1a1aa; }
 h3 { font-size: 0.9rem; font-weight: 600; color: #ffffff; }
-p { font-size: 0.85rem; line-height: 1.5; color: #71717a; }
+p { font-size: 0.85rem; line-height: 1.5; color: inherit; }
 
 /* Ultra Rounded Button System */
 .btn-main-action {
@@ -107,6 +107,14 @@ input {
 
 input:focus {
   border-color: #ffffff !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Utility for mobile space usage */
