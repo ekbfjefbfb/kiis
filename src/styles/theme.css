@@ -22,12 +22,10 @@
   --zinc-400: #a1a1aa;
 }
 
-/* Force 100% visibility and contrast */
+/* Fundamental Engine - Radical Minimalism */
 html, body {
-  width: 100%;
-  min-height: 100dvh;
-  background-color: var(--black) !important;
-  color: var(--white) !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
   font-family: 'Plus Jakarta Sans', sans-serif !important;
   margin: 0;
   padding: 0;
@@ -39,110 +37,46 @@ html, body {
   margin: 0 auto;
   max-width: 420px;
   min-height: 100dvh;
-  background-color: var(--black) !important;
+  background-color: #000000 !important;
 }
 
-/* Mobile-first centered column */
-.mobile-container {
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  flex-direction: column;
-}
+/* Atomic Text Hierarchy */
+h1 { font-size: 1.25rem; font-weight: 900; letter-spacing: -0.02em; color: #ffffff; }
+h2 { font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; color: #ffffff; }
+h3 { font-size: 0.875rem; font-weight: 700; color: #e4e4e7; }
+p { font-size: 0.8125rem; line-height: 1.5; color: #a1a1aa; }
 
-.text-zinc-400 { color: #a1a1aa !important; }
-.text-zinc-500 { color: #71717a !important; }
-.text-zinc-600 { color: #52525b !important; }
-.text-black { color: #000000 !important; }
-
-/* Technical Button System - Subtle & Functional */
-.btn-massive {
-  width: 100%;
-  background-color: #18181b;
-  color: #a1a1aa;
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: normal;
-  font-size: 0.9rem;
-  border: 1px solid #27272a;
-  cursor: pointer;
-}
-
-.btn-massive:active {
-  transform: scale(0.98);
-  background-color: #27272a;
-  color: #ffffff;
-}
-
-/* Specific White Action Button (e.g. Next/Login) */
-.btn-primary {
+/* Subtle Technical Elements */
+.btn-massive, .btn-primary {
   width: 100%;
   background-color: #ffffff;
   color: #000000;
   padding: 0.75rem;
-  border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-weight: 700;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
+  border-radius: 0.5rem;
+  font-weight: 800;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
   border: none;
-  cursor: pointer;
+  transition: opacity 0.2s;
 }
 
-.btn-primary:active {
-  transform: scale(0.98);
+.btn-massive:active, .btn-primary:active {
+  opacity: 0.8;
 }
 
-/* Typography for Eye Comfort */
-h1 { font-size: 1.75rem; line-height: 1.2; letter-spacing: -0.02em; }
-h2 { font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.02em; }
-h3 { font-size: 1.25rem; line-height: 1.2; letter-spacing: -0.01em; }
-
-p, span, label, input {
-  font-family: 'Plus Jakarta Sans', sans-serif !important;
-  line-height: 1.5;
-  letter-spacing: 0.01em;
-  font-size: 0.9rem;
-}
-
-/* Brutalist Inputs - Standard Mobile Sizing */
 input {
-  background-color: #121212 !important;
-  border: 1.5px solid #27272a !important;
-  border-radius: 0.75rem !important;
-  padding: 0.75rem 1rem !important;
+  background-color: #09090b !important;
+  border: 1px solid #27272a !important;
+  border-radius: 0.5rem !important;
+  padding: 0.75rem !important;
   color: #ffffff !important;
-  font-weight: 600 !important;
-  font-size: 0.9rem !important;
-  transition: all 0.2s ease !important;
+  font-size: 0.875rem !important;
   width: 100%;
 }
 
 input:focus {
-  border-color: #ffffff !important;
-  background-color: #18181b !important;
+  border-color: #52525b !important;
   outline: none !important;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05) !important;
-}
-
-input::placeholder {
-  color: #52525b !important;
-  font-weight: 500 !important;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-size: 0.75rem;
 }
 
 /* Scrollbar reset */
