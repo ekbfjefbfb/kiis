@@ -19,20 +19,20 @@ export default function Dashboard() {
   return (
     <div className="h-[100dvh] w-full bg-black flex flex-col overflow-hidden relative" style={{ backgroundColor: '#000000' }}>
       {/* Header - Engineering Minimal Apple/Tesla Style */}
-      <header className="w-full bg-black pt-10 pb-4 shrink-0">
-        <div className="mobile-container flex-row justify-between items-center">
+      <header className="w-full bg-black pt-8 pb-4 shrink-0 border-b border-zinc-900">
+        <div className="mobile-container flex-row justify-between items-end pb-2">
           <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em] mb-0.5">Hoy</span>
-            <h1 className="text-lg font-black text-white tracking-tight">
-              {new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long' }).toLowerCase()}
+            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em] mb-0.5">Terminal</span>
+            <h1 className="text-lg font-black text-white tracking-tight uppercase">
+              {new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
             </h1>
           </div>
-          <div className="flex gap-2">
-            <button onClick={() => navigate("/calendar")} className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
-              <Calendar size={16} className="text-zinc-500" />
+          <div className="flex gap-1.5">
+            <button onClick={() => navigate("/calendar")} className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
+              <Calendar size={14} className="text-zinc-500" />
             </button>
-            <button onClick={() => navigate("/profile")} className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
-              <User size={16} className="text-zinc-500" />
+            <button onClick={() => navigate("/profile")} className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
+              <User size={14} className="text-zinc-500" />
             </button>
           </div>
         </div>
@@ -40,54 +40,56 @@ export default function Dashboard() {
 
       <main className="flex-1 overflow-y-auto scrollbar-hide py-10">
         <div className="mobile-container space-y-16">
-          {/* Main Action - Extremely Minimal */}
+          {/* Main Action - Intelligence Engine */}
           <section>
             <button 
               onClick={() => navigate("/live")}
-              className="w-full bg-zinc-900/50 border border-zinc-800/40 py-4 px-5 rounded-xl flex items-center justify-between active:scale-[0.98] transition-all group"
+              className="w-full bg-zinc-900 border border-zinc-800 py-3.5 px-4 rounded-xl flex items-center justify-between active:scale-[0.98] transition-all group"
             >
               <div className="flex items-center gap-3">
-                <Mic size={18} className="text-zinc-500 group-active:text-white transition-colors" />
-                <span className="text-sm font-bold text-zinc-300">Grabar ahora</span>
+                <Mic size={16} className="text-zinc-500" />
+                <span className="text-sm font-bold text-zinc-300">Iniciar captura</span>
               </div>
-              <ChevronRight size={14} className="text-zinc-700" />
+              <div className="px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
+                <span className="text-[8px] font-black text-blue-500 uppercase tracking-widest">IA_LIVE</span>
+              </div>
             </button>
           </section>
 
           {/* Agenda Section - Pure Hierarchy */}
-          <section className="space-y-4">
+          <section className="space-y-3">
             <div className="flex items-center justify-between px-1">
-              <h2 className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em]">Agenda</h2>
+              <h2 className="text-[9px] font-bold text-zinc-600 uppercase tracking-[0.3em]">Agenda Académica</h2>
               <button 
                 onClick={() => setShowAddClass(true)}
-                className="text-[9px] font-bold text-zinc-700 hover:text-zinc-400 transition-colors uppercase tracking-widest"
+                className="text-[9px] font-bold text-zinc-700 hover:text-white transition-colors"
               >
-                + añadir
+                + NUEVA
               </button>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {CLASSES.map((cls) => (
                 <button
                   key={cls.id}
                   onClick={() => navigate(`/class/${cls.id}`)}
-                  className="w-full bg-zinc-900/30 border border-zinc-800/30 p-4 rounded-xl flex flex-col gap-3 text-left active:bg-zinc-800/40 transition-all"
+                  className="w-full bg-zinc-900/40 border border-zinc-800/40 p-4 rounded-xl flex flex-col gap-3 text-left active:bg-zinc-800/60 transition-all"
                 >
                   <div className="flex justify-between items-center w-full">
                     <div className="flex flex-col">
-                      <h3 className="text-sm font-bold text-zinc-200">{cls.name}</h3>
-                      <span className="text-[9px] font-medium text-zinc-600 uppercase tracking-wider">{cls.professor}</span>
+                      <h3 className="text-sm font-bold text-white">{cls.name}</h3>
+                      <span className="text-[9px] font-medium text-zinc-600 uppercase tracking-widest">{cls.professor}</span>
                     </div>
                     <ChevronRight size={14} className="text-zinc-800" />
                   </div>
 
                   {cls.nextTask && (
-                    <div className="pt-2.5 border-t border-zinc-800/30 flex items-center justify-between">
+                    <div className="pt-2.5 border-t border-zinc-800/50 flex items-center justify-between">
                       <div className="flex items-center gap-2 overflow-hidden">
-                        <div className="w-1 h-1 rounded-full bg-blue-500/50" />
+                        <Sparkles size={10} className="text-blue-500/50" />
                         <p className="text-[11px] text-zinc-500 font-medium truncate italic">{cls.nextTask}</p>
                       </div>
-                      <span className="text-[8px] font-bold text-zinc-700 uppercase tracking-tighter shrink-0 ml-2">{cls.taskDate}</span>
+                      <span className="text-[8px] font-bold text-zinc-700 uppercase shrink-0 ml-2">{cls.taskDate}</span>
                     </div>
                   )}
                 </button>
