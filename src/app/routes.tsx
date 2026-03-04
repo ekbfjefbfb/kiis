@@ -14,6 +14,7 @@ import SearchPage from "./pages/SearchPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import OnboardingPage from "./pages/OnboardingPage";
+import QuickNotePage from "./pages/QuickNotePage";
 
 function OnboardingGate() {
   const done = typeof window !== "undefined" && localStorage.getItem("onboarding_done") === "true";
@@ -24,6 +25,10 @@ export const router = createBrowserRouter([
   {
     path: "/onboarding",
     Component: OnboardingPage,
+  },
+  {
+    path: "/quick-note",
+    Component: QuickNotePage,
   },
   {
     path: "/login",

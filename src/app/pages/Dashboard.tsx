@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  Square, Calendar, ChevronRight, Plus, X, Zap, Radio, BookOpen, Brain, Loader2
+  Calendar, ChevronRight, Plus, X, Radio, BookOpen, Brain, Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
@@ -12,12 +12,9 @@ import { authService } from "../../services/auth.service";
 import { groqService } from "../../services/groq.service";
 
 export default function Dashboard() {
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [recentNotes, setRecentNotes] = useState<BackendNote[]>([]);
   const [tasks, setTasks] = useState<any[]>([]);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [isAddingClass, setIsAddingClass] = useState(false);
   const [newClassName, setNewClassName] = useState("");
   const [newClassProfessor, setNewClassProfessor] = useState("");
@@ -31,16 +28,6 @@ export default function Dashboard() {
     loadRecentNotes();
     loadTasks();
   }, []);
-
-  useEffect(() => {
-    let interval: any;
-    if (isRecording) {
-      interval = setInterval(() => setRecordingTime((p) => p + 1), 1000);
-    } else {
-      setRecordingTime(0);
-    }
-    return () => clearInterval(interval);
-  }, [isRecording]);
 
   const loadRecentNotes = async () => {
     try {
@@ -56,32 +43,6 @@ export default function Dashboard() {
     } catch (e) { console.error(e); }
   };
 
-  const handleQuickRecord = async () => {
-    if (isRecording) {
-      setIsRecording(false);
-      setIsProcessing(true);
-      try {
-        const audioBlob = await audioService.stopAudioRecording();
-        const transcript = await groqService.transcribe(audioBlob, 'es');
-        await notesService.createFromTranscript(transcript, "Nota Rápida", true);
-        setIsProcessing(false);
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 2000);
-        await loadRecentNotes();
-      } catch (error) {
-        console.error(error);
-        setIsProcessing(false);
-      }
-    } else {
-      const ok = await audioService.requestPermissions();
-      if (!ok) return;
-      try {
-        await audioService.startAudioRecording();
-        setIsRecording(true);
-      } catch (e) { console.error(e); }
-    }
-  };
-
   const handleCreateClass = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newClassName.trim() || !newClassProfessor.trim()) return;
@@ -94,15 +55,13 @@ export default function Dashboard() {
     setNewClassProfessor("");
   };
 
-  const formatTime = (s: number) => `${Math.floor(s / 60)}:${((s % 60).toString().padStart(2, "0"))}`;
-
   return (
     <div className="min-h-[100dvh] bg-black text-white pb-24 font-sans selection:bg-white/30 overflow-x-hidden">
       {/* Header Compacto - Mobile Scaled */}
       <div className="px-6 pt-8 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl sticky top-0 z-20 border-b border-white/5">
         <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
-          <h1 className="text-2xl font-black tracking-tighter uppercase italic leading-none">Notdeer</h1>
-          <p className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">{today}</p>
+          <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Hoy</p>
+          <p className="text-sm font-bold text-white/70 tracking-tight mt-0.5">{today}</p>
         </motion.div>
         <Link to="/calendar" className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
           <Calendar size={16} />
@@ -136,43 +95,20 @@ export default function Dashboard() {
 
         {/* 2) CTA principal (solo UNO) */}
         {primaryMode === "quick" ? (
-          <motion.button
-            type="button"
-            onClick={handleQuickRecord}
-            whileTap={{ scale: 0.99 }}
-            className={clsx(
-              "w-full rounded-3xl p-5 border transition-colors",
-              isRecording ? "bg-red-600 border-red-500/40" : "bg-zinc-900 border-white/5"
-            )}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className={clsx(
-                  "w-10 h-10 rounded-2xl flex items-center justify-center",
-                  isRecording ? "bg-white/15" : "bg-emerald-500/15"
-                )}>
-                  {isRecording ? (
-                    <Square size={18} fill="currentColor" />
-                  ) : (
-                    <Zap size={18} className="text-emerald-400" />
-                  )}
+          <Link to="/quick-note" className="block">
+            <motion.div
+              whileTap={{ scale: 0.99 }}
+              className="w-full rounded-3xl p-5 bg-zinc-900 border border-white/5"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-black uppercase italic leading-none">Nota rápida</p>
+                  <p className="text-[11px] text-white/40 font-bold uppercase tracking-widest mt-1">Graba 10s. Se guarda.</p>
                 </div>
-                <div className="text-left">
-                  <p className="text-sm font-black uppercase italic leading-none">Capturar idea</p>
-                  <p className="text-[11px] text-white/40 font-bold uppercase tracking-widest mt-1">
-                    {isRecording ? `Grabando ${formatTime(recordingTime)}` : "1 toque: graba y se guarda"}
-                  </p>
-                </div>
+                <ChevronRight size={18} className="text-white/20" />
               </div>
-
-              <div className={clsx(
-                "text-[11px] font-black uppercase tracking-widest",
-                isRecording ? "text-white" : "text-white/60"
-              )}>
-                {isRecording ? "Detener" : "Grabar"}
-              </div>
-            </div>
-          </motion.button>
+            </motion.div>
+          </Link>
         ) : (
           <Link to="/live" className="block">
             <motion.div
@@ -180,16 +116,9 @@ export default function Dashboard() {
               className="w-full rounded-3xl p-5 bg-zinc-900 border border-white/5"
             >
               <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-purple-500/15 flex items-center justify-center">
-                    <Radio size={18} className="text-purple-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-black uppercase italic leading-none">Grabar clase</p>
-                    <p className="text-[11px] text-white/40 font-bold uppercase tracking-widest mt-1">
-                      Resume + puntos clave + agenda
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-sm font-black uppercase italic leading-none">Clase en vivo</p>
+                  <p className="text-[11px] text-white/40 font-bold uppercase tracking-widest mt-1">Resumen + agenda</p>
                 </div>
                 <ChevronRight size={18} className="text-white/20" />
               </div>
@@ -199,22 +128,42 @@ export default function Dashboard() {
 
         {/* 3) CTA secundaria pequeña (IA) */}
         <Link to="/chat" className="block">
-          <motion.div
-            whileTap={{ scale: 0.99 }}
-            className="bg-white text-black rounded-2xl px-4 py-3 flex items-center justify-between"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-black/5 flex items-center justify-center">
-                <Brain size={16} />
-              </div>
-              <div>
-                <p className="text-[12px] font-black uppercase tracking-tight">Asistente IA</p>
-                <p className="text-[9px] text-black/40 font-bold uppercase tracking-widest mt-0.5">Habla o escribe</p>
-              </div>
+          <motion.div whileTap={{ scale: 0.99 }} className="bg-white text-black rounded-2xl px-4 py-3 flex items-center justify-between">
+            <div>
+              <p className="text-[12px] font-black uppercase tracking-tight">Asistente IA</p>
+              <p className="text-[9px] text-black/40 font-bold uppercase tracking-widest mt-0.5">Chat + voz</p>
             </div>
             <ChevronRight size={14} className="text-black/20" />
           </motion.div>
         </Link>
+
+        {/* Notas recientes (lista, no botones) */}
+        <section className="pt-2">
+          <div className="flex justify-between items-center mb-3 px-1">
+            <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/20">Notas recientes</h3>
+            <Link to="/notes" className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30">Ver</Link>
+          </div>
+          {recentNotes.length === 0 ? (
+            <Link to="/quick-note" className="block bg-zinc-900 border border-white/5 rounded-2xl p-4">
+              <p className="text-sm font-black uppercase italic">Graba tu primera nota</p>
+              <p className="text-[11px] text-white/40 font-bold uppercase tracking-widest mt-1">Toca para empezar</p>
+            </Link>
+          ) : (
+            <div className="space-y-2">
+              {recentNotes.slice(0, 3).map((n) => (
+                <Link key={n.id} to={`/note/${n.id}`} className="block">
+                  <div className="bg-zinc-900/40 border border-white/5 rounded-xl p-3 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-bold truncate">{n.title || "Nota"}</p>
+                      <p className="text-[10px] text-white/30 line-clamp-1">{n.summary || n.transcript || ""}</p>
+                    </div>
+                    <ChevronRight size={12} className="text-white/10" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
 
         {/* Materias (si está vacío: 1 CTA claro) */}
         <section className="pt-2">
@@ -259,14 +208,6 @@ export default function Dashboard() {
             <div className="bg-blue-600 rounded-xl p-3 flex items-center gap-2 shadow-2xl">
               <Loader2 size={14} className="animate-spin" />
               <p className="font-black text-[9px] uppercase tracking-widest italic">La IA está analizando...</p>
-            </div>
-          </motion.div>
-        )}
-        {showSuccess && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="fixed bottom-20 left-4 right-4 z-40">
-            <div className="bg-emerald-600 rounded-xl p-3 flex items-center gap-2 shadow-2xl">
-              <Zap size={14} fill="white" />
-              <p className="font-black text-[9px] uppercase tracking-widest italic">Nota guardada</p>
             </div>
           </motion.div>
         )}
