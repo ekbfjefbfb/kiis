@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Plus } from "lucide-react";
+import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Plus, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate } from "react-router";
@@ -43,7 +43,9 @@ export default function ChatPage() {
           pendingResponseRef.current = null;
           setIsTyping(false);
           if (autoSpeak && cleanedText) {
-            audioService.speak(cleanedText, () => {});
+            audioService.speak(cleanedText, () => {
+              // En modo voz pura, podríamos auto-activar el micro aquí si quisiéramos manos libres total
+            });
           }
         }
       },
@@ -130,26 +132,25 @@ export default function ChatPage() {
 
   return (
     <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden selection:bg-white/20">
-      {/* Header Minimalista Extremo */}
+      {/* Header Compacto */}
       <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-20">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
             <ArrowLeft size={18} />
           </button>
           <div className="flex flex-col">
-            <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Asistente</h1>
-            <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Chat + Voz</p>
+            <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">IA Unificada</h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button 
             onClick={() => setIsVoiceMode(!isVoiceMode)} 
             className={clsx(
-              "px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all",
+              "px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest transition-all",
               isVoiceMode ? "bg-white text-black border-white" : "bg-zinc-900 text-white/40 border-white/10"
             )}
           >
-            {isVoiceMode ? "Voz Pura" : "Modo Dual"}
+            {isVoiceMode ? "SOLO VOZ" : "VOZ + TEXTO"}
           </button>
           <button onClick={() => setIsAddingClass(true)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
             <Plus size={18} />
@@ -157,15 +158,14 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* Messages - Más Compacto */}
+      {/* Messages - Ultra Compacto */}
       <div className={clsx(
-        "flex-1 px-4 space-y-6 overflow-y-auto scrollbar-hide pt-6 pb-32 transition-all duration-500",
-        isVoiceMode ? "opacity-20 blur-sm pointer-events-none" : "opacity-100"
+        "flex-1 px-4 space-y-6 overflow-y-auto scrollbar-hide pt-6 transition-all duration-500",
+        isVoiceMode ? "opacity-10 blur-xl pointer-events-none" : "opacity-100"
       )}>
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center opacity-5">
             <Sparkles size={80} strokeWidth={1} />
-            <p className="mt-4 text-sm font-black uppercase italic tracking-widest text-center">IA Unificada</p>
           </div>
         )}
         
@@ -177,29 +177,24 @@ export default function ChatPage() {
             className={clsx("flex flex-col", msg.role === "user" ? "items-end" : "items-start")}
           >
             <div className={clsx(
-              "max-w-[88%] p-5 rounded-[28px] text-[15px] font-medium leading-snug shadow-2xl transition-all",
+              "max-w-[85%] p-4 rounded-[24px] text-[15px] font-medium leading-snug shadow-2xl transition-all",
               msg.role === "user" 
                 ? "bg-zinc-800 text-white rounded-tr-sm border border-white/5" 
-                : "bg-white text-black rounded-tl-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                : "bg-white text-black rounded-tl-sm"
             )}>
-              {msg.content || (
-                <div className="flex gap-1.5 p-1">
-                  <div className="w-1.5 h-1.5 bg-black/20 rounded-full animate-bounce" />
-                  <div className="w-1.5 h-1.5 bg-black/20 rounded-full animate-bounce [animation-delay:0.2s]" />
-                  <div className="w-1.5 h-1.5 bg-black/20 rounded-full animate-bounce [animation-delay:0.4s]" />
-                </div>
-              )}
+              {msg.content || "..."}
             </div>
-            <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest mt-2 px-2">
+            <span className="text-[8px] font-black text-white/20 uppercase tracking-widest mt-2 px-2">
               {msg.role === "user" ? "Tú" : "IA"}
             </span>
           </motion.div>
         ))}
         {isTyping && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3 px-4 py-2 bg-zinc-900/50 border border-white/5 rounded-full w-fit">
-            <Loader2 size={12} className="animate-spin text-white/40" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Procesando</span>
-          </motion.div>
+          <div className="flex gap-1.5 p-3 bg-zinc-900/50 w-fit rounded-full border border-white/5">
+            <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" />
+            <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.2s]" />
+            <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.4s]" />
+          </div>
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -208,55 +203,48 @@ export default function ChatPage() {
       <AnimatePresence>
         {isVoiceMode && (
           <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/60 backdrop-blur-md"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 backdrop-blur-3xl"
           >
-            <div className="relative">
+            <div className="relative flex items-center justify-center">
               <motion.div 
-                animate={isRecording ? { scale: [1, 1.4, 1], opacity: [0.2, 0.5, 0.2] } : {}}
-                transition={{ repeat: Infinity, duration: 1.5 }}
-                className="absolute inset-0 bg-white/20 rounded-full blur-3xl"
+                animate={isRecording ? { scale: [1, 1.5, 1], opacity: [0.1, 0.4, 0.1] } : {}}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="absolute w-64 h-64 bg-white rounded-full blur-[80px]"
               />
-              <Sparkles size={120} strokeWidth={1} className={clsx("transition-all duration-700", isRecording ? "text-white scale-110" : "text-white/5")} />
+              <Sparkles size={120} strokeWidth={0.5} className={clsx("transition-all duration-1000", isRecording ? "text-white scale-125" : "text-white/10")} />
             </div>
-            <div className="mt-12 text-center space-y-2">
-              <p className="text-sm font-black uppercase italic tracking-[0.4em] text-white/60">
-                {isRecording ? "Escuchando" : isProcessing ? "Procesando" : "Modo Voz Pura"}
+            <div className="mt-16 text-center">
+              <p className="text-lg font-black uppercase italic tracking-[0.5em] text-white/60">
+                {isRecording ? "TE ESCUCHO" : isProcessing ? "PROCESANDO" : "MODO VOZ"}
               </p>
-              <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">SST + TTS Unificado</p>
-            </div>
-            
-            {/* Animación de ondas visuales */}
-            {isRecording && (
-              <div className="absolute bottom-40 flex gap-1 items-end h-8">
-                {[...Array(8)].map((_, i) => (
+              <div className="flex gap-1 justify-center mt-6 h-4">
+                {[...Array(5)].map((_, i) => (
                   <motion.div
                     key={i}
-                    animate={{ height: [4, Math.random() * 32 + 8, 4] }}
-                    transition={{ repeat: Infinity, duration: 0.4, delay: i * 0.05 }}
-                    className="w-1 bg-white/40 rounded-full"
+                    animate={isRecording ? { height: [4, 16, 4] } : { height: 4 }}
+                    transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }}
+                    className="w-1 bg-white/30 rounded-full"
                   />
                 ))}
               </div>
-            )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Input Zone - Compacta y Flotante */}
-      <div className="shrink-0 p-6 bg-gradient-to-t from-black via-black/90 to-transparent pb-10 z-20">
-        <div className="max-w-md mx-auto flex gap-4 items-end">
+      {/* Input Zone - Eficiencia Máxima */}
+      <div className="shrink-0 p-6 bg-gradient-to-t from-black via-black to-transparent pb-12 z-20">
+        <div className="max-w-md mx-auto flex gap-4 items-center">
           <motion.button
             onClick={toggleVoiceRecording}
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.85 }}
             className={clsx(
-              "w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 shrink-0 shadow-2xl",
-              isRecording ? "bg-red-600 animate-pulse shadow-[0_0_30px_rgba(220,38,38,0.4)]" : "bg-white text-black"
+              "w-20 h-20 rounded-[32px] flex items-center justify-center transition-all duration-500 shrink-0 shadow-2xl",
+              isRecording ? "bg-red-600 shadow-[0_0_40px_rgba(220,38,38,0.5)]" : "bg-white text-black"
             )}
           >
-            {isRecording ? <StopCircle size={28} fill="white" /> : <Mic size={28} />}
+            {isRecording ? <StopCircle size={32} fill="white" /> : <Mic size={32} />}
           </motion.button>
 
           {!isVoiceMode && (
@@ -266,7 +254,7 @@ export default function ChatPage() {
                 onChange={(e) => setInput(e.target.value)}
                 rows={1}
                 placeholder="Hablemos?"
-                className="w-full bg-zinc-900 border border-white/10 rounded-2xl px-5 py-4 text-[15px] font-medium focus:outline-none focus:ring-1 focus:ring-white/20 resize-none overflow-hidden min-h-[56px] max-h-[120px] placeholder:text-white/10 text-white transition-all"
+                className="w-full bg-zinc-900/80 border border-white/10 rounded-[24px] px-6 py-5 text-[16px] font-medium focus:outline-none focus:ring-1 focus:ring-white/20 resize-none overflow-hidden min-h-[64px] max-h-[140px] placeholder:text-white/10 text-white transition-all shadow-xl"
                 onInput={(e) => {
                   const target = e.target as HTMLTextAreaElement;
                   target.style.height = 'auto';
@@ -276,13 +264,11 @@ export default function ChatPage() {
               <AnimatePresence>
                 {input.trim() && (
                   <motion.button
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
+                    initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
                     onClick={() => handleSend()}
-                    className="absolute right-2 bottom-2 w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center active:scale-90 transition-transform shadow-lg"
+                    className="absolute right-3 bottom-3 w-11 h-11 bg-white text-black rounded-2xl flex items-center justify-center active:scale-90 transition-transform shadow-lg"
                   >
-                    <Send size={18} />
+                    <Send size={20} />
                   </motion.button>
                 )}
               </AnimatePresence>
@@ -290,21 +276,18 @@ export default function ChatPage() {
           )}
           
           {isVoiceMode && (
-             <div className="flex-1 flex flex-col justify-center h-16">
-                <p className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">SST Activo</p>
-                <div className="flex items-center gap-2 mt-1 ml-2">
-                   <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                   <p className="text-xs font-bold text-white/40 uppercase tracking-tighter italic">Pulsa para detener</p>
+             <div className="flex-1 flex flex-col justify-center py-2">
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-2 italic">HABLA AHORA</p>
+                <div className="flex items-center gap-3 mt-2 ml-2">
+                   <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
+                   <p className="text-sm font-bold text-white/60 uppercase tracking-tighter italic">SST + TTS Activo</p>
                 </div>
              </div>
           )}
         </div>
       </div>
 
-      <AddClassModal 
-        isOpen={isAddingClass} 
-        onClose={() => setIsAddingClass(false)} 
-      />
+      <AddClassModal isOpen={isAddingClass} onClose={() => setIsAddingClass(false)} />
     </div>
   );
 }
