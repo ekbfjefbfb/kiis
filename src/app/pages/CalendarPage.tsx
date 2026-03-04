@@ -1,16 +1,28 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, CheckSquare, Calendar as CalendarIcon, Star, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  BookOpen,
+  CheckSquare,
+  Calendar as CalendarIcon,
+  Star,
+  Loader2,
+  Plus,
+  X,
+} from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { Link } from "react-router";
-import { TASKS, EXAMS, IMPORTANT_DATES, CLASSES } from "../data/mock";
+import { TASKS, CLASSES } from "../data/mock";
 
 interface CalendarEvent {
+  id: string;
   date: string;
   title: string;
   description?: string;
   type: "task" | "exam" | "important";
-  classId?: string;
+  classId?: string | null;
   completed: boolean;
 }
 
@@ -19,7 +31,14 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
+
   const [activeEvent, setActiveEvent] = useState<CalendarEvent | null>(null);
+  const [viewMode, setViewMode] = useState<"list" | "month">("list");
+
+  const [isAddingTask, setIsAddingTask] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskDescription, setNewTaskDescription] = useState("");
+  const [newTaskDate, setNewTaskDate] = useState(() => new Date().toISOString().split("T")[0]);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -28,12 +47,15 @@ export default function CalendarPage() {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const prevMonthDays = new Date(year, month, 0).getDate();
 
-  const monthName = currentDate.toLocaleDateString("es-ES", { month: "long", year: "numeric" }).replace(/^\w/, (c) => c.toUpperCase());
+  const monthName = currentDate
+    .toLocaleDateString("es-ES", { month: "long", year: "numeric" })
+    .replace(/^\w/, (c) => c.toUpperCase());
+
+  const todayStr = new Date().toISOString().split("T")[0];
 
   const goToPrev = () => setCurrentDate(new Date(year, month - 1, 1));
   const goToNext = () => setCurrentDate(new Date(year, month + 1, 1));
 
-  // Cargar eventos del backend o localStorage
   useEffect(() => {
     loadEvents();
   }, []);
@@ -41,101 +63,90 @@ export default function CalendarPage() {
   const loadEvents = async () => {
     setLoading(true);
     try {
-      // Cargar tareas del localStorage
-      const storedTasks = localStorage.getItem('user_tasks');
+      const storedTasks = localStorage.getItem("user_tasks");
       const tasks = storedTasks ? JSON.parse(storedTasks) : TASKS;
-      
-      // Cargar sesiones del backend/localStorage
-      const storedSessions = localStorage.getItem('recent_sessions');
-      const sessions = storedSessions ? JSON.parse(storedSessions) : [];
 
-      // Combinar eventos
-      const allEvents: CalendarEvent[] = [
-        ...tasks.map((t: any) => ({
-          date: t.date,
-          title: t.title,
-          description: t.description || t.details || t.note || t.title,
-          type: "task" as const,
-          classId: t.classId,
-          completed: t.completed,
-        })),
-        ...sessions.filter((s: any) => s.session_datetime).map((s: any) => ({
-          date: s.session_datetime.split('T')[0],
-          title: s.class_name || "Clase grabada",
-          description: s.summary || s.notes || "",
-          type: "important" as const,
-          classId: null,
-          completed: false,
-        })),
-      ];
-      
+      const allEvents: CalendarEvent[] = tasks.map((t: any) => ({
+        id: t.id?.toString() || Math.random().toString(),
+        date: t.date,
+        title: t.title,
+        description: t.description || t.details || t.note || t.title,
+        type: "task" as const,
+        classId: t.classId ?? null,
+        completed: !!t.completed,
+      }));
+
       setEvents(allEvents);
     } catch (e) {
       console.error("Error loading events:", e);
-      // Fallback a datos mock
-      setEvents(TASKS.map((t) => ({
-        date: t.date,
-        title: t.title,
-        description: (t as any).description || t.title,
-        type: "task" as const,
-        classId: t.classId,
-        completed: t.completed,
-      })));
+      setEvents(
+        TASKS.map((t: any) => ({
+          id: t.id?.toString() || Math.random().toString(),
+          date: t.date,
+          title: t.title,
+          description: t.description || t.title,
+          type: "task" as const,
+          classId: t.classId ?? null,
+          completed: !!t.completed,
+        }))
+      );
     }
     setLoading(false);
   };
 
-  const getEventsForDate = (dateStr: string) =>
-    events.filter((e) => e.date === dateStr);
+  const handleCreateTask = (e: React.FormEvent) => {
+    e.preventDefault();
+    const title = newTaskTitle.trim();
+    if (!title) return;
 
-  const getDotsForDate = (dateStr: string) => {
-    const events = getEventsForDate(dateStr);
-    const types = new Set(events.map((e) => e.type));
-    return Array.from(types);
+    const tasksRaw = localStorage.getItem("user_tasks");
+    const tasks = tasksRaw ? JSON.parse(tasksRaw) : [];
+
+    const next = [
+      {
+        id: Date.now().toString(),
+        title,
+        description: newTaskDescription.trim(),
+        date: newTaskDate,
+        completed: false,
+      },
+      ...tasks,
+    ];
+
+    localStorage.setItem("user_tasks", JSON.stringify(next));
+    setIsAddingTask(false);
+    setNewTaskTitle("");
+    setNewTaskDescription("");
+    setNewTaskDate(new Date().toISOString().split("T")[0]);
+    loadEvents();
   };
 
-  const dotColor = (type: string) => {
+  const eventLabel = (type: CalendarEvent["type"]) => {
     switch (type) {
-      case "task": return "bg-foreground";
-      case "exam": return "bg-foreground";
-      case "important": return "bg-foreground";
-      default: return "bg-muted-foreground";
+      case "task":
+        return "Tarea";
+      case "exam":
+        return "Examen";
+      case "important":
+        return "Importante";
+      default:
+        return "";
     }
   };
 
-  const eventIcon = (type: string) => {
-    switch (type) {
-      case "task": return <CheckSquare size={14} className="text-foreground" />;
-      case "exam": return <BookOpen size={14} className="text-foreground" />;
-      case "important": return <Star size={14} className="text-foreground fill-foreground" />;
-      default: return null;
-    }
-  };
+  const getEventsForDate = (dateStr: string) => events.filter((e) => e.date === dateStr);
 
-  const eventBg = (type: string) => {
-    switch (type) {
-      case "task": return "bg-card border-border";
-      case "exam": return "bg-card border-border";
-      case "important": return "bg-card border-border";
-      default: return "bg-card border-border";
-    }
-  };
+  const upcoming = events
+    .filter((e) => e.date >= todayStr)
+    .sort((a, b) => a.date.localeCompare(b.date));
 
-  const eventLabel = (type: string) => {
-    switch (type) {
-      case "task": return "Tarea";
-      case "exam": return "Examen";
-      case "important": return "Importante";
-      default: return "";
-    }
-  };
+  const groupedUpcoming = upcoming.reduce<Record<string, CalendarEvent[]>>((acc, ev) => {
+    (acc[ev.date] ||= []).push(ev);
+    return acc;
+  }, {});
 
-  const todayStr = new Date().toISOString().split("T")[0];
-
-  // Build calendar grid
   const cells: Array<{ day: number; dateStr: string; isCurrentMonth: boolean }> = [];
 
-  // Previous month days
   for (let i = firstDay - 1; i >= 0; i--) {
     const d = prevMonthDays - i;
     const m = month === 0 ? 12 : month;
@@ -147,7 +158,6 @@ export default function CalendarPage() {
     });
   }
 
-  // Current month days
   for (let d = 1; d <= daysInMonth; d++) {
     cells.push({
       day: d,
@@ -156,7 +166,6 @@ export default function CalendarPage() {
     });
   }
 
-  // Next month days to fill 6 rows
   const remaining = 42 - cells.length;
   for (let d = 1; d <= remaining; d++) {
     const m = month + 2;
@@ -172,297 +181,213 @@ export default function CalendarPage() {
   const selectedEvents = selectedDate ? getEventsForDate(selectedDate) : [];
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-24 font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-black text-white pb-24 font-sans selection:bg-white/30 overflow-x-hidden">
       {/* Header */}
-      <div className="bg-background/80 backdrop-blur-xl border-b border-border/50 px-6 pt-12 pb-6 sticky top-0 z-10">
+      <div className="bg-black/80 backdrop-blur-xl border-b border-white/5 px-6 pt-12 pb-6 sticky top-0 z-10">
         <div className="flex items-center justify-between mb-6">
           <Link
-            to="/"
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 outline-none focus:ring-1 focus:ring-ring transition-colors"
+            to="/dashboard"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-white active:scale-90 transition-transform"
           >
-            <ArrowLeft size={20} strokeWidth={1.5} />
+            <ArrowLeft size={20} />
           </Link>
           <div className="flex flex-col items-center">
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">Calendario</h1>
+            <h1 className="text-xl font-black uppercase italic tracking-tighter">Agenda</h1>
           </div>
-          <div className="w-10 h-10" />
-        </div>
-
-        {/* Month nav */}
-        <div className="flex items-center justify-between px-2">
           <button
-            onClick={goToPrev}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 outline-none focus:ring-1 focus:ring-ring transition-colors"
+            type="button"
+            onClick={() => setIsAddingTask(true)}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-white active:scale-90 transition-transform"
           >
-            <ChevronLeft size={20} strokeWidth={1.5} />
-          </button>
-          <h2 className="text-[17px] font-semibold tracking-tight text-foreground">{monthName}</h2>
-          <button
-            onClick={goToNext}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 outline-none focus:ring-1 focus:ring-ring transition-colors"
-          >
-            <ChevronRight size={20} strokeWidth={1.5} />
+            <Plus size={18} />
           </button>
         </div>
-      </div>
 
-      <div className="px-6 pt-6">
-        {/* Day labels */}
-        <div className="grid grid-cols-7 mb-4">
-          {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((d) => (
-            <div
-              key={d}
-              className="text-center text-[10px] font-bold text-muted-foreground uppercase tracking-widest py-1"
-            >
-              {d}
-            </div>
-          ))}
+        <div className="flex bg-zinc-900 border border-white/5 rounded-xl p-1">
+          <button
+            type="button"
+            onClick={() => {
+              setViewMode("list");
+              setSelectedDate(null);
+            }}
+            className={clsx(
+              "flex-1 h-9 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+              viewMode === "list" ? "bg-white text-black shadow-lg" : "text-white/40"
+            )}
+          >
+            Lista
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode("month")}
+            className={clsx(
+              "flex-1 h-9 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+              viewMode === "month" ? "bg-white text-black shadow-lg" : "text-white/40"
+            )}
+          >
+            Mes
+          </button>
         </div>
 
-        {/* Calendar grid */}
-        <div className="grid grid-cols-7 gap-y-2 gap-x-1">
-          {cells.map((cell, i) => {
-            const dots = cell.isCurrentMonth ? getDotsForDate(cell.dateStr) : [];
-            const isToday = cell.dateStr === todayStr;
-            const isSelected = cell.dateStr === selectedDate;
-
-            return (
-              <button
-                key={i}
-                onClick={() =>
-                  cell.isCurrentMonth && setSelectedDate(cell.dateStr === selectedDate ? null : cell.dateStr)
-                }
-                className={clsx(
-                  "flex flex-col items-center justify-center py-2.5 rounded-full outline-none focus:ring-1 focus:ring-ring transition-all min-h-[48px]",
-                  !cell.isCurrentMonth && "opacity-20",
-                  isSelected && "bg-foreground text-background",
-                  isToday && !isSelected && "bg-secondary text-secondary-foreground font-bold",
-                  cell.isCurrentMonth && !isSelected && !isToday && "hover:bg-accent active:bg-secondary text-foreground"
-                )}
-              >
-                <span
-                  className={clsx(
-                    "text-[15px]",
-                    isSelected ? "text-background font-bold" : isToday ? "text-foreground font-bold" : "text-foreground font-medium"
-                  )}
-                >
-                  {cell.day}
-                </span>
-                {dots.length > 0 && (
-                  <div className="flex gap-[3px] mt-1 relative">
-                    {dots.slice(0, 3).map((type, j) => (
-                      <div
-                        key={j}
-                        className={clsx(
-                          "w-1 h-1 rounded-full",
-                          isSelected ? "bg-background/80" : "bg-foreground",
-                          isToday && !isSelected && "bg-foreground"
-                        )}
-                      />
-                    ))}
-                  </div>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Legend */}
-        <div className="flex items-center justify-center gap-6 mt-6 mb-8 border-t border-border/50 pt-6">
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-foreground" />
-            <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-wider">Eventos</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-foreground" />
-            <span className="text-[11px] text-foreground font-bold uppercase tracking-wider">Hoy</span>
-          </div>
-        </div>
-
-        {/* Selected date events */}
-        <AnimatePresence mode="wait">
-          {selectedDate && (
-            <motion.div
-              key={selectedDate}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="space-y-4"
-            >
-              <h3 className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest pl-2">
-                {new Date(selectedDate + "T12:00:00").toLocaleDateString("es-ES", {
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </h3>
-
-              {selectedEvents.length === 0 ? (
-                <div className="text-center py-16">
-                  <CalendarIcon size={48} className="mx-auto text-muted-foreground/30 mb-4" strokeWidth={1} />
-                  <p className="text-[15px] font-medium text-muted-foreground">Sin eventos este día</p>
-                </div>
-              ) : (
-                selectedEvents.map((ev, i) => {
-                  const cls = ev.classId
-                    ? CLASSES.find((c) => c.id === ev.classId)
-                    : null;
-                  return (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      className={clsx(
-                        "p-0 rounded-3xl border transition-colors overflow-hidden",
-                        "bg-card border-border shadow-sm"
-                      )}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => setActiveEvent(ev)}
-                        className="w-full text-left p-5 active:opacity-90 transition-opacity"
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="mt-1 text-muted-foreground">
-                            {ev.type === "task" && <CheckSquare size={18} />}
-                            {ev.type === "exam" && <BookOpen size={18} />}
-                            {ev.type === "important" && <Star size={18} />}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-1.5">
-                              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                                {eventLabel(ev.type)}
-                              </span>
-                              {ev.completed && (
-                                <span className="text-[9px] bg-foreground text-background rounded-full px-2 py-0.5 font-bold uppercase tracking-wider">
-                                  Hecho
-                                </span>
-                              )}
-                            </div>
-                            <h4
-                              className={clsx(
-                                "font-semibold text-[17px] tracking-tight text-foreground",
-                                ev.completed && "line-through text-muted-foreground"
-                              )}
-                            >
-                              {ev.title}
-                            </h4>
-                            {cls && (
-                              <p className="text-[13px] text-muted-foreground mt-1">
-                                {cls.name}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-                    </motion.div>
-                  );
-                })
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Event detail modal */}
-        <AnimatePresence>
-          {activeEvent && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/70 z-40"
-                onClick={() => setActiveEvent(null)}
-              />
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 24 }}
-                className="fixed left-4 right-4 bottom-6 z-50 max-w-md mx-auto"
-              >
-                <div className="bg-card border border-border rounded-3xl p-5 shadow-2xl">
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
-                        {eventLabel(activeEvent.type)}
-                      </p>
-                      <h3 className="text-[18px] font-semibold tracking-tight text-foreground leading-snug">
-                        {activeEvent.title}
-                      </h3>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setActiveEvent(null)}
-                      className="w-9 h-9 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center"
-                      aria-label="Cerrar"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <div className="space-y-2">
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                      Qué tienes que hacer
-                    </p>
-                    <p className="text-[14px] text-foreground/90 leading-relaxed whitespace-pre-wrap">
-                      {activeEvent.description?.trim() ? activeEvent.description : "Sin descripción"}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-
-        {/* If no date selected, show next upcoming */}
-        {!selectedDate && (
-          <div className="mt-8">
-            <h3 className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-4 pl-2">
-              Próximos Eventos
-            </h3>
-            <div className="space-y-4">
-              {events
-                .filter((e) => e.date >= todayStr)
-                .sort((a, b) => a.date.localeCompare(b.date))
-                .slice(0, 5)
-                .map((ev, i) => {
-                  const cls = ev.classId
-                    ? CLASSES.find((c) => c.id === ev.classId)
-                    : null;
-                  return (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      className="bg-card p-4 rounded-[24px] border border-border flex items-center gap-4 shadow-sm"
-                    >
-                      <div className="flex flex-col items-center justify-center w-14 h-14 bg-secondary text-secondary-foreground rounded-[18px]">
-                        <span className="text-[10px] font-bold uppercase tracking-widest mb-0.5">
-                          {new Date(ev.date + "T12:00:00").toLocaleDateString("es-ES", { month: "short" })}
-                        </span>
-                        <span className="text-xl font-bold tracking-tighter leading-none">
-                          {new Date(ev.date + "T12:00:00").getDate()}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-[15px] tracking-tight text-foreground truncate mb-1">
-                          {ev.title}
-                        </h4>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                            {eventLabel(ev.type)} {cls ? `• ${cls.name}` : ""}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-            </div>
+        {viewMode === "month" && (
+          <div className="flex items-center justify-between px-2 mt-5">
+            <button onClick={goToPrev} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center active:bg-white/10 transition-colors">
+              <ChevronLeft size={16} />
+            </button>
+            <h2 className="text-sm font-black uppercase italic tracking-tighter">{monthName}</h2>
+            <button onClick={goToNext} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center active:bg-white/10 transition-colors">
+              <ChevronRight size={16} />
+            </button>
           </div>
         )}
       </div>
+
+      <div className="px-5 pt-6">
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="animate-spin text-white/40" size={24} />
+          </div>
+        ) : viewMode === "list" ? (
+          <div className="space-y-8">
+            {Object.keys(groupedUpcoming).length === 0 ? (
+              <div className="bg-zinc-900/40 border border-white/5 rounded-[24px] p-8 text-center">
+                <CalendarIcon size={32} className="mx-auto text-white/10 mb-4" />
+                <p className="text-[13px] font-black uppercase italic tracking-tight">Tu agenda está vacía</p>
+                <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest mt-2">Usa el botón + para empezar</p>
+              </div>
+            ) : (
+              Object.entries(groupedUpcoming).map(([date, items]) => (
+                <div key={date} className="space-y-3">
+                  <p className="text-[10px] font-black text-white/25 uppercase tracking-[0.2em] pl-2">
+                    {new Date(date + "T12:00:00").toLocaleDateString("es-ES", {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                  <div className="space-y-2">
+                    {items.map((ev) => (
+                      <motion.button
+                        key={ev.id}
+                        onClick={() => setActiveEvent(ev)}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full text-left bg-zinc-900/40 border border-white/5 rounded-[20px] p-4 flex items-center justify-between gap-3 active:bg-zinc-800 transition-all"
+                      >
+                        <div className="flex items-start gap-4 min-w-0">
+                          <div className="mt-1 text-white/40 shrink-0">
+                            {ev.type === "task" && <CheckSquare size={16} />}
+                            {ev.type === "exam" && <BookOpen size={16} />}
+                            {ev.type === "important" && <Star size={16} />}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-[9px] font-black uppercase tracking-[0.15em] text-white/20 mb-1">{eventLabel(ev.type)}</p>
+                            <p className={clsx("text-sm font-bold uppercase tracking-tight truncate", ev.completed && "line-through text-white/20")}>{ev.title}</p>
+                          </div>
+                        </div>
+                        <ChevronRight size={14} className="text-white/10" />
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="grid grid-cols-7 mb-4">
+              {["D", "L", "M", "M", "J", "V", "S"].map((d, i) => (
+                <div key={i} className="text-center text-[9px] font-black text-white/20 uppercase tracking-widest">{d}</div>
+              ))}
+            </div>
+            <div className="grid grid-cols-7 gap-1">
+              {cells.map((cell, i) => {
+                const isSelected = cell.dateStr === selectedDate;
+                const isToday = cell.dateStr === todayStr;
+                const hasEvents = getEventsForDate(cell.dateStr).length > 0;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => cell.isCurrentMonth && setSelectedDate(isSelected ? null : cell.dateStr)}
+                    className={clsx(
+                      "aspect-square rounded-xl flex flex-col items-center justify-center relative transition-all",
+                      !cell.isCurrentMonth && "opacity-10",
+                      isSelected ? "bg-white text-black scale-110 shadow-xl" : isToday ? "bg-zinc-800 text-white font-black" : "text-white/60 active:bg-white/5"
+                    )}
+                  >
+                    <span className="text-[13px] font-bold">{cell.day}</span>
+                    {hasEvents && !isSelected && (
+                      <div className="absolute bottom-1.5 w-1 h-1 rounded-full bg-white/40" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            
+            <AnimatePresence mode="wait">
+              {selectedDate && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="space-y-3 pt-4 border-t border-white/5">
+                  <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] pl-1">Eventos para el {new Date(selectedDate + "T12:00:00").toLocaleDateString("es-ES", { day: 'numeric', month: 'long' })}</p>
+                  {selectedEvents.length === 0 ? (
+                    <p className="text-[12px] text-white/20 font-bold uppercase italic p-2">Sin planes para hoy</p>
+                  ) : (
+                    selectedEvents.map((ev) => (
+                      <button key={ev.id} onClick={() => setActiveEvent(ev)} className="w-full text-left bg-zinc-900/40 border border-white/5 rounded-2xl p-4 flex items-center justify-between">
+                        <p className="text-sm font-bold uppercase tracking-tight truncate">{ev.title}</p>
+                        <ChevronRight size={14} className="text-white/10" />
+                      </button>
+                    ))
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+      </div>
+
+      {/* Modal: Detalle de Evento */}
+      <AnimatePresence>
+        {activeEvent && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/90 backdrop-blur-md z-40" onClick={() => setActiveEvent(null)} />
+            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 24 }} className="fixed left-4 right-4 bottom-6 z-50 max-w-md mx-auto">
+              <div className="bg-zinc-900 border border-white/10 rounded-[32px] p-6 shadow-2xl">
+                <div className="flex items-start justify-between gap-4 mb-6">
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-1">{eventLabel(activeEvent.type)}</p>
+                    <h3 className="text-xl font-black uppercase italic tracking-tight leading-none">{activeEvent.title}</h3>
+                  </div>
+                  <button onClick={() => setActiveEvent(null)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40"><X size={16} /></button>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 italic">Descripción</p>
+                  <p className="text-[14px] text-white/70 leading-relaxed font-medium">{activeEvent.description || "Sin detalles adicionales"}</p>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Modal: Nueva Tarea */}
+      <AnimatePresence>
+        {isAddingTask && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/90 backdrop-blur-md z-40" onClick={() => setIsAddingTask(false)} />
+            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 24 }} className="fixed bottom-0 left-0 right-0 bg-zinc-900 rounded-t-[32px] z-50 p-8 pb-12 max-w-md mx-auto">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-xl font-black uppercase italic tracking-tighter">Nueva Tarea</h2>
+                <button onClick={() => setIsAddingTask(false)} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40"><X size={16} /></button>
+              </div>
+              <form onSubmit={handleCreateTask} className="space-y-4">
+                <input value={newTaskTitle} onChange={(e) => setNewTaskTitle(e.target.value)} required placeholder="¿QUÉ HAY QUE HACER?" className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase" />
+                <textarea value={newTaskDescription} onChange={(e) => setNewTaskDescription(e.target.value)} rows={3} placeholder="DETALLES (OPCIONAL)" className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase resize-none" />
+                <input type="date" value={newTaskDate} onChange={(e) => setNewTaskDate(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase" />
+                <button type="submit" className="w-full bg-white text-black rounded-xl py-4 text-lg font-black uppercase italic tracking-tight mt-2">Guardar</button>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
