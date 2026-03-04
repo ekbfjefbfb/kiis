@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { 
   ArrowLeft, Calendar as CalendarIcon, ChevronLeft, ChevronRight, 
-  Plus, Clock, MapPin, CheckCircle2, ListTodo, LayoutGrid 
+  Plus, MapPin, CheckCircle2, ListTodo, LayoutGrid 
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
@@ -30,96 +30,91 @@ export default function CalendarPage() {
   ];
 
   return (
-    <div className="min-h-[100dvh] w-full bg-black text-white font-sans selection:bg-white/20 overflow-x-hidden flex flex-col">
-      {/* Header Brutalista */}
-      <header className="px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] pt-[max(env(safe-area-inset-top,2rem),3rem)] pb-6 flex justify-between items-end border-b border-white/5 bg-black/80 backdrop-blur-xl sticky top-0 z-20">
+    <div className="h-[100dvh] w-full bg-black text-white font-sans selection:bg-white/20 overflow-hidden flex flex-col relative">
+      <header className="px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] pt-[max(env(safe-area-inset-top,2rem),3rem)] pb-6 flex justify-between items-end border-b border-white/5 bg-black/80 backdrop-blur-xl sticky top-0 z-20 shrink-0">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate("/dashboard")} className="w-11 h-11 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
-            <ArrowLeft size={20} />
+          <button onClick={() => navigate("/dashboard")} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            <ArrowLeft size={18} />
           </button>
           <div>
-            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-1">Agenda</p>
-            <h1 className="text-2xl font-black uppercase italic tracking-tighter leading-none">Mi Calendario</h1>
+            <p className="text-[9px] font-medium text-zinc-600 uppercase tracking-[0.3em] mb-1.5 text-left">Agenda_</p>
+            <h1 className="text-xl font-bold uppercase italic tracking-tighter leading-none text-white">Calendario</h1>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2.5">
           <button 
             onClick={() => setView(view === "agenda" ? "month" : "agenda")}
-            className="w-11 h-11 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform text-zinc-400"
+            className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform text-zinc-500"
           >
-            {view === "agenda" ? <LayoutGrid size={20} /> : <ListTodo size={20} />}
+            {view === "agenda" ? <LayoutGrid size={18} /> : <ListTodo size={18} />}
           </button>
           <button 
             onClick={() => setIsAddingClass(true)}
-            className="w-11 h-11 rounded-full bg-white text-black flex items-center justify-center active:scale-90 transition-transform shadow-xl"
+            className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center active:scale-90 transition-transform shadow-lg"
           >
-            <Plus size={20} />
+            <Plus size={18} />
           </button>
         </div>
       </header>
 
-      {/* Date Navigation - Brutal & Clean */}
-      <div className="px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] pt-8 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h2 className="text-3xl font-black uppercase italic tracking-tighter">
-            {selectedDate.toLocaleDateString("es-ES", { month: "long", year: "numeric" })}
-          </h2>
-        </div>
+      <div className="px-6 pt-8 pb-4 flex items-center justify-between shrink-0">
+        <h2 className="text-2xl font-bold uppercase italic tracking-tighter text-white">
+          {selectedDate.toLocaleDateString("es-ES", { month: "long", year: "numeric" })}
+        </h2>
         <div className="flex gap-2">
-          <button className="w-10 h-10 rounded-full bg-zinc-900/50 flex items-center justify-center text-zinc-600 hover:text-white transition-colors">
-            <ChevronLeft size={20} />
+          <button className="w-9 h-9 rounded-full bg-zinc-900/50 flex items-center justify-center text-zinc-700 active:text-white transition-colors">
+            <ChevronLeft size={18} />
           </button>
-          <button className="w-10 h-10 rounded-full bg-zinc-900/50 flex items-center justify-center text-zinc-600 hover:text-white transition-colors">
-            <ChevronRight size={20} />
+          <button className="w-9 h-9 rounded-full bg-zinc-900/50 flex items-center justify-center text-zinc-700 active:text-white transition-colors">
+            <ChevronRight size={18} />
           </button>
         </div>
       </div>
 
-      {/* View Content Area */}
-      <main className="flex-1 px-[env(safe-area-inset-left,1.25rem)] pr-[env(safe-area-inset-right,1.25rem)] py-8 max-w-2xl mx-auto w-full pb-32">
+      <main className="flex-1 overflow-y-auto scrollbar-hide px-[env(safe-area-inset-left,1.25rem)] pr-[env(safe-area-inset-right,1.25rem)] pb-32 max-w-2xl mx-auto w-full">
         <AnimatePresence mode="wait">
           {view === "agenda" ? (
             <motion.div 
-              key="agenda-view"
+              key="agenda"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="space-y-4"
+              className="space-y-3"
             >
               {events.map((event) => (
                 <motion.div 
                   key={event.id}
                   whileTap={{ scale: 0.98 }}
-                  className="bg-zinc-900/40 border border-white/5 rounded-[28px] p-6 flex items-center justify-between"
+                  className="bg-zinc-900/40 border border-white/5 rounded-[28px] p-5 flex items-center justify-between"
                 >
                   <div className="flex items-center gap-5">
                     <div className={clsx(
-                      "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border border-white/5",
+                      "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-white/5 shadow-inner",
                       event.type === "class" ? "bg-zinc-800" : 
                       event.type === "exam" ? "bg-red-500/10" : "bg-emerald-500/10"
                     )}>
-                      {event.type === "class" ? <CalendarIcon size={20} className="text-zinc-500" /> :
-                       event.type === "exam" ? <span className="text-[10px] font-black text-red-500">EXM</span> :
-                       <CheckCircle2 size={20} className="text-emerald-500" />}
+                      {event.type === "class" ? <CalendarIcon size={18} className="text-zinc-600" /> :
+                       event.type === "exam" ? <span className="text-[8px] font-black text-red-500">EXM</span> :
+                       <CheckCircle2 size={18} className="text-emerald-500/60" />}
                     </div>
                     <div className="text-left">
-                      <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">{event.time}</p>
-                      <p className="text-lg font-black uppercase italic tracking-tight text-white leading-tight">{event.title}</p>
+                      <p className="text-[9px] font-bold text-zinc-700 uppercase tracking-widest mb-1">{event.time}</p>
+                      <p className="text-base font-bold uppercase italic tracking-tight text-white leading-none mb-1">{event.title}</p>
                       {event.room && (
-                        <div className="flex items-center gap-1.5 mt-1.5 text-zinc-500">
+                        <div className="flex items-center gap-1 text-zinc-600">
                           <MapPin size={10} />
-                          <p className="text-[9px] font-bold uppercase tracking-widest">{event.room}</p>
+                          <p className="text-[8px] font-bold uppercase tracking-widest">{event.room}</p>
                         </div>
                       )}
                     </div>
                   </div>
-                  <ChevronRight size={20} className="text-zinc-800" />
+                  <ChevronRight size={18} className="text-zinc-800" />
                 </motion.div>
               ))}
             </motion.div>
           ) : (
             <motion.div 
-              key="month-view"
+              key="month"
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
@@ -127,7 +122,7 @@ export default function CalendarPage() {
             >
               <div className="grid grid-cols-7 gap-2 mb-6">
                 {["D", "L", "M", "M", "J", "V", "S"].map(d => (
-                  <div key={d} className="text-center text-[10px] font-black text-zinc-700 uppercase">{d}</div>
+                  <div key={d} className="text-center text-[10px] font-bold text-zinc-800 uppercase">{d}</div>
                 ))}
               </div>
               <div className="grid grid-cols-7 gap-2 h-64">
@@ -135,8 +130,8 @@ export default function CalendarPage() {
                   <button 
                     key={i}
                     className={clsx(
-                      "flex items-center justify-center text-sm font-bold rounded-xl transition-all aspect-square",
-                      i + 1 === 15 ? "bg-white text-black" : "text-zinc-500 hover:text-white active:bg-zinc-800"
+                      "flex items-center justify-center text-xs font-bold rounded-xl transition-all aspect-square",
+                      i + 1 === 15 ? "bg-white text-black shadow-lg" : "text-zinc-600 hover:text-white active:bg-zinc-800"
                     )}
                   >
                     {i + 1}
