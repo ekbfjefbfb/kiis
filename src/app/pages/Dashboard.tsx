@@ -19,7 +19,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen w-full bg-black text-white font-sans flex flex-col pb-10" style={{ backgroundColor: '#000000' }}>
-      {/* Header - Minimalismo de Ingeniería */}
+      {/* Header - Ingeniería Minimalista */}
       <header className="px-8 pt-20 pb-12 flex justify-between items-start sticky top-0 bg-black/80 backdrop-blur-xl z-30">
         <div className="space-y-2">
           <p className="text-[10px] font-bold tracking-[0.6em] text-zinc-600 uppercase">Hoy_</p>
@@ -38,7 +38,7 @@ export default function Dashboard() {
       </header>
 
       <main className="flex-1 px-8 space-y-16">
-        {/* Acción Principal - El bloque de impacto */}
+        {/* Acción Principal - Impacto Visual Inteligente */}
         <section>
           <button 
             onClick={() => navigate("/live")}
@@ -57,7 +57,7 @@ export default function Dashboard() {
           </button>
         </section>
 
-        {/* Materias - Estética de Datos */}
+        {/* Materias - Jerarquía Nivel 2 */}
         <section className="space-y-8">
           <div className="flex justify-between items-center px-4">
             <div className="flex items-center gap-3 text-zinc-600">
