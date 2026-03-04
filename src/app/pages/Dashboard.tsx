@@ -86,7 +86,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-left">
                       <h3 className="text-sm font-black text-white uppercase tracking-tight group-hover:text-white transition-colors leading-none mb-1">{cls.name}</h3>
-                      <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors">{cls.teacher}</p>
+                      <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors">{cls.professor}</p>
                     </div>
                   </div>
                   <ChevronRight size={16} className="text-zinc-800 group-hover:text-zinc-600 transition-all" strokeWidth={3} />

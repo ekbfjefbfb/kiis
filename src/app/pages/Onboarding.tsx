@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { motion } from "framer-motion";
 import { ArrowRight, Radio, Brain, Zap, Download } from "lucide-react";
 import { usePWAInstall } from "../../hooks/usePWAInstall";
 
