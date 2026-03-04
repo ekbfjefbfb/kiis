@@ -18,7 +18,7 @@ export default function Dashboard() {
   }).toUpperCase();
 
   return (
-    <div className="min-h-screen w-full bg-black text-white font-sans flex flex-col pb-10" style={{ backgroundColor: '#000000' }}>
+    <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col pb-10 overflow-x-hidden" style={{ backgroundColor: '#000000' }}>
       {/* Header - Ingeniería Minimalista con Jerarquía Definida */}
       <header className="px-8 pt-20 pb-12 flex justify-between items-start sticky top-0 bg-black/80 backdrop-blur-xl z-30">
         <div className="space-y-2">
