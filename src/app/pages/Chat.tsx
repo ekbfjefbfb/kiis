@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Copy, Share2, ThumbsUp } from "lucide-react";
+import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Copy, Share2, ThumbsUp, User } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { aiService, chatWebSocket } from "../../services/ai.service";
 import { audioService } from "../../services/audio.service";
 import { groqService } from "../../services/groq.service";
@@ -127,20 +127,28 @@ export default function ChatPage() {
 
   return (
     <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden selection:bg-white/10">
-      {/* Header Minimalista */}
+      {/* Header Unificado y Sutil - Reemplaza Bottom Nav */}
       <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-20">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+        <div className="flex items-center gap-4">
+          <Link to="/dashboard" className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
             <ArrowLeft size={18} />
-          </button>
-          <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Asistente</h1>
+          </Link>
+          <div className="flex flex-col">
+            <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Asistente</h1>
+            <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em] mt-1">SST + TTS Active</p>
+          </div>
         </div>
-        <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
-          {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/30" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/30" />}
+          </button>
+          <Link to="/profile" className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            <User size={18} className="text-white/60" />
+          </Link>
+        </div>
       </div>
 
-      {/* Messages Area */}
+      {/* Messages */}
       <div className="flex-1 px-6 space-y-8 overflow-y-auto scrollbar-hide pt-6 pb-40">
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center opacity-[0.02]">
@@ -184,20 +192,20 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Zone - Lógica Estructurada */}
+      {/* Input Zone - Lógica Estructurada Sin Scroll */}
       <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-black via-black to-transparent z-20">
         <div className="max-w-2xl mx-auto">
           <div className="bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex items-center gap-2 shadow-2xl">
             
-            {/* Input con Placeholder Lógico */}
-            <div className="flex-1 flex items-center px-4 py-2 min-h-[44px]">
+            {/* Input Área: Sin scroll visible, auto-ajustable */}
+            <div className="flex-1 flex items-center px-4 py-2">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 rows={1}
                 disabled={isRecording}
                 placeholder={isRecording ? "Te escucho..." : "Escribe o habla_"}
-                className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2 disabled:opacity-50"
+                className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[44px] max-h-[120px] py-2 scrollbar-hide"
                 onInput={(e) => {
                   const target = e.target as HTMLTextAreaElement;
                   target.style.height = 'auto';
@@ -206,20 +214,21 @@ export default function ChatPage() {
               />
             </div>
 
-            {/* Botones con Funciones Máximas y Definidas */}
+            {/* Acciones de Voz y Envío: Bien Estructuradas */}
             <div className="flex items-center gap-2 pr-1">
-              {/* Botón Micrófono: Solo visible cuando NO se graba y el input está vacío */}
+              {/* Micrfono: Siempre funcional, desaparece al escribir para dar paso a Enviar */}
               {!isRecording && !input.trim() && (
-                <button 
+                <motion.button 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
                   onClick={toggleVoiceRecording}
-                  aria-label="Micro"
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-white active:bg-white/10 transition-all shrink-0"
+                  className="w-11 h-11 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center text-white/60 hover:text-white active:scale-90 transition-all shrink-0"
                 >
                   <Mic size={20} />
-                </button>
+                </motion.button>
               )}
               
-              {/* Botón Dinámico: Hablar / Detener / Enviar */}
+              {/* Botón Principal Hablar/Detener/Enviar */}
               <motion.button
                 onClick={isRecording ? toggleVoiceRecording : isProcessing ? undefined : (input.trim() ? () => handleSend() : toggleVoiceRecording)}
                 whileTap={{ scale: 0.95 }}
@@ -227,7 +236,7 @@ export default function ChatPage() {
                   "h-11 flex items-center justify-center gap-2 px-5 rounded-full transition-all duration-300 font-bold shrink-0",
                   isRecording 
                     ? "bg-white text-black shadow-lg w-32" 
-                    : "bg-white text-black active:bg-white/90"
+                    : "bg-white text-black active:opacity-90"
                 )}
               >
                 {isRecording ? (
@@ -236,9 +245,9 @@ export default function ChatPage() {
                     <span className="text-[13px] font-black uppercase italic tracking-tighter">Detener</span>
                   </>
                 ) : isProcessing ? (
-                  <Loader2 size={18} className="animate-spin text-black" />
+                  <Loader2 size={18} className="animate-spin" />
                 ) : input.trim() ? (
-                  <Send size={18} className="text-black" />
+                  <Send size={18} />
                 ) : (
                   <>
                     <div className="flex gap-0.5 items-end h-3 mr-1">
@@ -246,7 +255,7 @@ export default function ChatPage() {
                       <div className="w-[2px] h-3 bg-black rounded-full" />
                       <div className="w-[2px] h-2 bg-black rounded-full" />
                     </div>
-                    <span className="text-[13px] font-black uppercase italic tracking-tighter text-black">Hablar</span>
+                    <span className="text-[13px] font-black uppercase italic tracking-tighter">Hablar</span>
                   </>
                 )}
               </motion.button>
