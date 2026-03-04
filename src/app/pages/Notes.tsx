@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Search, ChevronRight, ArrowUpDown, ArrowLeft, Loader2, FileText, X } from "lucide-react";
+import { Search, ChevronRight, ArrowUpDown, ArrowLeft, Loader2, FileText, X, BookOpen } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate, Link } from "react-router";
 import { notesService, BackendNote } from "../../services/notes.service";
+import AddClassModal from "../components/AddClassModal";
 
 type SortOption = "recent" | "oldest" | "title";
 
@@ -13,6 +14,7 @@ export default function NotesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [loading, setLoading] = useState(true);
+  const [isAddingClass, setIsAddingClass] = useState(false);
 
   useEffect(() => {
     loadNotes();
@@ -62,6 +64,12 @@ export default function NotesPage() {
           <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Mis Notas</h1>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsAddingClass(true)}
+            className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform"
+          >
+            <BookOpen size={16} />
+          </button>
           <div className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 flex items-center gap-1.5">
             <ArrowUpDown size={12} className="text-white/30" />
             <select 
@@ -77,14 +85,13 @@ export default function NotesPage() {
       </div>
 
       <div className="px-5 pt-6 space-y-6">
-        {/* Barra de Búsqueda Minimalista */}
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
           <input 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="BUSCAR NOTAS..."
-            className="w-full bg-zinc-900 border border-white/5 rounded-2xl py-4 pl-11 pr-4 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase"
+            className="w-full bg-zinc-900 border border-white/5 rounded-2xl py-4 pl-11 pr-4 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase text-white"
           />
           {searchQuery && (
             <button onClick={() => setSearchQuery("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20">
@@ -93,7 +100,6 @@ export default function NotesPage() {
           )}
         </div>
 
-        {/* Lista de Notas */}
         {loading ? (
           <div className="flex justify-center py-20">
             <Loader2 className="animate-spin text-white/20" size={24} />
@@ -136,6 +142,11 @@ export default function NotesPage() {
           </div>
         )}
       </div>
+
+      <AddClassModal 
+        isOpen={isAddingClass} 
+        onClose={() => setIsAddingClass(false)} 
+      />
     </div>
   );
 }

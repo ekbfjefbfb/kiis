@@ -4,14 +4,13 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Link } from "react-router";
-import { CLASSES, addClass } from "../data/mock";
+import { CLASSES } from "../data/mock";
 import { notesService, BackendNote } from "../../services/notes.service";
+import AddClassModal from "../components/AddClassModal";
 
 export default function Dashboard() {
   const [recentNotes, setRecentNotes] = useState<BackendNote[]>([]);
   const [isAddingClass, setIsAddingClass] = useState(false);
-  const [newClassName, setNewClassName] = useState("");
-  const [newClassProfessor, setNewClassProfessor] = useState("");
 
   const today = new Date().toLocaleDateString("es-ES", {
     weekday: "long", month: "long", day: "numeric",
@@ -28,21 +27,9 @@ export default function Dashboard() {
     } catch (e) { console.error(e); }
   };
 
-  const handleCreateClass = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newClassName.trim() || !newClassProfessor.trim()) return;
-    addClass({
-      name: newClassName, professor: newClassProfessor,
-      time: "Por definir", room: "Por definir", email: "", phone: "", nextTask: "", taskDate: ""
-    });
-    setIsAddingClass(false);
-    setNewClassName("");
-    setNewClassProfessor("");
-  };
-
   return (
     <div className="min-h-[100dvh] bg-black text-white pb-24 font-sans selection:bg-white/30 overflow-x-hidden">
-      {/* Header Compacto */}
+      {/* Header Compacto - Agenda Style */}
       <div className="px-6 pt-10 pb-6 flex justify-between items-end border-b border-white/5">
         <div>
           <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Hoy</p>
@@ -54,13 +41,13 @@ export default function Dashboard() {
       </div>
 
       <div className="px-5 space-y-6 pt-6">
-        {/* Acciones - Lista minimalista sin exceso de colores */}
+        {/* Acciones de Agenda Reales */}
         <div className="grid grid-cols-1 gap-3">
           <Link to="/quick-note" className="block group">
             <motion.div whileTap={{ scale: 0.98 }} className="bg-zinc-900/50 border border-white/5 rounded-[24px] p-5 flex items-center justify-between transition-all active:bg-zinc-800">
               <div className="flex items-center gap-4">
-                <div className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center">
-                  <Zap size={20} className="text-white/70" />
+                <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
+                  <Zap size={20} className="text-emerald-400" />
                 </div>
                 <div>
                   <p className="text-sm font-black uppercase italic leading-none">Nota rápida</p>
@@ -74,8 +61,8 @@ export default function Dashboard() {
           <Link to="/live" className="block group">
             <motion.div whileTap={{ scale: 0.98 }} className="bg-zinc-900/50 border border-white/5 rounded-[24px] p-5 flex items-center justify-between transition-all active:bg-zinc-800">
               <div className="flex items-center gap-4">
-                <div className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center">
-                  <Radio size={20} className="text-white/70" />
+                <div className="w-11 h-11 rounded-2xl bg-purple-500/10 flex items-center justify-center">
+                  <Radio size={20} className="text-purple-400" />
                 </div>
                 <div>
                   <p className="text-sm font-black uppercase italic leading-none">Clase en vivo</p>
@@ -93,7 +80,7 @@ export default function Dashboard() {
                   <Brain size={20} className="text-white/70" />
                 </div>
                 <div>
-                  <p className="text-sm font-black uppercase italic leading-none">Asistente IA</p>
+                  <p className="text-sm font-black uppercase italic leading-none text-white">Asistente IA</p>
                   <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest mt-1">Chat y voz unificados.</p>
                 </div>
               </div>
@@ -156,25 +143,10 @@ export default function Dashboard() {
         </section>
       </div>
 
-      {/* Modal Nueva Materia */}
-      <AnimatePresence>
-        {isAddingClass && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/90 backdrop-blur-md z-40" onClick={() => setIsAddingClass(false)} />
-            <motion.div initial={{ opacity: 0, y: "100%" }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: "100%" }} className="fixed bottom-0 left-0 right-0 bg-zinc-900 rounded-t-[32px] z-50 p-8 pb-12 max-w-md mx-auto shadow-2xl border-t border-white/5">
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-xl font-black uppercase italic tracking-tighter">Nueva Materia</h2>
-                <button onClick={() => setIsAddingClass(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40"><X size={16} /></button>
-              </div>
-              <form onSubmit={handleCreateClass} className="space-y-4">
-                <input type="text" required value={newClassName} onChange={(e) => setNewClassName(e.target.value)} placeholder="NOMBRE DE MATERIA" className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase" />
-                <input type="text" required value={newClassProfessor} onChange={(e) => setNewClassProfessor(e.target.value)} placeholder="PROFESOR" className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase" />
-                <button type="submit" className="w-full bg-white text-black rounded-xl py-4 text-lg font-black uppercase italic tracking-tight mt-2 active:scale-95 transition-transform">Guardar Materia</button>
-              </form>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <AddClassModal 
+        isOpen={isAddingClass} 
+        onClose={() => setIsAddingClass(false)} 
+      />
     </div>
   );
 }

@@ -14,8 +14,9 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
-import { Link, useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { TASKS, CLASSES } from "../data/mock";
+import AddClassModal from "../components/AddClassModal";
 
 interface CalendarEvent {
   id: string;
@@ -38,6 +39,7 @@ export default function CalendarPage() {
   const [viewMode, setViewMode] = useState<"list" | "month">("list");
 
   const [isAddingTask, setIsAddingTask] = useState(false);
+  const [isAddingClass, setIsAddingClass] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDescription, setNewTaskDescription] = useState("");
   const [newTaskDate, setNewTaskDate] = useState(() => new Date().toISOString().split("T")[0]);
@@ -66,9 +68,9 @@ export default function CalendarPage() {
     setLoading(true);
     try {
       const storedTasks = localStorage.getItem("user_tasks");
-      const tasks = storedTasks ? JSON.parse(storedTasks) : TASKS;
+      const tasksList = storedTasks ? JSON.parse(storedTasks) : TASKS;
 
-      const allEvents: CalendarEvent[] = tasks.map((t: any) => ({
+      const allEvents: CalendarEvent[] = tasksList.map((t: any) => ({
         id: t.id?.toString() || Math.random().toString(),
         date: t.date,
         title: t.title,
@@ -86,7 +88,7 @@ export default function CalendarPage() {
           id: t.id?.toString() || Math.random().toString(),
           date: t.date,
           title: t.title,
-          description: t.description || t.title,
+          description: (t as any).description || t.title,
           type: "task" as const,
           classId: t.classId ?? null,
           completed: !!t.completed,
@@ -102,7 +104,7 @@ export default function CalendarPage() {
     if (!title) return;
 
     const tasksRaw = localStorage.getItem("user_tasks");
-    const tasks = tasksRaw ? JSON.parse(tasksRaw) : [];
+    const existingTasks = tasksRaw ? JSON.parse(tasksRaw) : [];
 
     const next = [
       {
@@ -112,7 +114,7 @@ export default function CalendarPage() {
         date: newTaskDate,
         completed: false,
       },
-      ...tasks,
+      ...existingTasks,
     ];
 
     localStorage.setItem("user_tasks", JSON.stringify(next));
@@ -192,13 +194,22 @@ export default function CalendarPage() {
           <div className="flex flex-col items-center">
             <h1 className="text-xl font-black uppercase italic tracking-tighter">Agenda</h1>
           </div>
-          <button
-            type="button"
-            onClick={() => setIsAddingTask(true)}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-white active:scale-90 transition-transform"
-          >
-            <Plus size={18} />
-          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setIsAddingClass(true)}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-white active:scale-90 transition-transform"
+            >
+              <BookOpen size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsAddingTask(true)}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-white active:scale-90 transition-transform"
+            >
+              <Plus size={18} />
+            </button>
+          </div>
         </div>
 
         <div className="flex bg-zinc-900 border border-white/5 rounded-xl p-1">
@@ -339,15 +350,14 @@ export default function CalendarPage() {
         )}
       </div>
 
+      {/* Modal: Detalle de Evento */}
       <AnimatePresence>
         {activeEvent && (
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/90 backdrop-blur-md z-40" onClick={() => setActiveEvent(null)} />
             <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 24 }} className="fixed left-4 right-4 bottom-6 z-50 max-w-md mx-auto">
               <div className="bg-zinc-900 border border-white/10 rounded-[32px] p-7 shadow-2xl overflow-hidden relative">
-                {/* Decoración de fondo sutil */}
                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-                
                 <div className="flex items-start justify-between gap-4 mb-8 relative z-10">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 mb-2">
@@ -362,14 +372,10 @@ export default function CalendarPage() {
                       {activeEvent.title}
                     </h3>
                   </div>
-                  <button 
-                    onClick={() => setActiveEvent(null)} 
-                    className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 active:scale-90 transition-all shrink-0"
-                  >
+                  <button onClick={() => setActiveEvent(null)} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 active:scale-90 transition-all shrink-0">
                     <X size={20} />
                   </button>
                 </div>
-
                 <div className="space-y-4 relative z-10">
                   <div className="flex flex-col gap-1">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 italic">Instrucciones</p>
@@ -379,11 +385,7 @@ export default function CalendarPage() {
                       </p>
                     </div>
                   </div>
-                  
-                  <button 
-                    onClick={() => setActiveEvent(null)}
-                    className="w-full bg-white text-black rounded-2xl py-4 text-sm font-black uppercase italic tracking-widest active:scale-[0.98] transition-all mt-2"
-                  >
+                  <button onClick={() => setActiveEvent(null)} className="w-full bg-white text-black rounded-2xl py-4 text-sm font-black uppercase italic tracking-widest active:scale-[0.98] transition-all mt-2">
                     Entendido
                   </button>
                 </div>
@@ -393,6 +395,7 @@ export default function CalendarPage() {
         )}
       </AnimatePresence>
 
+      {/* Modal: Nueva Tarea */}
       <AnimatePresence>
         {isAddingTask && (
           <>
@@ -403,15 +406,20 @@ export default function CalendarPage() {
                 <button onClick={() => setIsAddingTask(false)} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40"><X size={16} /></button>
               </div>
               <form onSubmit={handleCreateTask} className="space-y-4">
-                <input value={newTaskTitle} onChange={(e) => setNewTaskTitle(e.target.value)} required placeholder="¿QUÉ HAY QUE HACER?" className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase" />
-                <textarea value={newTaskDescription} onChange={(e) => setNewTaskDescription(e.target.value)} rows={3} placeholder="DETALLES (OPCIONAL)" className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase resize-none" />
-                <input type="date" value={newTaskDate} onChange={(e) => setNewTaskDate(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase" />
-                <button type="submit" className="w-full bg-white text-black rounded-xl py-4 text-lg font-black uppercase italic tracking-tight mt-2">Guardar</button>
+                <input value={newTaskTitle} onChange={(e) => setNewTaskTitle(e.target.value)} required placeholder="¿QUÉ HAY QUE HACER?" className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase text-white" />
+                <textarea value={newTaskDescription} onChange={(e) => setNewTaskDescription(e.target.value)} rows={3} placeholder="DETALLES (OPCIONAL)" className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase resize-none text-white" />
+                <input type="date" value={newTaskDate} onChange={(e) => setNewTaskDate(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase text-white" />
+                <button type="submit" className="w-full bg-white text-black rounded-xl py-4 text-lg font-black uppercase italic tracking-tight mt-2 active:scale-95 transition-transform">Guardar Tarea</button>
               </form>
             </motion.div>
           </>
         )}
       </AnimatePresence>
+
+      <AddClassModal 
+        isOpen={isAddingClass} 
+        onClose={() => setIsAddingClass(false)} 
+      />
     </div>
   );
 }

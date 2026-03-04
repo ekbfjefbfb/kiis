@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, AudioLines, Sparkles, Loader2 } from "lucide-react";
+import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, AudioLines, Sparkles, Loader2, BookOpen } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate } from "react-router";
 import { aiService, chatWebSocket } from "../../services/ai.service";
 import { audioService } from "../../services/audio.service";
 import { groqService } from "../../services/groq.service";
+import AddClassModal from "../components/AddClassModal";
 
 interface ChatMessage {
   id?: string;
@@ -24,6 +25,7 @@ export default function ChatPage() {
   const [autoSpeak, setAutoSpeak] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pendingResponseRef = useRef<string | null>(null);
+  const [isAddingClass, setIsAddingClass] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -124,20 +126,24 @@ export default function ChatPage() {
 
   return (
     <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden">
-      {/* Header Compacto - Adaptado para Apple/Android */}
+      {/* Header Compacto */}
       <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-20">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
             <ArrowLeft size={16} />
           </button>
-          <h1 className="text-xl font-black uppercase italic tracking-tighter">Asistente IA</h1>
+          <h1 className="text-xl font-black uppercase italic tracking-tighter">IA Chat</h1>
         </div>
-        <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
-          {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/40" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setIsAddingClass(true)} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
+            <BookOpen size={16} />
+          </button>
+          <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
+            {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/40" />}
+          </button>
+        </div>
       </div>
 
-      {/* Messages - Ajuste de altura dinámica */}
       <div className="flex-1 px-4 space-y-4 overflow-y-auto scrollbar-hide pt-4 pb-4">
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center opacity-10">
@@ -176,7 +182,6 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Zone - Ajuste Apple/Android y Teclado */}
       <div className="shrink-0 p-4 bg-black border-t border-white/5 pb-10">
         <div className="max-w-md mx-auto flex gap-2 items-end">
           <motion.button
@@ -195,7 +200,7 @@ export default function ChatPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               rows={1}
-              placeholder={isRecording ? "Grabando..." : "Hablemos?"}
+              placeholder={isRecording ? "Escuchando..." : "Hablemos?"}
               className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-1 focus:ring-white/20 resize-none overflow-hidden min-h-[48px] max-h-[120px] placeholder:text-white/10"
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
@@ -219,6 +224,11 @@ export default function ChatPage() {
           </div>
         </div>
       </div>
+
+      <AddClassModal 
+        isOpen={isAddingClass} 
+        onClose={() => setIsAddingClass(false)} 
+      />
     </div>
   );
 }
