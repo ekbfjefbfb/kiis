@@ -16,60 +16,48 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center justify-center py-8">
-      <main className="mobile-container flex-1 justify-center space-y-10">
-        {/* Branding Simple */}
+    <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center justify-center py-10">
+      <main className="mobile-container flex-1 justify-center space-y-12">
+        {/* Branding Radical Minimal */}
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg">
-            <span className="text-black text-2xl font-bold">K</span>
+          <div className="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded flex items-center justify-center">
+            <span className="text-white text-lg font-black tracking-tighter">K</span>
           </div>
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-white">Únete</h1>
-            <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest mt-1">Crea tu cuenta</p>
-          </div>
+          <h1 className="text-sm font-bold text-zinc-500 uppercase tracking-[0.3em]">Registro</h1>
         </div>
 
-        {/* Formulario Simple */}
-        <form onSubmit={handleSubmit} className="w-full space-y-4">
-          <div className="space-y-3 mb-6">
-            <div className="relative group">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
-              <input
-                type="text"
-                placeholder="Nombre completo"
-                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-zinc-700 focus:outline-none focus:border-zinc-600 transition-all font-medium text-sm"
-                required
-              />
-            </div>
-            <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-zinc-700 focus:outline-none focus:border-zinc-600 transition-all font-medium text-sm"
-                required
-              />
-            </div>
-            <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
-              <input
-                type="password"
-                placeholder="Contraseña"
-                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-zinc-700 focus:outline-none focus:border-zinc-600 transition-all font-medium text-sm"
-                required
-              />
-            </div>
+        {/* Formulario Terminal Puro */}
+        <form onSubmit={handleSubmit} className="w-full space-y-3">
+          <div className="space-y-2 mb-6">
+            <input
+              type="text"
+              placeholder="NOMBRE"
+              className="w-full bg-black border border-zinc-900 rounded py-2.5 px-4 text-white placeholder:text-zinc-800 focus:outline-none focus:border-zinc-700 transition-all font-bold text-[10px] tracking-[0.2em]"
+              required
+            />
+            <input
+              type="email"
+              placeholder="EMAIL"
+              className="w-full bg-black border border-zinc-900 rounded py-2.5 px-4 text-white placeholder:text-zinc-800 focus:outline-none focus:border-zinc-700 transition-all font-bold text-[10px] tracking-[0.2em]"
+              required
+            />
+            <input
+              type="password"
+              placeholder="PASSWORD"
+              className="w-full bg-black border border-zinc-900 rounded py-2.5 px-4 text-white placeholder:text-zinc-800 focus:outline-none focus:border-zinc-700 transition-all font-bold text-[10px] tracking-[0.2em]"
+              required
+            />
           </div>
 
           <button 
             disabled={loading}
             type="submit"
-            className="btn-primary mt-4"
+            className="w-full bg-zinc-900 border border-zinc-800 text-zinc-400 py-3 rounded flex items-center justify-center gap-2 active:scale-[0.99] transition-all font-bold text-[10px] uppercase tracking-[0.2em]"
           >
-            {loading ? <Loader2 className="animate-spin" size={18} /> : (
+            {loading ? <Loader2 className="animate-spin" size={14} /> : (
               <>
                 <span>Registrarme</span>
-                <ArrowRight size={18} />
+                <ArrowRight size={14} />
               </>
             )}
           </button>
@@ -77,9 +65,9 @@ export default function RegisterPage() {
 
         <button 
           onClick={() => navigate("/login")}
-          className="w-full text-center py-2 text-xs font-medium text-zinc-500 active:text-white transition-colors"
+          className="w-full text-center py-2 text-[10px] font-bold text-zinc-700 active:text-white transition-colors uppercase tracking-widest"
         >
-          ¿Ya tienes cuenta? <span className="text-white border-b border-white/20 pb-0.5">Inicia Sesión</span>
+          Ya tengo cuenta
         </button>
       </main>
     </div>
