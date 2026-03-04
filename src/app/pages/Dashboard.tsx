@@ -28,8 +28,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-[100dvh] w-full bg-black text-white pb-24 font-sans selection:bg-white/30 overflow-x-hidden flex flex-col relative">
-      {/* Header Adaptativo - Agenda Style */}
+    <div className="h-[100dvh] w-full bg-black text-white font-sans selection:bg-white/30 overflow-hidden flex flex-col relative">
       <header className="px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] pt-[max(env(safe-area-inset-top,2rem),3rem)] pb-6 flex justify-between items-end border-b border-white/5 bg-black/80 backdrop-blur-xl sticky top-0 z-20 shrink-0">
         <div>
           <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-1 text-left">Hoy</p>
@@ -45,10 +44,7 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* Contenido Principal con Spacing Inteligente */}
-      <main className="flex-1 px-[env(safe-area-inset-left,1.25rem)] pr-[env(safe-area-inset-right,1.25rem)] space-y-10 pt-6 max-w-2xl mx-auto w-full pb-[max(env(safe-area-inset-bottom,2rem),2rem)]">
-        
-        {/* Acciones de Agenda - El centro del sistema */}
+      <main className="flex-1 overflow-y-auto scrollbar-hide px-[env(safe-area-inset-left,1.25rem)] pr-[env(safe-area-inset-right,1.25rem)] pt-6 max-w-2xl mx-auto w-full pb-[max(env(safe-area-inset-bottom,2rem),2rem)] space-y-10">
         <section className="grid grid-cols-1 gap-3">
           <Link to="/quick-note" className="block group">
             <motion.div whileTap={{ scale: 0.98 }} className="bg-zinc-900/50 border border-white/5 rounded-[32px] p-6 flex items-center justify-between transition-all active:bg-zinc-800 relative overflow-hidden">
@@ -99,7 +95,6 @@ export default function Dashboard() {
           </Link>
         </section>
 
-        {/* Notas Recientes - Archivo dinámico */}
         <section className="space-y-5">
           <div className="flex justify-between items-center px-2">
             <div className="flex items-center gap-3 text-zinc-500">
@@ -130,7 +125,6 @@ export default function Dashboard() {
           )}
         </section>
 
-        {/* Materias - Gestión de largo plazo */}
         <section className="space-y-5">
           <div className="flex justify-between items-center px-2 text-left">
             <div className="flex items-center gap-3 text-zinc-500">
