@@ -100,7 +100,7 @@ export default function Dashboard() {
             <Clock size={16} className="opacity-40" />
             <span className="text-[11px] font-bold uppercase tracking-[0.7em]">Recientes_</span>
           </div>
-          <div className="bg-zinc-900/10 border border-dashed border-zinc-800/30 rounded-[48px] p-24 flex flex-col items-center justify-center text-center space-y-6">
+          <div className="bg-zinc-900/10 border border-dashed border-zinc-800/20 rounded-[48px] p-24 flex flex-col items-center justify-center text-center space-y-6">
             <Sparkles size={32} className="text-zinc-900" />
             <p className="text-[11px] font-bold uppercase tracking-[0.7em] text-zinc-900 italic">No_Activity_</p>
           </div>
