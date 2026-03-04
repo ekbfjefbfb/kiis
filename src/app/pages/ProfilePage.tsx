@@ -1,9 +1,11 @@
-import { ArrowLeft, User, Settings, Shield, Bell, LogOut, ChevronRight } from "lucide-react";
+import { ArrowLeft, User, Settings, Shield, Bell, LogOut, ChevronRight, Download } from "lucide-react";
 import { useNavigate } from "react-router";
 import { motion } from "motion/react";
+import { usePWAInstall } from "../../hooks/usePWAInstall";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
+  const { isInstallable, installPWA } = usePWAInstall();
 
   const menuItems = [
     { icon: <Settings size={18} />, label: "Ajustes_", desc: "Configuración general" },
@@ -34,7 +36,30 @@ export default function ProfilePage() {
           </div>
         </section>
 
+        {isInstallable && (
+          <section className="space-y-3">
+            <p className="text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] ml-2">Aplicación_</p>
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              onClick={installPWA}
+              className="w-full bg-white text-black rounded-[28px] p-5 flex items-center justify-between transition-all active:bg-zinc-200 shadow-xl"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-10 h-10 rounded-xl bg-black/5 flex items-center justify-center">
+                  <Download size={18} />
+                </div>
+                <div className="text-left">
+                  <p className="text-base font-bold uppercase italic tracking-tight leading-none mb-1">Descargar App_</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest opacity-60">Instalar en tu teléfono</p>
+                </div>
+              </div>
+              <ChevronRight size={18} />
+            </motion.button>
+          </section>
+        )}
+
         <section className="space-y-3">
+          <p className="text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] ml-2">Preferencias_</p>
           {menuItems.map((item, i) => (
             <motion.button
               key={i}
@@ -55,7 +80,7 @@ export default function ProfilePage() {
           ))}
         </section>
 
-        <button className="w-full h-16 rounded-[32px] border border-red-500/10 bg-red-500/5 text-red-500 flex items-center justify-center gap-3 active:scale-95 transition-transform">
+        <button onClick={() => navigate("/login")} className="w-full h-16 rounded-[32px] border border-red-500/10 bg-red-500/5 text-red-500 flex items-center justify-center gap-3 active:scale-95 transition-transform">
           <LogOut size={18} />
           <span className="text-xs font-bold uppercase tracking-[0.2em]">Cerrar Sesión_</span>
         </button>

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowRight, Brain, Radio, Zap, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Brain, Radio, Zap, Download } from "lucide-react";
+import { usePWAInstall } from "../../hooks/usePWAInstall";
 
 const STEPS = [
   {
@@ -27,6 +28,7 @@ const STEPS = [
 export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
+  const { isInstallable, installPWA } = usePWAInstall();
 
   const next = () => {
     if (currentStep < STEPS.length - 1) {
@@ -38,6 +40,18 @@ export default function Onboarding() {
 
   return (
     <div className="h-[100dvh] w-full bg-black text-white font-sans overflow-hidden flex flex-col relative selection:bg-white/20">
+      {isInstallable && (
+        <motion.button
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={installPWA}
+          className="absolute top-[env(safe-area-inset-top,2rem)] right-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/10 rounded-full active:scale-95 transition-all backdrop-blur-md"
+        >
+          <Download size={14} className="text-white" />
+          <span className="text-[9px] font-black uppercase tracking-widest">Instalar App_</span>
+        </motion.button>
+      )}
+
       <main className="flex-1 flex flex-col items-center justify-center px-8 max-w-md mx-auto w-full relative">
         <AnimatePresence mode="wait">
           <motion.div
