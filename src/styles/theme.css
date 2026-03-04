@@ -24,7 +24,6 @@ html, body, #root {
 /* Tipografía */
 :root {
   font-family: 'Plus Jakarta Sans', sans-serif !important;
-  color-scheme: dark !important;
 }
 
 /* REGLAS MAESTRAS DE CONTRASTE */
@@ -44,7 +43,7 @@ html, body, #root {
 /* DISABLE ALL HIDDEN STATES */
 .opacity-0, [style*="opacity: 0"], .hidden, [style*="display: none"] {
   opacity: 1 !important;
-  display: flex !important;
+  display: flex !important; 
   visibility: visible !important;
 }
 
