@@ -19,10 +19,10 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen w-full bg-black text-white font-sans flex flex-col pb-10" style={{ backgroundColor: '#000000' }}>
-      {/* Header - Minimalismo Extremo */}
-      <header className="px-6 pt-16 pb-8 flex justify-between items-start sticky top-0 bg-black/80 backdrop-blur-xl z-30">
-        <div className="space-y-1">
-          <p className="text-[10px] font-bold tracking-[0.4em] text-zinc-500 uppercase opacity-50">Hoy_</p>
+      {/* Header - Jerarquía refinada y limpia */}
+      <header className="px-6 pt-16 pb-10 flex justify-between items-start sticky top-0 bg-black/80 backdrop-blur-xl z-30">
+        <div className="space-y-1.5">
+          <p className="text-[10px] font-bold tracking-[0.5em] text-zinc-600 uppercase">Hoy_</p>
           <h1 className="text-3xl font-black italic tracking-tighter uppercase leading-none">
             {today}
           </h1>
@@ -37,36 +37,36 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="flex-1 px-6 space-y-14">
-        {/* Acción Principal - Jerarquía Refinada */}
+      <main className="flex-1 px-6 space-y-16">
+        {/* Acción Principal - El foco absoluto */}
         <section>
           <button 
             onClick={() => navigate("/live")}
-            className="w-full bg-white text-black p-8 rounded-[40px] flex items-center justify-between group active:scale-[0.97] transition-all shadow-[0_20px_50px_rgba(255,255,255,0.1)]"
+            className="w-full bg-white text-black p-10 rounded-[48px] flex items-center justify-between group active:scale-[0.97] transition-all shadow-[0_25px_60px_rgba(255,255,255,0.1)]"
           >
-            <div className="flex items-center gap-7">
+            <div className="flex items-center gap-8">
               <div className="w-16 h-16 rounded-[24px] bg-black flex items-center justify-center shadow-lg">
                 <Mic size={32} className="text-white" />
               </div>
               <div className="text-left">
                 <h2 className="text-2xl font-black italic uppercase tracking-tighter leading-none">Grabar_Ahora_</h2>
-                <p className="text-[11px] font-bold uppercase tracking-[0.25em] opacity-40 mt-1.5">Inteligencia_Instantánea_</p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.3em] opacity-40 mt-2">Inteligencia_Instantánea_</p>
               </div>
             </div>
-            <ChevronRight size={28} strokeWidth={3} className="opacity-20 group-hover:opacity-100 transition-opacity" />
+            <ChevronRight size={32} strokeWidth={3} className="opacity-20 group-hover:opacity-100 transition-opacity" />
           </button>
         </section>
 
-        {/* Materias - Diseño Compacto y Elegante */}
-        <section className="space-y-6">
-          <div className="flex justify-between items-end px-2">
-            <div className="flex items-center gap-2.5 text-zinc-500">
-              <BookOpen size={16} className="opacity-40" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.5em] opacity-40">Materias_</span>
+        {/* Materias - Lista inteligente y minimalista */}
+        <section className="space-y-8">
+          <div className="flex justify-between items-center px-2">
+            <div className="flex items-center gap-3 text-zinc-600">
+              <BookOpen size={16} className="opacity-50" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.6em]">Materias_</span>
             </div>
             <button 
               onClick={() => setShowAddClass(true)}
-              className="w-10 h-10 rounded-full bg-zinc-900/30 border border-zinc-800/30 flex items-center justify-center active:scale-90 transition-all group"
+              className="w-10 h-10 rounded-full bg-zinc-900/40 border border-zinc-800/40 flex items-center justify-center active:scale-90 transition-all group"
             >
               <Plus size={18} className="text-zinc-500 group-hover:text-white transition-colors" />
             </button>
@@ -77,32 +77,32 @@ export default function Dashboard() {
               <button
                 key={cls.id}
                 onClick={() => navigate(`/class/${cls.id}`)}
-                className="w-full bg-zinc-900/20 border border-zinc-800/30 p-6 rounded-[32px] flex items-center justify-between group active:bg-zinc-800/40 transition-all hover:border-zinc-700/50"
+                className="w-full bg-zinc-900/30 border border-white/[0.03] p-6 rounded-[36px] flex items-center justify-between group active:bg-zinc-800/40 transition-all hover:border-white/10"
               >
                 <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 rounded-[18px] bg-zinc-900/50 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
-                    <LayoutGrid size={20} className="text-zinc-600 group-hover:text-zinc-400 transition-colors" />
+                  <div className="w-14 h-14 rounded-[22px] bg-zinc-900/50 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
+                    <LayoutGrid size={22} className="text-zinc-600 group-hover:text-zinc-400 transition-colors" />
                   </div>
                   <div className="text-left">
-                    <h3 className="text-lg font-bold uppercase italic tracking-tight text-zinc-200 leading-tight">{cls.name}</h3>
-                    <p className="text-[10px] font-medium text-zinc-600 uppercase tracking-[0.2em] mt-1 opacity-60">{cls.professor}</p>
+                    <h3 className="text-xl font-bold uppercase italic tracking-tight text-zinc-100 leading-none">{cls.name}</h3>
+                    <p className="text-[10px] font-medium text-zinc-600 uppercase tracking-[0.25em] mt-2 opacity-60">{cls.professor}</p>
                   </div>
                 </div>
-                <ChevronRight size={18} className="text-zinc-800 group-hover:text-zinc-500 group-hover:translate-x-1 transition-all" />
+                <ChevronRight size={20} className="text-zinc-800 group-hover:text-zinc-500 group-hover:translate-x-1 transition-all" />
               </button>
             ))}
           </div>
         </section>
 
-        {/* Recientes - Placeholder Minimalista */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-2.5 text-zinc-500 px-2">
-            <Clock size={16} className="opacity-40" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.5em] opacity-40">Recientes_</span>
+        {/* Recientes - Placeholder estética brutalista */}
+        <section className="space-y-8">
+          <div className="flex items-center gap-3 text-zinc-600 px-2">
+            <Clock size={16} className="opacity-50" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.6em]">Recientes_</span>
           </div>
-          <div className="bg-zinc-900/10 border border-dashed border-zinc-800/20 rounded-[32px] p-14 flex flex-col items-center justify-center text-center space-y-4">
-            <Sparkles size={24} className="text-zinc-900" />
-            <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-zinc-800 italic">Sin_Actividad_</p>
+          <div className="bg-zinc-900/10 border border-dashed border-zinc-800/30 rounded-[40px] p-20 flex flex-col items-center justify-center text-center space-y-6">
+            <Sparkles size={28} className="text-zinc-900" />
+            <p className="text-[11px] font-bold uppercase tracking-[0.6em] text-zinc-800 italic">Sin_Actividad_</p>
           </div>
         </section>
       </main>
