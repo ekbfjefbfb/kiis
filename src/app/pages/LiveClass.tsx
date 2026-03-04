@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ArrowLeft, Mic, StopCircle, Radio, Brain, Calendar, CheckCircle2, ChevronRight, Loader2, ListTodo, Plus } from "lucide-react";
+import { ArrowLeft, Mic, StopCircle, Brain, Calendar, CheckCircle2, ChevronRight, Loader2, Plus } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
@@ -20,6 +20,7 @@ interface ClassSession {
   date: string;
   summary: string;
   tasks: Task[];
+  topic?: string;
 }
 
 export default function LiveClassPage() {
@@ -102,7 +103,7 @@ export default function LiveClassPage() {
       const finalTranscript = await groqService.transcribe(audioBlob, 'es');
       
       const prompt = `Analiza esta clase de "${selectedClass?.name}" y genera un resumen estructurado y tareas. 
-      Responde en formato JSON puro: { "summary": "...", "tasks": [{ "id": "uuid", "title": "...", "dueDate": "...", "completed": false }] }
+      Responde en formato JSON puro: { "summary": "...", "topic": "Título breve del tema", "tasks": [{ "id": "uuid", "title": "...", "dueDate": "...", "completed": false }] }
       Transcripción: ${finalTranscript}`;
       
       let aiResponse = "";
@@ -115,6 +116,7 @@ export default function LiveClassPage() {
         const newSession: ClassSession = {
           id: Date.now().toString(),
           date: new Date().toLocaleDateString(),
+          topic: parsed.topic,
           summary: parsed.summary,
           tasks: parsed.tasks
         };
@@ -125,6 +127,7 @@ export default function LiveClassPage() {
         const fallbackSession: ClassSession = {
           id: Date.now().toString(),
           date: new Date().toLocaleDateString(),
+          topic: "Resumen de Clase",
           summary: aiResponse,
           tasks: [{ id: "1", title: "Repasar conceptos de hoy", dueDate: "Mañana", completed: false }]
         };
@@ -244,7 +247,7 @@ export default function LiveClassPage() {
                   ))}
                 </div>
               </section>
-              <motion.button onClick={() => navigate(`/class/${selectedClass?.id}`)} whileTap={{ scale: 0.95 }} className="w-full h-20 bg-white text-black rounded-[40px] font-black uppercase italic tracking-tighter text-xl shadow-[0_0_50px_rgba(255,255,255,0.15)] flex items-center justify-center gap-4 active:bg-zinc-200 transition-colors"><span>Guardar Agenda</span><CheckCircle2 size={28} /></motion.button>
+              <motion.button onClick={() => navigate(`/class/${selectedClass?.id}`)} whileTap={{ scale: 0.95 }} className="w-full h-20 bg-white text-black rounded-[40px] font-black uppercase italic tracking-tighter text-xl shadow-[0_0_50px_rgba(255,255,255,0.15)] flex items-center justify-center gap-4 active:bg-zinc-200 transition-colors"><span>Ver Materia</span><CheckCircle2 size={28} /></motion.button>
             </motion.div>
           )}
         </AnimatePresence>
