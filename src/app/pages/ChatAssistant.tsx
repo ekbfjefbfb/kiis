@@ -99,92 +99,83 @@ export default function ChatAssistant() {
 
   return (
     <div className="h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center overflow-hidden">
-      <header className="w-full max-w-2xl px-6 pt-12 pb-6 flex justify-between items-center sticky top-0 bg-black/80 backdrop-blur-xl z-30 shrink-0 border-b border-white/5">
-        <button onClick={() => navigate(-1)} className="w-11 h-11 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all shadow-lg">
-          <ArrowLeft size={20} className="text-zinc-400" />
+      <header className="w-full max-w-2xl px-5 pt-8 pb-4 flex justify-between items-center sticky top-0 bg-black z-30 shrink-0 border-b border-zinc-900">
+        <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
+          <ArrowLeft size={16} className="text-zinc-400" />
         </button>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 shadow-lg">
-            <Brain size={20} className="text-white" />
-          </div>
-          <h1 className="text-sm font-black uppercase italic tracking-[0.2em]">IA_Assistant_</h1>
-        </div>
-        <div className="w-11 flex justify-end">
-          {isSpeaking && <Volume2 size={20} className="text-white animate-pulse" />}
+        <h1 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Asistente</h1>
+        <div className="w-9 flex justify-end">
+          {isSpeaking && <Volume2 size={16} className="text-white animate-pulse" />}
         </div>
       </header>
 
-      <main ref={scrollRef} className="w-full max-w-2xl flex-1 overflow-y-auto px-6 py-10 space-y-12 scrollbar-hide">
+      <main ref={scrollRef} className="w-full max-w-2xl flex-1 overflow-y-auto px-5 py-6 space-y-6 scrollbar-hide">
         {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-center space-y-10 opacity-20 py-20">
-            <Sparkles size={80} strokeWidth={1} className="text-white" />
-            <div className="space-y-4">
-              <p className="text-sm font-black uppercase tracking-[0.8em]">Neural_Engine_Ready_</p>
-              <p className="text-xs italic font-medium opacity-60">Consultas de ingeniería en tiempo real_</p>
+          <div className="h-full flex flex-col items-center justify-center text-center space-y-6 opacity-20 py-10">
+            <Sparkles size={48} strokeWidth={1.5} className="text-zinc-500" />
+            <div className="space-y-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Listo para consultas</p>
             </div>
           </div>
         )}
         
-        <div className="space-y-8">
+        <div className="space-y-6">
           {messages.map((m) => (
-            <motion.div 
+            <div 
               key={m.id}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
               className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className={`max-w-[85%] p-5 rounded-[28px] shadow-lg relative ${
+              <div className={`max-w-[85%] p-4 rounded-2xl shadow-sm relative ${
                 m.role === 'user' 
-                  ? 'bg-white text-black font-black italic border-none rounded-br-[8px]' 
-                  : 'bg-zinc-900 border border-white/5 text-zinc-100 rounded-bl-[8px]'
+                  ? 'bg-zinc-800 text-zinc-100' 
+                  : 'bg-zinc-900/50 border border-zinc-800/50 text-zinc-300'
               }`}>
-                <p className="text-[14px] leading-relaxed tracking-tight">{m.content}</p>
-                <span className={`absolute bottom-[-20px] text-[8px] font-black uppercase tracking-widest text-zinc-600 ${m.role === 'user' ? 'right-2' : 'left-2'}`}>
-                  {m.role === 'user' ? 'User_Terminal' : 'IA_Response'}
+                <p className="text-sm leading-relaxed">{m.content}</p>
+                <span className={`absolute -bottom-5 text-[8px] font-bold uppercase tracking-widest text-zinc-700 ${m.role === 'user' ? 'right-1' : 'left-1'}`}>
+                  {m.role === 'user' ? 'Usuario' : 'IA'}
                 </span>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
         
         {isProcessing && (
           <div className="flex justify-start">
-            <div className="bg-zinc-900 border border-white/5 p-8 rounded-[36px] shadow-lg flex items-center gap-4">
-              <Loader2 size={20} className="animate-spin text-white" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Sintetizando_</span>
+            <div className="bg-zinc-900/50 border border-zinc-800/50 p-4 rounded-2xl flex items-center gap-3">
+              <Loader2 size={14} className="animate-spin text-zinc-500" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">Procesando</span>
             </div>
           </div>
         )}
       </main>
 
-      <footer className="w-full max-w-2xl p-5 bg-black/90 backdrop-blur-2xl border-t border-white/5 pb-8">
+      <footer className="w-full max-w-2xl p-5 bg-black border-t border-zinc-900 pb-8">
         <div className="flex items-center gap-3">
           <div className="flex-1 relative">
             <input 
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Terminal prompt..."
-              className="w-full bg-[#121212] border-2 border-zinc-800 rounded-[24px] pl-6 pr-14 py-4 text-sm font-bold focus:outline-none focus:border-white transition-all italic text-white placeholder:text-zinc-700 shadow-inner"
+              placeholder="Escribe un mensaje..."
+              className="w-full bg-zinc-900 border border-zinc-800/50 rounded-xl pl-5 pr-12 py-3.5 text-sm font-medium focus:outline-none focus:border-zinc-700 transition-all text-white placeholder:text-zinc-700"
             />
             <button 
               onClick={() => handleSend()}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white flex items-center justify-center active:scale-90 transition-transform shadow-lg"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center active:scale-95 transition-all"
             >
-              <Send size={18} className="text-black" />
+              <Send size={14} className="text-zinc-400" />
             </button>
           </div>
           
           <button 
             onClick={isRecording ? stopVoice : startVoice}
-            className={`w-16 h-16 rounded-full flex flex-col items-center justify-center border-4 transition-all shadow-xl relative ${
+            className={`w-12 h-12 rounded-xl flex items-center justify-center border transition-all active:scale-95 ${
               isRecording 
-                ? 'bg-red-500 border-black animate-pulse' 
-                : 'bg-zinc-900 border-zinc-800'
+                ? 'bg-red-500/10 border-red-500/50 text-red-500 animate-pulse' 
+                : 'bg-zinc-900 border-zinc-800 text-zinc-400'
             }`}
           >
-            {isRecording ? <StopCircle size={28} /> : <Mic size={28} className="text-white" />}
-            <span className="absolute -bottom-5 text-[8px] font-black uppercase tracking-widest text-zinc-500 italic">Hablar_</span>
+            {isRecording ? <StopCircle size={20} /> : <Mic size={20} />}
           </button>
         </div>
       </footer>
