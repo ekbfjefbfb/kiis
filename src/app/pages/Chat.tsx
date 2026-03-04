@@ -127,7 +127,7 @@ export default function ChatPage() {
 
   return (
     <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden selection:bg-white/10">
-      {/* Header Unificado y Sutil - Reemplaza Bottom Nav */}
+      {/* Header Unificado y Sutil */}
       <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-20">
         <div className="flex items-center gap-4">
           <Link to="/dashboard" className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
@@ -135,12 +135,12 @@ export default function ChatPage() {
           </Link>
           <div className="flex flex-col">
             <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Asistente</h1>
-            <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em] mt-1">SST + TTS Active</p>
+            <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em] mt-1">Chat Inteligente</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
-            {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/30" />}
+          <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform text-white/60">
+            {autoSpeak ? <Volume2 size={18} className="text-white" /> : <VolumeX size={18} />}
           </button>
           <Link to="/profile" className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
             <User size={18} className="text-white/60" />
@@ -192,20 +192,20 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Zone - Lógica Estructurada Sin Scroll */}
+      {/* Input Zone - Rediseño Brutal y Compacto */}
       <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-black via-black to-transparent z-20">
         <div className="max-w-2xl mx-auto">
           <div className="bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex items-center gap-2 shadow-2xl">
             
             {/* Input Área: Sin scroll visible, auto-ajustable */}
-            <div className="flex-1 flex items-center px-4 py-2">
+            <div className="flex-1 flex items-center px-4 py-2 min-h-[44px]">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 rows={1}
                 disabled={isRecording}
                 placeholder={isRecording ? "Te escucho..." : "Escribe o habla_"}
-                className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[44px] max-h-[120px] py-2 scrollbar-hide"
+                className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2 scrollbar-hide"
                 onInput={(e) => {
                   const target = e.target as HTMLTextAreaElement;
                   target.style.height = 'auto';
@@ -214,9 +214,8 @@ export default function ChatPage() {
               />
             </div>
 
-            {/* Acciones de Voz y Envío: Bien Estructuradas */}
+            {/* Acciones de Voz y Envío */}
             <div className="flex items-center gap-2 pr-1">
-              {/* Micrfono: Siempre funcional, desaparece al escribir para dar paso a Enviar */}
               {!isRecording && !input.trim() && (
                 <motion.button 
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -228,14 +227,13 @@ export default function ChatPage() {
                 </motion.button>
               )}
               
-              {/* Botón Principal Hablar/Detener/Enviar */}
               <motion.button
                 onClick={isRecording ? toggleVoiceRecording : isProcessing ? undefined : (input.trim() ? () => handleSend() : toggleVoiceRecording)}
                 whileTap={{ scale: 0.95 }}
                 className={clsx(
-                  "h-11 flex items-center justify-center gap-2 px-5 rounded-full transition-all duration-300 font-bold shrink-0",
+                  "h-11 flex items-center justify-center gap-2 px-5 rounded-full transition-all duration-300 font-bold shrink-0 shadow-lg",
                   isRecording 
-                    ? "bg-white text-black shadow-lg w-32" 
+                    ? "bg-white text-black w-32" 
                     : "bg-white text-black active:opacity-90"
                 )}
               >
@@ -245,7 +243,7 @@ export default function ChatPage() {
                     <span className="text-[13px] font-black uppercase italic tracking-tighter">Detener</span>
                   </>
                 ) : isProcessing ? (
-                  <Loader2 size={18} className="animate-spin" />
+                  <Loader2 size={18} className="animate-spin text-black" />
                 ) : input.trim() ? (
                   <Send size={18} />
                 ) : (
