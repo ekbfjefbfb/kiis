@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { Lock, Mail, BookOpen } from "lucide-react";
+import { Lock, Mail, BookOpen, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { authService } from "../../services/auth.service";
 
@@ -17,120 +16,88 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     
-    if (!email || !password) {
-      setError("Por favor ingresa tu correo y contraseña");
-      setLoading(false);
-      return;
-    }
-
     try {
       const success = await authService.login(email, password);
       if (success) {
         navigate("/dashboard");
       } else {
-        setError("Correo o contraseña incorrectos");
+        setError("Credenciales incorrectas");
       }
     } catch (err: any) {
-      console.error("Error:", err);
-      setError(err.message || "Error al iniciar sesión. Intenta de nuevo.");
+      setError(err.message || "Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[100dvh] p-6 bg-background text-foreground relative overflow-hidden font-sans transition-colors duration-300">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
+    <div className="min-h-[100dvh] bg-black text-white font-sans selection:bg-white/20 flex flex-col items-center justify-center px-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="w-full max-w-sm text-center relative z-10"
+        className="w-full max-w-sm space-y-10"
       >
-        {/* Logo */}
-        <div className="flex flex-col items-center mb-6">
-          <div className="w-11 h-11 bg-foreground rounded-xl flex items-center justify-center mb-4">
-            <BookOpen size={22} className="text-background" />
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <BookOpen size={32} className="text-white" />
           </div>
-          <h1 className="text-xl font-semibold tracking-tight">Bienvenido</h1>
-          <p className="text-xs mt-1.5 text-muted-foreground">
-            Inicia sesión para continuar
-          </p>
+          <h1 className="text-4xl font-black uppercase italic tracking-tighter leading-none">Bienvenido</h1>
+          <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Tu agenda inteligente</p>
         </div>
 
-        {/* Form Card */}
-        <div className="w-full bg-card border border-border rounded-2xl p-5 relative">
+        {/* Form */}
+        <div className="bg-zinc-900/50 border border-white/5 rounded-[32px] p-8 space-y-6">
           {error && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              className="mb-5 bg-destructive/10 text-destructive text-[13px] p-3 rounded-xl border border-destructive/20 font-medium"
-            >
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-bold uppercase tracking-widest p-4 rounded-xl text-center">
               {error}
-            </motion.div>
+            </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-4 text-left">
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest pl-1">
-                Correo Electrónico
-              </label>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 ml-2">Email</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-transparent border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-ring transition-all placeholder:text-muted-foreground"
-                  placeholder="tu@correo.edu"
+                  className="w-full bg-black/30 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase"
+                  placeholder="TU@EMAIL.COM"
                 />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest pl-1">
-                Contraseña
-              </label>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 ml-2">Contraseña</label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-transparent border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-ring transition-all placeholder:text-muted-foreground"
-                  placeholder="Tu contraseña"
+                  className="w-full bg-black/30 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-white/20 transition-all"
+                  placeholder="••••••••"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end">
-              <a href="#" className="text-xs text-muted-foreground hover:text-foreground font-medium transition-colors">
-                ¿Olvidaste tu contraseña?
-              </a>
-            </div>
-
             <button
               type="submit"
-              disabled={loading || !email || !password}
-              className="w-full bg-foreground text-background rounded-xl py-3 font-semibold text-sm mt-1 disabled:opacity-50 hover:bg-foreground/90 active:scale-[0.98] transition-all flex items-center justify-center h-11"
+              disabled={loading}
+              className="w-full bg-white text-black rounded-2xl py-4 text-lg font-black uppercase italic tracking-tight mt-4 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
             >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-              ) : (
-                "Iniciar Sesión"
-              )}
+              {loading ? <Loader2 size={20} className="animate-spin" /> : "Entrar"}
             </button>
           </form>
 
-          <div className="mt-6 text-center text-xs">
-            <span className="text-muted-foreground">¿No tienes una cuenta? </span>
-            <Link
-              to="/register"
-              className="font-semibold text-foreground hover:underline underline-offset-4 transition-all"
-            >
-              Registrarme
-            </Link>
+          <div className="text-center pt-4">
+            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+              ¿No tienes cuenta? <Link to="/register" className="text-white hover:underline">Regístrate</Link>
+            </p>
           </div>
         </div>
       </motion.div>
