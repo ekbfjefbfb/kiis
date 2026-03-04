@@ -1,7 +1,7 @@
 
-  # Minimalist Student App Prototype
+  # Minimalist User Interface
 
-  This is a code bundle for Minimalist Student App Prototype. The original project is available at https://www.figma.com/design/uvT1gSnPH4EuZYn7Z7XvMr/Minimalist-Student-App-Prototype.
+  This is a code bundle for Minimalist User Interface. The original project is available at https://www.figma.com/design/Nil2EN8VcuZgJUnMX66sf1/Minimalist-User-Interface.
 
   ## Running the code
 

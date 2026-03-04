@@ -1,81 +1,71 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --font-size: 16px;
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
-  --destructive: #d4183d;
-  --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
-  --input: transparent;
-  --input-background: #f3f3f5;
-  --switch-background: #cbced4;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
+  /* Core Colors from User Request */
+  --background: #F7F7F9; /* Pearl Gray */
+  --foreground: #0A0A14; /* Almost Black */
+  --primary: #3B3BF9;    /* Indigo Accent */
+  --primary-foreground: #FFFFFF;
+  --muted: #AAAAB8;      /* Muted Text */
+  --muted-foreground: #AAAAB8;
+  
+  /* Additional UI Colors derived or kept neutral */
+  --card: #F7F7F9;       /* Same as bg to avoid card look */
+  --card-foreground: #0A0A14;
+  --popover: #FFFFFF;
+  --popover-foreground: #0A0A14;
+  --secondary: #EEEEF2;
+  --secondary-foreground: #0A0A14;
+  --accent: #E0E0E5;
+  --accent-foreground: #0A0A14;
+  --destructive: #FF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #D8D8E4;
+  --input: #D8D8E4;
+  --ring: #3B3BF9;
+  
+  --radius: 0.5rem;
+  
+  /* Chart colors (kept as placeholders) */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  --sidebar: #F7F7F9;
+  --sidebar-foreground: #0A0A14;
+  --sidebar-primary: #3B3BF9;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E0E0E5;
+  --sidebar-accent-foreground: #0A0A14;
+  --sidebar-border: #D8D8E4;
+  --sidebar-ring: #3B3BF9;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  /* If the user ever switches to dark mode, we can keep some darkness but maybe align with their brand if known. 
+     For now, standard dark mode or maybe the "Dark Blue" from the screenshot? 
+     Let's stick to a standard dark mode for safety, but the default is what matters. */
+  --background: #0A0A14;
+  --foreground: #F7F7F9;
+  --card: #12121A;
+  --card-foreground: #F7F7F9;
+  --popover: #12121A;
+  --popover-foreground: #F7F7F9;
+  --primary: #3B3BF9;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1E1E28;
+  --secondary-foreground: #F7F7F9;
+  --muted: #2A2A35;
+  --muted-foreground: #888899;
+  --accent: #1E1E28;
+  --accent-foreground: #F7F7F9;
+  --destructive: #FF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #2A2A35;
+  --input: #2A2A35;
+  --ring: #3B3BF9;
 }
 
 @theme inline {
@@ -97,8 +87,6 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
-  --color-input-background: var(--input-background);
-  --color-switch-background: var(--switch-background);
   --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -122,60 +110,18 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
   }
-
-  /**
-  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
-  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
-  */
-
-  html {
-    font-size: var(--font-size);
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium tracking-tight;
   }
+}
 
-  h1 {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  h2 {
-    font-size: var(--text-xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  h3 {
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  h4 {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  label {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  button {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  input {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-normal);
-    line-height: 1.5;
-  }
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
