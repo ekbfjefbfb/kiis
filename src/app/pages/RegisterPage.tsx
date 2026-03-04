@@ -1,91 +1,96 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
-import { Lock, Mail, User, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router";
+import { User, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 
 export default function RegisterPage() {
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       navigate("/dashboard");
-    }, 1200);
+    }, 1500);
   };
 
   return (
-    <div className="h-[100dvh] w-full bg-black text-white font-sans overflow-hidden flex flex-col relative selection:bg-white/20">
-      <main className="flex-1 flex flex-col items-center justify-center px-8 max-w-md mx-auto w-full space-y-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-4"
-        >
-          <div className="w-16 h-16 bg-white rounded-[24px] mx-auto flex items-center justify-center mb-8 shadow-2xl">
-            <span className="text-3xl font-black text-black italic leading-none">K</span>
+    <div className="h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center justify-center px-8 overflow-hidden" style={{ backgroundColor: '#000000' }}>
+      <main className="w-full max-w-[340px] flex flex-col items-center space-y-12">
+        {/* Branding Centrado - Jerarquía 1 */}
+        <div className="flex flex-col items-center space-y-6">
+          <div className="w-20 h-20 bg-white rounded-[28px] flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.15)]">
+            <span className="text-black text-3xl font-black italic">K</span>
           </div>
-          <h1 className="text-4xl font-extrabold uppercase italic tracking-tighter leading-none text-white">Únete_</h1>
-          <p className="text-[11px] font-medium text-zinc-500 uppercase tracking-[0.4em]">Crea tu cuenta de ingeniería</p>
-        </motion.div>
+          <div className="text-center space-y-2">
+            <h1 className="text-4xl font-black uppercase italic tracking-tighter text-white">Únete_</h1>
+            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.4em]">Crea tu cuenta de ingeniería</p>
+          </div>
+        </div>
 
-        <form onSubmit={handleRegister} className="w-full space-y-4">
-          <div className="space-y-2">
+        {/* Formulario Estructurado - Jerarquía 2 */}
+        <form onSubmit={handleSubmit} className="w-full space-y-4">
+          <div className="space-y-3">
             <div className="relative group">
-              <User className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-white transition-colors" size={18} />
-              <input
+              <div className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-white transition-colors">
+                <User size={18} />
+              </div>
+              <input 
+                required
                 type="text"
                 placeholder="NOMBRE_COMPLETO_"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-[28px] pl-14 pr-6 py-5 text-sm font-bold placeholder:text-zinc-800 focus:outline-none focus:border-zinc-700 transition-all italic text-white"
-                required
+                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-[22px] py-5 pl-14 pr-6 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-zinc-600 focus:bg-zinc-900 transition-all placeholder:text-zinc-700"
               />
             </div>
 
             <div className="relative group">
-              <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-white transition-colors" size={18} />
-              <input
+              <div className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-white transition-colors">
+                <Mail size={18} />
+              </div>
+              <input 
+                required
                 type="email"
                 placeholder="EMAIL_"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-[28px] pl-14 pr-6 py-5 text-sm font-bold placeholder:text-zinc-800 focus:outline-none focus:border-zinc-700 transition-all italic text-white"
-                required
+                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-[22px] py-5 pl-14 pr-6 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-zinc-600 focus:bg-zinc-900 transition-all placeholder:text-zinc-700"
               />
             </div>
-            
+
             <div className="relative group">
-              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-white transition-colors" size={18} />
-              <input
+              <div className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-white transition-colors">
+                <Lock size={18} />
+              </div>
+              <input 
+                required
                 type="password"
                 placeholder="CONTRASEÑA_"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-[28px] pl-14 pr-6 py-5 text-sm font-bold placeholder:text-zinc-800 focus:outline-none focus:border-zinc-700 transition-all italic text-white"
-                required
+                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-[22px] py-5 pl-14 pr-6 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-zinc-600 focus:bg-zinc-900 transition-all placeholder:text-zinc-700"
               />
             </div>
           </div>
 
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            type="submit"
+          <button 
             disabled={loading}
-            className="w-full h-16 bg-white text-black rounded-[32px] font-bold uppercase italic tracking-tighter text-lg shadow-xl flex items-center justify-center gap-3 transition-all mt-8"
+            type="submit"
+            className="w-full bg-white text-black h-20 rounded-[32px] font-black uppercase italic tracking-tighter text-xl flex items-center justify-center gap-3 active:scale-[0.97] disabled:opacity-50 transition-all shadow-xl mt-4"
           >
-            {loading ? (
-              <div className="w-6 h-6 border-3 border-black/20 border-t-black rounded-full animate-spin" />
-            ) : (
+            {loading ? <Loader2 className="animate-spin" /> : (
               <>
                 <span>Registrarme_</span>
-                <ArrowRight size={20} />
+                <ArrowRight size={22} strokeWidth={3} />
               </>
             )}
-          </motion.button>
+          </button>
         </form>
 
-        <div className="text-center pt-4">
-          <p className="text-[11px] font-medium text-zinc-600 uppercase tracking-widest">
-            ¿Ya tienes cuenta? <Link to="/login" className="text-white font-bold hover:underline underline-offset-4">Inicia Sesión_</Link>
-          </p>
-        </div>
+        {/* Footer Link - Jerarquía 3 */}
+        <button 
+          onClick={() => navigate("/login")}
+          className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors"
+        >
+          ¿Ya tienes cuenta? <span className="text-white border-b border-white/20 pb-0.5">Inicia Sesión_</span>
+        </button>
       </main>
     </div>
   );

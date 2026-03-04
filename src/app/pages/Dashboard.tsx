@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { 
   Mic, Calendar, User, ChevronRight, 
-  BookOpen, Sparkles, Clock, LayoutGrid, Plus
+  BookOpen, Sparkles, Clock, LayoutGrid, Plus, MessageSquare
 } from "lucide-react";
 import { CLASSES } from "../data/mock";
 import AddClassModal from "../components/AddClassModal";
@@ -18,61 +18,61 @@ export default function Dashboard() {
   }).toUpperCase();
 
   return (
-    <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col pb-10 overflow-x-hidden" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
-      {/* Header - Ingeniería Minimalista con Jerarquía Definida */}
+    <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col pb-24 overflow-x-hidden relative" style={{ backgroundColor: '#000000' }}>
+      {/* Header - Minimalismo Apple/Tesla Style */}
       <header className="px-8 pt-20 pb-12 flex justify-between items-start sticky top-0 bg-black/80 backdrop-blur-xl z-30">
         <div className="space-y-2">
           <p className="text-[10px] font-bold tracking-[0.6em] text-zinc-600 uppercase">Hoy_</p>
-          <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none text-white">
+          <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none">
             {today}
           </h1>
         </div>
         <div className="flex gap-4">
-          <button onClick={() => navigate("/calendar")} className="w-12 h-12 rounded-full bg-zinc-900/50 border border-zinc-800/50 flex items-center justify-center active:scale-90 transition-all">
+          <button onClick={() => navigate("/calendar")} className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all">
             <Calendar size={20} className="text-zinc-400" />
           </button>
-          <button onClick={() => navigate("/profile")} className="w-12 h-12 rounded-full bg-zinc-900/50 border border-zinc-800/50 flex items-center justify-center active:scale-90 transition-all">
+          <button onClick={() => navigate("/profile")} className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all">
             <User size={20} className="text-zinc-400" />
           </button>
         </div>
       </header>
 
-      <main className="flex-1 px-8 space-y-16">
-        {/* Acción Principal - El bloque de impacto visual */}
-        <section>
+      <main className="flex-1 px-8 space-y-16 flex flex-col">
+        {/* Acción Principal - Centrada y con Impacto */}
+        <section className="flex justify-center">
           <button 
             onClick={() => navigate("/live")}
-            className="w-full bg-white text-black p-10 rounded-[48px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_30px_70px_rgba(255,255,255,0.15)]"
+            className="w-full max-w-[400px] bg-white text-black p-10 rounded-[48px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_30px_70px_rgba(255,255,255,0.1)]"
           >
             <div className="flex items-center gap-8">
               <div className="w-16 h-16 rounded-[24px] bg-black flex items-center justify-center shadow-lg">
                 <Mic size={32} className="text-white" />
               </div>
               <div className="text-left">
-                <h2 className="text-3xl font-black italic uppercase tracking-tighter leading-none text-black">Grabar_Ahora_</h2>
-                <p className="text-[11px] font-bold uppercase tracking-[0.4em] opacity-40 mt-2.5 text-black">Inteligencia_Realtime_</p>
+                <h2 className="text-3xl font-black italic uppercase tracking-tighter leading-none">Grabar_Ahora_</h2>
+                <p className="text-[11px] font-bold uppercase tracking-[0.4em] opacity-40 mt-2.5">Captura_IA_Instantánea_</p>
               </div>
             </div>
-            <ChevronRight size={36} strokeWidth={3} className="opacity-10 group-hover:opacity-100 transition-opacity text-black" />
+            <ChevronRight size={36} strokeWidth={3} className="opacity-10 group-hover:opacity-100 transition-opacity" />
           </button>
         </section>
 
-        {/* Materias - Estética de Datos y Jerarquía Nivel 2 */}
-        <section className="space-y-8">
-          <div className="flex justify-between items-center px-4">
+        {/* Agenda / Materias - Centrada y Limpia */}
+        <section className="space-y-8 flex flex-col items-center">
+          <div className="w-full max-w-[400px] flex justify-between items-center px-4">
             <div className="flex items-center gap-3 text-zinc-600">
               <BookOpen size={16} className="opacity-40" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.7em]">Materias_</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.7em]">Agenda_</span>
             </div>
             <button 
               onClick={() => setShowAddClass(true)}
-              className="w-10 h-10 rounded-full bg-zinc-900/40 border border-zinc-800/40 flex items-center justify-center active:scale-90 transition-all group"
+              className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all group"
             >
               <Plus size={18} className="text-zinc-500 group-hover:text-white transition-colors" />
             </button>
           </div>
           
-          <div className="grid grid-cols-1 gap-4">
+          <div className="w-full max-w-[400px] grid grid-cols-1 gap-4">
             {CLASSES.map((cls) => (
               <button
                 key={cls.id}
@@ -94,18 +94,26 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Recientes - Brutalismo Minimalista */}
-        <section className="space-y-8 pb-10">
-          <div className="flex items-center gap-3 text-zinc-600 px-4">
+        {/* Recientes - Estética Brutalista Centrada */}
+        <section className="space-y-8 flex flex-col items-center pb-10">
+          <div className="w-full max-w-[400px] flex items-center gap-3 text-zinc-600 px-4">
             <Clock size={16} className="opacity-40" />
             <span className="text-[11px] font-bold uppercase tracking-[0.7em]">Recientes_</span>
           </div>
-          <div className="bg-zinc-900/10 border border-dashed border-zinc-800/20 rounded-[48px] p-24 flex flex-col items-center justify-center text-center space-y-6">
+          <div className="w-full max-w-[400px] bg-zinc-900/10 border border-dashed border-zinc-800/20 rounded-[48px] p-24 flex flex-col items-center justify-center text-center space-y-6">
             <Sparkles size={32} className="text-zinc-900" />
             <p className="text-[11px] font-bold uppercase tracking-[0.7em] text-zinc-900 italic">No_Activity_</p>
           </div>
         </section>
       </main>
+
+      {/* Floating Chat IA - Premium & Inteligente */}
+      <button 
+        onClick={() => navigate("/chat")}
+        className="fixed bottom-10 right-8 w-16 h-16 rounded-full bg-white text-black flex items-center justify-center shadow-[0_20px_50px_rgba(255,255,255,0.2)] active:scale-90 transition-all z-50 border-4 border-black"
+      >
+        <MessageSquare size={28} fill="currentColor" />
+      </button>
 
       {showAddClass && <AddClassModal isOpen={showAddClass} onClose={() => setShowAddClass(false)} />}
     </div>

@@ -1,124 +1,87 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 import { 
-  ArrowLeft, Search, Plus, ChevronRight, FileText, Clock, Sun, Moon
+  ArrowLeft, Search, FileText, ChevronRight, 
+  Sparkles, Calendar, BookOpen
 } from "lucide-react";
 import { motion } from "motion/react";
-import { notesService, BackendNote } from "../../services/notes.service";
-import AddClassModal from "../components/AddClassModal";
-import { useDarkMode } from "../../hooks/useDarkMode";
 
 export default function NotesPage() {
   const navigate = useNavigate();
-  const { isDark, toggleDarkMode } = useDarkMode();
-  const [notes, setNotes] = useState<BackendNote[]>([]);
-  const [search, setSearch] = useState("");
-  const [isAddingClass, setIsAddingClass] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    loadNotes();
-  }, []);
-
-  const loadNotes = async () => {
-    try {
-      const data = await notesService.listNotes(50, 0);
-      setNotes(data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredNotes = notes.filter(n => 
-    (n.title?.toLowerCase() || "").includes(search.toLowerCase()) ||
-    (n.summary?.toLowerCase() || "").includes(search.toLowerCase())
-  );
+  const notes = [
+    { id: 1, date: "02 MAR", title: "TEOREMA_DE_BAYES_", subject: "MATEMÁTICAS", summary: "Análisis de probabilidades condicionales..." },
+    { id: 2, date: "28 FEB", title: "REVOLUCIÓN_INDUSTRIAL_", subject: "HISTORIA", summary: "Impacto socioeconómico en Europa..." },
+    { id: 3, date: "25 FEB", title: "LEYES_DE_NEWTON_", subject: "FÍSICA", summary: "Principios de dinámica y estática..." }
+  ];
 
   return (
-    <div className="h-[100dvh] w-full bg-background text-foreground font-sans selection:bg-primary/30 overflow-hidden flex flex-col relative transition-colors duration-300">
-      <header className="px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] pt-[max(env(safe-area-inset-top,2rem),3rem)] pb-6 flex justify-between items-end border-b border-border bg-background/80 backdrop-blur-xl sticky top-0 z-20 shrink-0">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate("/dashboard")} className="w-10 h-10 rounded-full bg-secondary border border-border flex items-center justify-center active:scale-90 transition-transform">
-            <ArrowLeft size={18} />
-          </button>
-          <div>
-            <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-[0.3em] mb-1 text-left">Archivo_</p>
-            <h1 className="text-xl font-bold uppercase italic tracking-tighter leading-none text-foreground">Mis Notas</h1>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <button 
-            onClick={toggleDarkMode}
-            className="w-10 h-10 rounded-full bg-secondary border border-border flex items-center justify-center active:scale-90 transition-transform"
-          >
-            {isDark ? <Sun size={18} className="text-muted-foreground" /> : <Moon size={18} className="text-muted-foreground" />}
-          </button>
-          <button 
-            onClick={() => setIsAddingClass(true)}
-            className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center active:scale-90 transition-transform shadow-lg"
-          >
-            <Plus size={18} />
-          </button>
-        </div>
+    <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center overflow-x-hidden" style={{ backgroundColor: '#000000' }}>
+      <header className="w-full max-w-2xl px-8 pt-16 pb-8 flex justify-between items-center sticky top-0 bg-black/80 backdrop-blur-xl z-30 shrink-0">
+        <button onClick={() => navigate(-1)} className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all">
+          <ArrowLeft size={20} className="text-zinc-400" />
+        </button>
+        <h1 className="text-sm font-black uppercase italic tracking-[0.2em]">Biblioteca_IA_</h1>
+        <div className="w-12" />
       </header>
 
-      <div className="px-6 py-6 shrink-0">
-        <div className="relative group max-w-2xl mx-auto">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+      <main className="w-full max-w-2xl flex-1 px-8 py-8 space-y-12">
+        {/* Search Bar Premium */}
+        <div className="relative group">
+          <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-white transition-colors">
+            <Search size={18} />
+          </div>
           <input 
-            type="text"
-            placeholder="BUSCAR_EN_ARCHIVO_"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-secondary/40 border border-border rounded-[28px] pl-14 pr-6 py-5 text-sm font-bold placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/10 transition-all italic"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="BUSCAR_NOTAS_"
+            className="w-full bg-zinc-900/50 border border-zinc-800 rounded-[28px] py-5 pl-16 pr-6 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-zinc-600 focus:bg-zinc-900 transition-all placeholder:text-zinc-700"
           />
         </div>
-      </div>
 
-      <main className="flex-1 overflow-y-auto scrollbar-hide px-[env(safe-area-inset-left,1.25rem)] pr-[env(safe-area-inset-right,1.25rem)] pb-32 max-w-2xl mx-auto w-full space-y-3">
-        {loading ? (
-          <div className="py-20 text-center opacity-20">
-            <Clock size={32} className="mx-auto mb-4 animate-spin" />
-            <p className="text-[10px] font-bold uppercase tracking-[0.4em]">Cargando_</p>
+        {/* Notes List */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-3 text-zinc-600 px-4">
+            <FileText size={16} className="opacity-40" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.7em]">Registros_</span>
           </div>
-        ) : filteredNotes.length === 0 ? (
-          <div className="py-20 text-center opacity-10">
-            <FileText size={48} className="mx-auto mb-4" />
-            <p className="text-[10px] font-bold uppercase tracking-[0.4em]">Vacio_</p>
-          </div>
-        ) : (
-          filteredNotes.map((note) => (
-            <Link key={note.id} to={`/note/${note.id}`} className="block group">
-              <motion.div 
-                whileTap={{ scale: 0.98 }}
-                className="bg-secondary/40 border border-border rounded-[28px] p-5 flex items-center justify-between transition-all active:bg-secondary"
+
+          <div className="space-y-3">
+            {notes.map((note) => (
+              <motion.button
+                key={note.id}
+                onClick={() => navigate(`/note/${note.id}`)}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full bg-zinc-900/30 border border-white/[0.03] p-8 rounded-[40px] flex items-center justify-between group active:bg-zinc-800/40 transition-all"
               >
-                <div className="flex items-center gap-5 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-secondary border border-border flex items-center justify-center shrink-0">
-                    <FileText size={18} className="text-muted-foreground" />
+                <div className="flex items-center gap-7">
+                  <div className="flex flex-col items-center justify-center space-y-1 opacity-40">
+                    <span className="text-[10px] font-black italic text-white leading-none">{note.date.split(' ')[0]}</span>
+                    <span className="text-[8px] font-bold text-zinc-500">{note.date.split(' ')[1]}</span>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                      {new Date(note.created_at || Date.now()).toLocaleDateString()}
-                    </p>
-                    <p className="text-base font-bold uppercase italic tracking-tight text-foreground truncate leading-none mb-1.5">
-                      {note.title || "Nota"}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground truncate italic line-clamp-1">
-                      {note.summary || note.transcript || "Detalles_"}
-                    </p>
+                  <div className="text-left space-y-2">
+                    <h3 className="text-xl font-bold uppercase italic tracking-tight text-white leading-none">{note.title}</h3>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">{note.subject}</span>
+                      <div className="w-1 h-1 rounded-full bg-zinc-800" />
+                      <p className="text-[10px] text-zinc-500 italic truncate max-w-[140px]">{note.summary}</p>
+                    </div>
                   </div>
                 </div>
-                <ChevronRight size={18} className="text-muted-foreground shrink-0" />
-              </motion.div>
-            </Link>
-          ))
-        )}
-      </main>
+                <ChevronRight size={20} className="text-zinc-800 group-hover:text-zinc-500 transition-all" />
+              </motion.button>
+            ))}
+          </div>
+        </section>
 
-      <AddClassModal isOpen={isAddingClass} onClose={() => setIsAddingClass(false)} />
+        {/* Terminal Sync Indicator */}
+        <div className="py-10 flex flex-col items-center opacity-10">
+          <Sparkles size={32} />
+          <p className="text-[10px] font-bold uppercase tracking-[0.5em] mt-4">Cloud_Archive_Ready_</p>
+        </div>
+      </main>
     </div>
   );
 }

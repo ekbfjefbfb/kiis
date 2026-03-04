@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { 
   ArrowLeft, Mic, Send, StopCircle, Loader2, 
-  Sparkles, User, Brain, Volume2, VolumeX
+  Sparkles, Brain, Volume2
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { aiService } from "../../services/ai.service";
@@ -46,7 +46,6 @@ export default function ChatAssistant() {
     try {
       let aiResponse = "";
       const assistantMessageId = (Date.now() + 1).toString();
-      
       setMessages(prev => [...prev, { id: assistantMessageId, role: 'assistant', content: "" }]);
 
       await aiService.chat(messageContent, messages.map(m => ({ role: m.role, content: m.content })), (token) => {
@@ -96,27 +95,30 @@ export default function ChatAssistant() {
   };
 
   return (
-    <div className="h-[100dvh] w-full bg-black text-white font-sans flex flex-col relative overflow-hidden" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
-      <header className="px-6 pt-12 pb-6 flex justify-between items-center border-b border-zinc-800 bg-black sticky top-0 z-20 shrink-0">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-          <ArrowLeft size={18} className="text-zinc-400" />
+    <div className="h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center overflow-hidden" style={{ backgroundColor: '#000000' }}>
+      <header className="w-full max-w-2xl px-8 pt-16 pb-8 flex justify-between items-center sticky top-0 bg-black/80 backdrop-blur-xl z-30 shrink-0">
+        <button onClick={() => navigate(-1)} className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all">
+          <ArrowLeft size={20} className="text-zinc-400" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-zinc-800">
-            <Brain size={16} className="text-white" />
+          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 shadow-lg">
+            <Brain size={20} className="text-white" />
           </div>
-          <h1 className="text-sm font-bold uppercase italic tracking-widest">Asistente_IA</h1>
+          <h1 className="text-sm font-black uppercase italic tracking-[0.2em]">IA_Assistant_</h1>
         </div>
-        <div className="w-10 flex justify-end">
-          {isSpeaking && <Volume2 size={18} className="text-white animate-pulse" />}
+        <div className="w-12 flex justify-end">
+          {isSpeaking && <Volume2 size={20} className="text-white animate-pulse" />}
         </div>
       </header>
 
-      <main ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-8 space-y-8 scrollbar-hide">
+      <main ref={scrollRef} className="w-full max-w-2xl flex-1 overflow-y-auto px-8 py-8 space-y-8 scrollbar-hide">
         {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-center space-y-6 opacity-20">
-            <Sparkles size={48} strokeWidth={1} />
-            <p className="text-[10px] font-bold uppercase tracking-[0.5em]">Consulta cualquier duda_</p>
+          <div className="h-full flex flex-col items-center justify-center text-center space-y-8 opacity-20 py-20">
+            <Sparkles size={64} strokeWidth={1} />
+            <div className="space-y-2">
+              <p className="text-[11px] font-bold uppercase tracking-[0.6em]">Terminal_Inteligente_</p>
+              <p className="text-xs italic opacity-60">Realiza consultas sobre tus clases_</p>
+            </div>
           </div>
         )}
         
@@ -127,10 +129,10 @@ export default function ChatAssistant() {
             animate={{ opacity: 1, y: 0 }}
             className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <div className={`max-w-[85%] p-5 rounded-[24px] ${
+            <div className={`max-w-[85%] p-6 rounded-[32px] ${
               m.role === 'user' 
-                ? 'bg-zinc-900 border border-zinc-800 text-white italic' 
-                : 'bg-white/5 border border-white/10 text-zinc-300'
+                ? 'bg-white text-black font-bold italic shadow-xl' 
+                : 'bg-zinc-900 border border-zinc-800 text-zinc-200'
             }`}>
               <p className="text-sm leading-relaxed">{m.content}</p>
             </div>
@@ -138,38 +140,38 @@ export default function ChatAssistant() {
         ))}
         {isProcessing && (
           <div className="flex justify-start">
-            <div className="bg-white/5 border border-white/10 p-5 rounded-[24px]">
-              <Loader2 size={16} className="animate-spin text-zinc-500" />
+            <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-[32px] shadow-lg">
+              <Loader2 size={18} className="animate-spin text-zinc-500" />
             </div>
           </div>
         )}
       </main>
 
-      <footer className="p-6 bg-black border-t border-zinc-800 pb-10">
-        <div className="max-w-2xl mx-auto flex items-center gap-3">
+      <footer className="w-full max-w-2xl p-8 bg-black/80 backdrop-blur-xl border-t border-zinc-800 pb-12">
+        <div className="flex items-center gap-4">
           <div className="flex-1 relative">
             <input 
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Escribe tu duda..."
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-[24px] pl-6 pr-12 py-4 text-sm focus:outline-none focus:border-zinc-700 transition-all italic"
+              placeholder="Terminal prompt..."
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-[28px] pl-8 pr-14 py-5 text-sm font-medium focus:outline-none focus:border-white/20 focus:bg-zinc-800 transition-all italic text-white"
             />
             <button 
               onClick={() => handleSend()}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white flex items-center justify-center active:scale-90 transition-transform"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white flex items-center justify-center active:scale-90 transition-transform shadow-lg"
             >
-              <Send size={14} className="text-black" />
+              <Send size={16} className="text-black" />
             </button>
           </div>
           
           <button 
             onClick={isRecording ? stopVoice : startVoice}
-            className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all ${
-              isRecording ? 'bg-red-500 border-red-500 animate-pulse' : 'bg-zinc-900 border-zinc-800'
+            className={`w-16 h-16 rounded-full flex items-center justify-center border-4 transition-all ${
+              isRecording ? 'bg-red-500 border-black animate-pulse' : 'bg-zinc-900 border-zinc-800'
             }`}
           >
-            {isRecording ? <StopCircle size={24} /> : <Mic size={24} className="text-white" />}
+            {isRecording ? <StopCircle size={28} /> : <Mic size={28} className="text-white" />}
           </button>
         </div>
       </footer>

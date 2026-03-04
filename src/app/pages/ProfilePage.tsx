@@ -1,132 +1,103 @@
-import { useState, useEffect } from "react";
-import { ArrowLeft, User, Moon, Sun, LogOut, ChevronRight, Settings, Mail, Phone, Shield, Bell, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router";
-import { motion } from "motion/react";
+import { 
+  ArrowLeft, User, Mail, Shield, LogOut, 
+  Download, ChevronRight, Zap, Settings, Bell
+} from "lucide-react";
+import { usePWAInstall } from "../../hooks/usePWAInstall";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { installPWA } = usePWAInstall();
 
-  useEffect(() => {
-    document.body.style.backgroundColor = isDarkMode ? "#000000" : "#ffffff";
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-
-  const toggleTheme = () => setIsDarkMode(!isDarkMode);
+  const handleLogout = () => {
+    navigate("/login");
+  };
 
   return (
-    <div className={`min-h-[100dvh] w-full transition-colors duration-500 ${isDarkMode ? 'bg-[#000000] text-white' : 'bg-white text-black'} font-sans selection:bg-zinc-500/30 overflow-x-hidden flex flex-col`}>
-      {/* Header Adaptativo - Safe Area Aware */}
-      <header className={`px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] pt-[max(env(safe-area-inset-top,2rem),3rem)] pb-6 flex justify-between items-center border-b ${isDarkMode ? 'border-white/5 bg-[#000000]/80' : 'border-black/5 bg-white/80'} backdrop-blur-xl sticky top-0 z-20`}>
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className={`w-11 h-11 rounded-full ${isDarkMode ? 'bg-zinc-900 border-white/10' : 'bg-zinc-100 border-black/5'} border flex items-center justify-center active:scale-90 transition-transform`}>
-            <ArrowLeft size={20} />
-          </button>
-          <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Perfil</h1>
-        </div>
-        <button className={`w-11 h-11 rounded-full ${isDarkMode ? 'bg-zinc-900 border-white/10' : 'bg-zinc-100 border-black/5'} border flex items-center justify-center active:scale-90 transition-transform`}>
-          <Settings size={20} className="opacity-60" />
+    <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center overflow-x-hidden" style={{ backgroundColor: '#000000' }}>
+      <header className="w-full max-w-2xl px-8 pt-16 pb-8 flex justify-between items-center sticky top-0 bg-black/80 backdrop-blur-xl z-30 shrink-0">
+        <button onClick={() => navigate(-1)} className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all">
+          <ArrowLeft size={20} className="text-zinc-400" />
         </button>
+        <h1 className="text-sm font-black uppercase italic tracking-[0.2em]">Perfil_Terminal_</h1>
+        <div className="w-12" />
       </header>
 
-      {/* Main Content - Flex Grow para usar espacio */}
-      <main className="flex-1 px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] py-8 space-y-10 max-w-2xl mx-auto w-full">
-        
-        {/* Identidad - Jerarquía Inteligente */}
-        <section className="flex flex-col items-center text-center space-y-5 py-4">
-          <div className={`w-28 h-24 rounded-[36px] ${isDarkMode ? 'bg-zinc-900' : 'bg-zinc-100'} flex items-center justify-center border ${isDarkMode ? 'border-white/10' : 'border-black/10'} shadow-2xl`}>
-            <User size={48} className={isDarkMode ? 'text-white/20' : 'text-black/20'} />
+      <main className="w-full max-w-2xl flex-1 px-8 py-8 space-y-12">
+        {/* User Branding */}
+        <div className="flex flex-col items-center space-y-6">
+          <div className="w-32 h-32 rounded-[48px] bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-2xl relative group">
+            <div className="absolute inset-0 bg-white/5 rounded-[48px] blur-2xl group-active:bg-white/10 transition-colors" />
+            <User size={48} className="text-white relative" strokeWidth={1.5} />
           </div>
-          <div className="space-y-1">
-            <h2 className="text-3xl font-black uppercase italic tracking-tight">Alberto</h2>
-            <p className={`text-[11px] font-bold uppercase tracking-[0.25em] ${isDarkMode ? 'text-white/30' : 'text-black/30'}`}>Usuario Maestro</p>
+          <div className="text-center space-y-1">
+            <h2 className="text-3xl font-black italic uppercase tracking-tighter">ALBERTO_DEV</h2>
+            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.4em]">Ingeniero de Software</p>
           </div>
-        </section>
+        </div>
 
-        {/* Información Estática - Brutalmente Bien Estructurada */}
-        <section className="space-y-3">
-          <p className={`text-[10px] font-black uppercase tracking-[0.3em] mb-4 ml-2 ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}>Datos de la cuenta</p>
-          
-          <div className={`w-full ${isDarkMode ? 'bg-zinc-900/60 border-white/5' : 'bg-zinc-50 border-black/5'} border rounded-[24px] p-5 flex items-center gap-5`}>
-            <div className={`w-11 h-11 rounded-2xl ${isDarkMode ? 'bg-zinc-800' : 'bg-white'} flex items-center justify-center shadow-sm shrink-0`}>
-              <Mail size={20} className={isDarkMode ? 'text-white/40' : 'text-black/40'} />
-            </div>
-            <div className="min-w-0">
-              <p className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}>Email</p>
-              <p className="text-[15px] font-bold tracking-tight truncate">alberto@kiis.ai</p>
-            </div>
-          </div>
-
-          <div className={`w-full ${isDarkMode ? 'bg-zinc-900/60 border-white/5' : 'bg-zinc-50 border-black/5'} border rounded-[24px] p-5 flex items-center gap-5`}>
-            <div className={`w-11 h-11 rounded-2xl ${isDarkMode ? 'bg-zinc-800' : 'bg-white'} flex items-center justify-center shadow-sm shrink-0`}>
-              <Phone size={20} className={isDarkMode ? 'text-white/40' : 'text-black/40'} />
-            </div>
-            <div className="min-w-0">
-              <p className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}>Teléfono</p>
-              <p className="text-[15px] font-bold tracking-tight">+52 55 1234 5678</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Ajustes y Privacidad */}
-        <section className="space-y-3">
-          <p className={`text-[10px] font-black uppercase tracking-[0.3em] mb-4 ml-2 ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}>Seguridad & Preferencias</p>
-          
-          <div className={`w-full ${isDarkMode ? 'bg-zinc-900/40 border-white/5' : 'bg-zinc-50 border-black/5'} border rounded-[24px] p-5 flex items-center justify-between shadow-sm`}>
-            <div className="flex items-center gap-5">
-              <div className={`w-11 h-11 rounded-2xl ${isDarkMode ? 'bg-emerald-500/10' : 'bg-emerald-500/5'} flex items-center justify-center shrink-0`}>
-                <Shield size={20} className="text-emerald-500" />
+        {/* Action Groups */}
+        <div className="space-y-10">
+          {/* PWA Install - Premium Call */}
+          <section className="space-y-4">
+            <button
+              onClick={installPWA}
+              className="w-full bg-white text-black p-8 rounded-[40px] flex items-center justify-between group active:scale-[0.97] transition-all shadow-[0_20px_50px_rgba(255,255,255,0.1)]"
+            >
+              <div className="flex items-center gap-6">
+                <div className="w-14 h-14 rounded-[20px] bg-black flex items-center justify-center shadow-lg">
+                  <Download size={24} className="text-white" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-xl font-black italic uppercase tracking-tighter leading-none">Descargar_App_</h3>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mt-1.5">Instalación_Nativa_</p>
+                </div>
               </div>
-              <div className="text-left">
-                <p className="text-sm font-black uppercase italic leading-none">Privacidad Activa</p>
-                <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}>Encriptación AES-256</p>
-              </div>
-            </div>
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse" />
-          </div>
+              <Zap size={24} fill="currentColor" className="text-black" />
+            </button>
+          </section>
 
+          {/* Account Settings */}
+          <section className="space-y-4">
+            <div className="flex items-center gap-3 text-zinc-600 px-4">
+              <Settings size={14} className="opacity-40" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.6em]">Configuración_</span>
+            </div>
+            
+            <div className="space-y-3">
+              {[
+                { icon: <Mail size={18} />, label: "Email_Terminal_", value: "alberto@kiis.dev" },
+                { icon: <Shield size={18} />, label: "Privacidad_Datos_", value: "Encriptado_AES" },
+                { icon: <Bell size={18} />, label: "Notificaciones_", value: "Push_Activas" }
+              ].map((item, i) => (
+                <button
+                  key={i}
+                  className="w-full bg-zinc-900/30 border border-white/[0.03] p-6 rounded-[32px] flex items-center justify-between group active:bg-zinc-800/40 transition-all"
+                >
+                  <div className="flex items-center gap-5">
+                    <div className="w-12 h-12 rounded-[18px] bg-zinc-900/50 flex items-center justify-center text-zinc-500 group-hover:text-white transition-colors">
+                      {item.icon}
+                    </div>
+                    <div className="text-left">
+                      <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest leading-none mb-1">{item.label}</p>
+                      <h4 className="font-bold uppercase italic tracking-tight text-zinc-200">{item.value}</h4>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-zinc-800 group-hover:text-zinc-500" />
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Logout */}
           <button 
-            onClick={toggleTheme}
-            className={`w-full ${isDarkMode ? 'bg-zinc-900/80 border-white/5' : 'bg-zinc-100/50 border-black/5'} border rounded-[24px] p-5 flex items-center justify-between active:scale-[0.98] transition-all`}
+            onClick={handleLogout}
+            className="w-full p-8 rounded-[32px] border border-zinc-800/50 text-zinc-500 font-bold uppercase tracking-[0.4em] text-[11px] flex items-center justify-center gap-4 active:bg-red-500/10 active:text-red-500 active:border-red-500/20 transition-all"
           >
-            <div className="flex items-center gap-5">
-              <div className={`w-11 h-11 rounded-2xl ${isDarkMode ? 'bg-zinc-800' : 'bg-zinc-200'} flex items-center justify-center shrink-0`}>
-                {isDarkMode ? <Moon size={20} /> : <Sun size={20} />}
-              </div>
-              <div className="text-left">
-                <p className="text-sm font-black uppercase italic leading-none">Modo {isDarkMode ? 'Oscuro' : 'Claro'}</p>
-                <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}>{isDarkMode ? 'Negro Puro' : 'Blanco Puro'}</p>
-              </div>
-            </div>
-            <div className={`w-14 h-7 rounded-full relative transition-colors p-1.5 ${isDarkMode ? 'bg-zinc-800' : 'bg-zinc-200'}`}>
-              <motion.div 
-                animate={{ x: isDarkMode ? 28 : 0 }}
-                className={`w-4 h-4 rounded-full shadow-md ${isDarkMode ? 'bg-white' : 'bg-zinc-900'}`}
-              />
-            </div>
+            <LogOut size={18} />
+            Cerrar_Sesión_
           </button>
-
-          <button className={`w-full ${isDarkMode ? 'bg-zinc-900/80 border-white/5' : 'bg-zinc-100/50 border-black/5'} border rounded-[24px] p-5 flex items-center justify-between active:scale-[0.98] transition-all mt-6`}>
-            <div className="flex items-center gap-5 text-left">
-              <div className={`w-11 h-11 rounded-2xl ${isDarkMode ? 'bg-zinc-800' : 'bg-zinc-200'} flex items-center justify-center shrink-0`}>
-                <LogOut size={20} className="text-zinc-500" />
-              </div>
-              <div>
-                <p className="text-sm font-black uppercase italic leading-none">Cerrar Sesión</p>
-                <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}>Desconectar</p>
-              </div>
-            </div>
-            <ChevronRight size={18} className="opacity-10" />
-          </button>
-        </section>
-
-        <footer className="pt-8 pb-[max(env(safe-area-inset-bottom,2rem),2rem)] text-center">
-          <p className={`text-[10px] font-black uppercase tracking-[0.4em] ${isDarkMode ? 'text-zinc-800' : 'text-zinc-200'}`}>Versión 1.2.0 LIMON</p>
-        </footer>
+        </div>
       </main>
     </div>
   );
