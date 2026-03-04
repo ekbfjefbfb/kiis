@@ -49,18 +49,17 @@ export default function Onboarding() {
           </motion.button>
         </header>
 
-        <main className="flex-1 flex flex-col justify-center space-y-10 pb-8">
+        <main className="flex-1 flex flex-col justify-center space-y-8 pb-8">
           <div className="text-center space-y-6">
-            <div className="w-20 h-20 rounded-[32px] bg-zinc-900 border border-zinc-800 mx-auto flex items-center justify-center shadow-xl relative mb-2">
-              <div className="absolute inset-0 bg-white/5 rounded-[32px] blur-xl animate-pulse" />
-              <div className="relative text-white scale-100">{STEPS[currentStep].icon}</div>
+            <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800/50 mx-auto flex items-center justify-center relative mb-2">
+              <div className="relative text-zinc-400 scale-75">{STEPS[currentStep].icon}</div>
             </div>
             
-            <div className="space-y-3 px-4">
-              <h1 className="text-2xl font-black tracking-tight leading-tight uppercase text-white">
-                {STEPS[currentStep].title}
+            <div className="space-y-2 px-4">
+              <h1 className="text-xl font-bold tracking-tight text-white">
+                {STEPS[currentStep].title.replace('_', '').replace('CAPTURA', 'Captura').replace('TERMINAL', 'de voz').replace('SÍNTESIS', 'Resúmenes').replace('NATIVA', 'con IA').replace('CONTROL', 'Todo').replace('TOTAL', 'organizado')}
               </h1>
-              <p className="text-zinc-400 text-sm font-medium max-w-[260px] mx-auto leading-relaxed">
+              <p className="text-zinc-500 text-sm font-medium max-w-[240px] mx-auto leading-relaxed">
                 {STEPS[currentStep].description}
               </p>
             </div>
@@ -81,12 +80,12 @@ export default function Onboarding() {
 
           <button
             onClick={next}
-            className="btn-massive bg-white text-black shadow-lg"
+            className="w-full bg-white text-black py-3.5 rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
           >
-            <span className="text-base font-black tracking-tight">
-              {currentStep === STEPS.length - 1 ? "EMPEZAR_" : "SIGUIENTE_"}
+            <span className="font-bold text-sm">
+              {currentStep === STEPS.length - 1 ? "Empezar" : "Siguiente"}
             </span>
-            <ArrowRight size={20} strokeWidth={3} />
+            <ArrowRight size={18} />
           </button>
         </footer>
       </div>

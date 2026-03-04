@@ -19,20 +19,20 @@ export default function Dashboard() {
   return (
     <div className="h-[100dvh] w-full bg-black flex flex-col overflow-hidden relative" style={{ backgroundColor: '#000000' }}>
       {/* Header - Engineering Minimal Apple/Tesla Style */}
-      <header className="w-full bg-black/80 backdrop-blur-xl z-30 pt-12 pb-8 shrink-0">
-        <div className="mobile-container flex-row justify-between items-center">
-          <header className="mb-10">
-            <p className="text-[10px] font-black tracking-[0.3em] text-zinc-500 uppercase mb-2">Hoy</p>
-            <h1 className="text-4xl font-black tracking-tighter leading-none uppercase">
-              {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
+      <header className="w-full bg-black z-30 pt-8 pb-6 shrink-0">
+        <div className="mobile-container flex-row justify-between items-end">
+          <div className="space-y-1">
+            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Hoy</p>
+            <h1 className="text-xl font-bold text-white lowercase first-letter:uppercase">
+              {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}
             </h1>
-          </header>
-          <div className="flex gap-4">
-            <button onClick={() => navigate("/calendar")} className="w-11 h-11 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all shadow-lg">
-              <Calendar size={20} className="text-zinc-400" />
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => navigate("/calendar")} className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
+              <Calendar size={16} className="text-zinc-400" />
             </button>
-            <button onClick={() => navigate("/profile")} className="w-11 h-11 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-90 transition-all shadow-lg">
-              <User size={20} className="text-zinc-400" />
+            <button onClick={() => navigate("/profile")} className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
+              <User size={16} className="text-zinc-400" />
             </button>
           </div>
         </div>
@@ -40,22 +40,19 @@ export default function Dashboard() {
 
       <main className="flex-1 overflow-y-auto scrollbar-hide py-10">
         <div className="mobile-container space-y-16">
-          {/* Main Action - Centered & Balanced */}
-          <section className="mb-8 px-1">
+          {/* Main Action - Simple & Balanced */}
+          <section className="mb-8">
             <button 
               onClick={() => navigate("/live")}
-              className="w-full bg-white text-black p-5 rounded-2xl flex items-center justify-between group active:scale-[0.97] transition-all shadow-xl border-none"
+              className="w-full bg-zinc-900 border border-zinc-800/50 p-5 rounded-2xl flex items-center gap-4 active:scale-[0.98] transition-all group"
             >
-              <div className="flex items-center gap-5">
-                <div className="w-11 h-11 rounded-xl bg-black flex items-center justify-center shadow-lg">
-                  <Mic size={22} className="text-white" />
-                </div>
-                <div className="text-left space-y-0.5">
-                  <h2 className="text-lg font-black italic uppercase tracking-tighter leading-none text-black">Grabar_Ahora_</h2>
-                  <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">IA_Realtime_Engine_</p>
-                </div>
+              <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
+                <Mic size={20} className="text-zinc-400 group-active:text-white transition-colors" />
               </div>
-              <ChevronRight size={20} strokeWidth={3} className="text-black/20 group-hover:text-black transition-colors" />
+              <div className="text-left">
+                <h2 className="text-base font-bold text-zinc-200">Grabar clase</h2>
+                <p className="text-[10px] font-medium text-zinc-500">Inicia la captura de audio</p>
+              </div>
             </button>
           </section>
 

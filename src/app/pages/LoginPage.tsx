@@ -16,37 +16,37 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center justify-center py-10">
-      <main className="mobile-container flex-1 justify-center space-y-12">
-        {/* Branding Centrado - Apple Style */}
-        <div className="flex flex-col items-center space-y-6">
-          <div className="w-20 h-20 bg-white rounded-[26px] flex items-center justify-center shadow-[0_0_50px_rgba(255,255,255,0.18)]">
-            <span className="text-black text-3xl font-black italic">K</span>
+    <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center justify-center py-8">
+      <main className="mobile-container flex-1 justify-center space-y-10">
+        {/* Branding Simple */}
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg">
+            <span className="text-black text-2xl font-bold">K</span>
           </div>
-          <div className="text-center space-y-2">
-            <h1 className="text-[34px] font-black uppercase italic tracking-tighter text-white">Hola_</h1>
-            <p className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic">Acceso_a_Terminal_</p>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white">Hola</h1>
+            <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest mt-1">Acceso a terminal</p>
           </div>
         </div>
 
-        {/* Formulario Estructurado y Centrado */}
-        <form onSubmit={handleSubmit} className="w-full space-y-6">
-          <div className="space-y-3 mb-8">
+        {/* Formulario Simple */}
+        <form onSubmit={handleSubmit} className="w-full space-y-4">
+          <div className="space-y-3 mb-6">
             <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 transition-colors group-focus-within:text-white" size={18} strokeWidth={2.5} />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
               <input
                 type="email"
-                placeholder="MAIL_"
-                className="w-full bg-[#121212] border-2 border-zinc-800 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-white transition-all font-bold tracking-tight text-sm"
+                placeholder="Email"
+                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-zinc-700 focus:outline-none focus:border-zinc-600 transition-all font-medium text-sm"
                 required
               />
             </div>
             <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 transition-colors group-focus-within:text-white" size={18} strokeWidth={2.5} />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
               <input
                 type="password"
-                placeholder="CONTRASEÑA_"
-                className="w-full bg-[#121212] border-2 border-zinc-800 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-white transition-all font-bold tracking-tight text-sm"
+                placeholder="Contraseña"
+                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-zinc-700 focus:outline-none focus:border-zinc-600 transition-all font-medium text-sm"
                 required
               />
             </div>
@@ -55,23 +55,22 @@ export default function LoginPage() {
           <button 
             disabled={loading}
             type="submit"
-            className="btn-massive bg-white text-black shadow-xl mt-4"
+            className="w-full bg-white text-black py-3.5 rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-all font-bold text-sm"
           >
-            {loading ? <Loader2 className="animate-spin" /> : (
+            {loading ? <Loader2 className="animate-spin" size={18} /> : (
               <>
-                <span className="font-black tracking-tight">ENTRAR_</span>
-                <ArrowRight size={20} strokeWidth={3} />
+                <span>Entrar</span>
+                <ArrowRight size={18} />
               </>
             )}
           </button>
         </form>
 
-        {/* Footer Link */}
         <button 
           onClick={() => navigate("/register")}
-          className="w-full text-center py-4 text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500 active:text-white transition-colors"
+          className="w-full text-center py-2 text-xs font-medium text-zinc-500 active:text-white transition-colors"
         >
-          ¿No tienes cuenta? <span className="text-white border-b-2 border-white/20 pb-1">Regístrate_</span>
+          ¿No tienes cuenta? <span className="text-white border-b border-white/20 pb-0.5">Regístrate</span>
         </button>
       </main>
     </div>
