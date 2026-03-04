@@ -40,22 +40,22 @@ export default function Dashboard() {
 
       <main className="flex-1 overflow-y-auto scrollbar-hide py-10">
         <div className="mobile-container space-y-16">
-          {/* Main Action - Centered & Massive Impact */}
-          <section className="mb-10">
+          {/* Main Action - Centered & Balanced */}
+          <section className="mb-8 px-1">
             <button 
               onClick={() => navigate("/live")}
-              className="w-full bg-white text-black p-6 rounded-[24px] flex items-center justify-between group active:scale-[0.97] transition-all shadow-xl border-none"
+              className="w-full bg-white text-black p-5 rounded-2xl flex items-center justify-between group active:scale-[0.97] transition-all shadow-xl border-none"
             >
-              <div className="flex items-center gap-6">
-                <div className="w-12 h-12 rounded-[16px] bg-black flex items-center justify-center shadow-lg">
-                  <Mic size={24} className="text-white" />
+              <div className="flex items-center gap-5">
+                <div className="w-11 h-11 rounded-xl bg-black flex items-center justify-center shadow-lg">
+                  <Mic size={22} className="text-white" />
                 </div>
                 <div className="text-left space-y-0.5">
-                  <h2 className="text-xl font-black italic uppercase tracking-tighter leading-none text-black">Grabar_Ahora_</h2>
-                  <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">IA_Realtime_Engine_</p>
+                  <h2 className="text-lg font-black italic uppercase tracking-tighter leading-none text-black">Grabar_Ahora_</h2>
+                  <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">IA_Realtime_Engine_</p>
                 </div>
               </div>
-              <ChevronRight size={24} strokeWidth={3} className="text-black/20 group-hover:text-black transition-colors" />
+              <ChevronRight size={20} strokeWidth={3} className="text-black/20 group-hover:text-black transition-colors" />
             </button>
           </section>
 
@@ -78,18 +78,18 @@ export default function Dashboard() {
                 <button
                   key={cls.id}
                   onClick={() => navigate(`/class/${cls.id}`)}
-                  className="w-full bg-zinc-900/30 border border-white/[0.03] p-5 rounded-[26px] flex items-center justify-between group active:bg-zinc-800/40 transition-all hover:border-white/10"
+                  className="w-full bg-zinc-900/30 border border-white/[0.03] p-4 rounded-2xl flex items-center justify-between group active:bg-zinc-800/40 transition-all hover:border-white/10"
                 >
-                  <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 rounded-2xl bg-zinc-900/50 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
-                      <LayoutGrid size={24} className="text-zinc-700 group-hover:text-zinc-400 transition-colors" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-zinc-900/50 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
+                      <LayoutGrid size={20} className="text-zinc-700 group-hover:text-zinc-400 transition-colors" />
                     </div>
-                    <div className="text-left space-y-1">
-                      <h3 className="text-sm font-black text-white uppercase tracking-tight group-hover:text-white transition-colors leading-none">{cls.name}</h3>
-                      <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors">{cls.professor}</p>
+                    <div className="text-left">
+                      <h3 className="text-sm font-black text-white uppercase tracking-tight group-hover:text-white transition-colors leading-none mb-1">{cls.name}</h3>
+                      <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors">{cls.professor}</p>
                     </div>
                   </div>
-                  <ChevronRight size={16} className="text-zinc-800 group-hover:text-zinc-600 transition-all" strokeWidth={3} />
+                  <ChevronRight size={14} className="text-zinc-800 group-hover:text-zinc-600 transition-all" strokeWidth={3} />
                 </button>
               ))}
             </div>

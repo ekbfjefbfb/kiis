@@ -31,13 +31,13 @@ export default function RegisterPage() {
 
         {/* Formulario Estructurado y Centrado */}
         <form onSubmit={handleSubmit} className="w-full space-y-6">
-          <div className="space-y-4 mb-8">
+          <div className="space-y-3 mb-8">
             <div className="relative group">
               <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 transition-colors group-focus-within:text-white" size={18} strokeWidth={2.5} />
               <input
                 type="text"
                 placeholder="NOMBRE_COMPLETO_"
-                className="w-full bg-zinc-900/50 border-2 border-zinc-800 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-white transition-all font-bold tracking-tight text-base"
+                className="w-full bg-[#121212] border-2 border-zinc-800 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-white transition-all font-bold tracking-tight text-sm"
                 required
               />
             </div>
@@ -46,7 +46,7 @@ export default function RegisterPage() {
               <input
                 type="email"
                 placeholder="MAIL_"
-                className="w-full bg-zinc-900/50 border-2 border-zinc-800 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-white transition-all font-bold tracking-tight text-base"
+                className="w-full bg-[#121212] border-2 border-zinc-800 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-white transition-all font-bold tracking-tight text-sm"
                 required
               />
             </div>
@@ -55,7 +55,7 @@ export default function RegisterPage() {
               <input
                 type="password"
                 placeholder="CONTRASEÑA_"
-                className="w-full bg-zinc-900/50 border-2 border-zinc-800 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-white transition-all font-bold tracking-tight text-base"
+                className="w-full bg-[#121212] border-2 border-zinc-800 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-white transition-all font-bold tracking-tight text-sm"
                 required
               />
             </div>
@@ -64,12 +64,12 @@ export default function RegisterPage() {
           <button 
             disabled={loading}
             type="submit"
-            className="btn-massive w-full bg-white text-black shadow-xl"
+            className="btn-massive bg-white text-black shadow-xl mt-4"
           >
             {loading ? <Loader2 className="animate-spin" /> : (
               <>
                 <span className="font-black tracking-tight">REGISTRARME_</span>
-                <ArrowRight size={22} strokeWidth={3} />
+                <ArrowRight size={20} strokeWidth={3} />
               </>
             )}
           </button>
