@@ -44,15 +44,15 @@ export default function Dashboard() {
           <section className="px-2 mb-10">
             <button 
               onClick={() => navigate("/live")}
-              className="w-full bg-white text-black p-6 rounded-[32px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.15)] border-none"
+              className="w-full bg-white text-black p-8 rounded-[32px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_20px_60px_rgba(255,255,255,0.15)] border-none"
             >
               <div className="flex items-center gap-6">
-                <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shadow-2xl">
-                  <Mic size={24} className="text-white" />
+                <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center shadow-2xl">
+                  <Mic size={28} className="text-white" />
                 </div>
-                <div className="text-left space-y-0.5">
+                <div className="text-left space-y-1">
                   <h2 className="text-lg font-black italic uppercase tracking-tighter leading-none">Grabar_Ahora_</h2>
-                  <p className="text-[8px] font-black text-zinc-400 uppercase tracking-widest">IA_Realtime_</p>
+                  <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">IA_Realtime_</p>
                 </div>
               </div>
               <ChevronRight size={24} strokeWidth={3} className="opacity-10 group-hover:opacity-100 transition-opacity" />
@@ -78,15 +78,15 @@ export default function Dashboard() {
                 <button
                   key={cls.id}
                   onClick={() => navigate(`/class/${cls.id}`)}
-                  className="w-full bg-zinc-900/30 border border-white/[0.03] p-5 rounded-[28px] flex items-center justify-between group active:bg-zinc-800/40 transition-all hover:border-white/10"
+                  className="w-full bg-zinc-900/30 border border-white/[0.03] p-6 rounded-[28px] flex items-center justify-between group active:bg-zinc-800/40 transition-all hover:border-white/10"
                 >
                   <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 rounded-2xl bg-zinc-900/50 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
-                      <LayoutGrid size={20} className="text-zinc-700 group-hover:text-zinc-400 transition-colors" />
+                    <div className="w-14 h-14 rounded-2xl bg-zinc-900/50 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
+                      <LayoutGrid size={24} className="text-zinc-700 group-hover:text-zinc-400 transition-colors" />
                     </div>
-                    <div className="text-left">
-                      <h3 className="text-sm font-black text-white uppercase tracking-tight group-hover:text-white transition-colors leading-none mb-1">{cls.name}</h3>
-                      <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors">{cls.professor}</p>
+                    <div className="text-left space-y-1">
+                      <h3 className="text-sm font-black text-white uppercase tracking-tight group-hover:text-white transition-colors leading-none">{cls.name}</h3>
+                      <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors">{cls.professor}</p>
                     </div>
                   </div>
                   <ChevronRight size={16} className="text-zinc-800 group-hover:text-zinc-600 transition-all" strokeWidth={3} />

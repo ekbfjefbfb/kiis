@@ -75,8 +75,8 @@ body {
   width: 100%;
   background-color: white;
   color: black;
-  padding: 1rem 1.5rem;
-  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -84,7 +84,7 @@ body {
   transition: all 0.2s;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   font-size: 0.75rem;
   border: none;
 }
