@@ -42,7 +42,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-[100dvh] bg-black text-white pb-24 font-sans selection:bg-white/30 overflow-x-hidden">
-      {/* Header Compacto - Agenda Style */}
+      {/* Header Compacto */}
       <div className="px-6 pt-10 pb-6 flex justify-between items-end border-b border-white/5">
         <div>
           <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Hoy</p>
@@ -54,13 +54,13 @@ export default function Dashboard() {
       </div>
 
       <div className="px-5 space-y-6 pt-6">
-        {/* Acciones de Agenda Reales (Cada una es una pantalla) */}
+        {/* Acciones - Lista minimalista sin exceso de colores */}
         <div className="grid grid-cols-1 gap-3">
           <Link to="/quick-note" className="block group">
             <motion.div whileTap={{ scale: 0.98 }} className="bg-zinc-900/50 border border-white/5 rounded-[24px] p-5 flex items-center justify-between transition-all active:bg-zinc-800">
               <div className="flex items-center gap-4">
-                <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
-                  <Zap size={20} className="text-emerald-400" />
+                <div className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center">
+                  <Zap size={20} className="text-white/70" />
                 </div>
                 <div>
                   <p className="text-sm font-black uppercase italic leading-none">Nota rápida</p>
@@ -74,8 +74,8 @@ export default function Dashboard() {
           <Link to="/live" className="block group">
             <motion.div whileTap={{ scale: 0.98 }} className="bg-zinc-900/50 border border-white/5 rounded-[24px] p-5 flex items-center justify-between transition-all active:bg-zinc-800">
               <div className="flex items-center gap-4">
-                <div className="w-11 h-11 rounded-2xl bg-purple-500/10 flex items-center justify-center">
-                  <Radio size={20} className="text-purple-400" />
+                <div className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center">
+                  <Radio size={20} className="text-white/70" />
                 </div>
                 <div>
                   <p className="text-sm font-black uppercase italic leading-none">Clase en vivo</p>
@@ -102,7 +102,7 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        {/* Notas Recientes (Servicial) */}
+        {/* Notas Recientes */}
         <section>
           <div className="flex justify-between items-center mb-3 px-1">
             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 italic">Notas recientes</h3>
@@ -119,7 +119,7 @@ export default function Dashboard() {
                   <div className="bg-zinc-900/40 border border-white/5 rounded-[20px] p-4 flex items-center justify-between transition-all active:bg-zinc-800">
                     <div className="min-w-0 flex-1 pr-4">
                       <p className="text-[13px] font-bold uppercase truncate tracking-tight">{n.title || "Nota"}</p>
-                      <p className="text-[10px] text-white/20 font-medium truncate mt-0.5 italic">{n.summary || n.transcript || "Sin contenido"}</p>
+                      <p className="text-[10px] text-white/30 font-medium truncate mt-0.5 italic">{n.summary || n.transcript || "Sin contenido"}</p>
                     </div>
                     <ChevronRight size={12} className="text-white/10" />
                   </div>
@@ -129,7 +129,7 @@ export default function Dashboard() {
           )}
         </section>
 
-        {/* Materias (Compacto) */}
+        {/* Materias */}
         <section>
           <div className="flex justify-between items-center mb-3 px-1">
             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 italic">Mis materias</h3>
@@ -156,7 +156,7 @@ export default function Dashboard() {
         </section>
       </div>
 
-      {/* Modal Nueva Materia - Fit Móvil */}
+      {/* Modal Nueva Materia */}
       <AnimatePresence>
         {isAddingClass && (
           <>

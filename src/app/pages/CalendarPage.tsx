@@ -10,10 +10,11 @@ import {
   Loader2,
   Plus,
   X,
+  ChevronRight as ChevronRightIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { TASKS, CLASSES } from "../data/mock";
 
 interface CalendarEvent {
@@ -27,6 +28,7 @@ interface CalendarEvent {
 }
 
 export default function CalendarPage() {
+  const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -123,14 +125,10 @@ export default function CalendarPage() {
 
   const eventLabel = (type: CalendarEvent["type"]) => {
     switch (type) {
-      case "task":
-        return "Tarea";
-      case "exam":
-        return "Examen";
-      case "important":
-        return "Importante";
-      default:
-        return "";
+      case "task": return "Tarea";
+      case "exam": return "Examen";
+      case "important": return "Importante";
+      default: return "";
     }
   };
 
@@ -185,12 +183,12 @@ export default function CalendarPage() {
       {/* Header */}
       <div className="bg-black/80 backdrop-blur-xl border-b border-white/5 px-6 pt-12 pb-6 sticky top-0 z-10">
         <div className="flex items-center justify-between mb-6">
-          <Link
-            to="/dashboard"
+          <button
+            onClick={() => navigate(-1)}
             className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-white active:scale-90 transition-transform"
           >
             <ArrowLeft size={20} />
-          </Link>
+          </button>
           <div className="flex flex-col items-center">
             <h1 className="text-xl font-black uppercase italic tracking-tighter">Agenda</h1>
           </div>
@@ -206,10 +204,7 @@ export default function CalendarPage() {
         <div className="flex bg-zinc-900 border border-white/5 rounded-xl p-1">
           <button
             type="button"
-            onClick={() => {
-              setViewMode("list");
-              setSelectedDate(null);
-            }}
+            onClick={() => { setViewMode("list"); setSelectedDate(null); }}
             className={clsx(
               "flex-1 h-9 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
               viewMode === "list" ? "bg-white text-black shadow-lg" : "text-white/40"
@@ -284,7 +279,7 @@ export default function CalendarPage() {
                             <p className={clsx("text-sm font-bold uppercase tracking-tight truncate", ev.completed && "line-through text-white/20")}>{ev.title}</p>
                           </div>
                         </div>
-                        <ChevronRight size={14} className="text-white/10" />
+                        <ChevronRightIcon size={14} className="text-white/10" />
                       </motion.button>
                     ))}
                   </div>
@@ -333,7 +328,7 @@ export default function CalendarPage() {
                     selectedEvents.map((ev) => (
                       <button key={ev.id} onClick={() => setActiveEvent(ev)} className="w-full text-left bg-zinc-900/40 border border-white/5 rounded-2xl p-4 flex items-center justify-between">
                         <p className="text-sm font-bold uppercase tracking-tight truncate">{ev.title}</p>
-                        <ChevronRight size={14} className="text-white/10" />
+                        <ChevronRightIcon size={14} className="text-white/10" />
                       </button>
                     ))
                   )}
@@ -344,7 +339,6 @@ export default function CalendarPage() {
         )}
       </div>
 
-      {/* Modal: Detalle de Evento */}
       <AnimatePresence>
         {activeEvent && (
           <>
@@ -368,7 +362,6 @@ export default function CalendarPage() {
         )}
       </AnimatePresence>
 
-      {/* Modal: Nueva Tarea */}
       <AnimatePresence>
         {isAddingTask && (
           <>
