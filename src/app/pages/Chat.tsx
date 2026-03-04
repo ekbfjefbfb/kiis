@@ -140,7 +140,7 @@ export default function ChatPage() {
         </button>
       </div>
 
-      {/* Messages */}
+      {/* Messages Area */}
       <div className="flex-1 px-6 space-y-8 overflow-y-auto scrollbar-hide pt-6 pb-40">
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center opacity-[0.02]">
@@ -181,74 +181,54 @@ export default function ChatPage() {
             )}
           </motion.div>
         ))}
-        {isTyping && !messages.find(m => m.role === 'ai' && m.content === '') && (
-          <div className="flex gap-1.5 p-1 opacity-40">
-            <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" />
-            <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:0.2s]" />
-            <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:0.4s]" />
-          </div>
-        )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Zone - Brutal y Compacta */}
+      {/* Input Zone - Lógica Estructurada */}
       <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-black via-black to-transparent z-20">
         <div className="max-w-2xl mx-auto">
-          <div className={clsx(
-            "bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex items-center gap-2 shadow-2xl transition-all duration-500",
-            isRecording && "bg-[#1a1a1a]"
-          )}>
+          <div className="bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex items-center gap-2 shadow-2xl">
             
-            {/* Input / Animación */}
-            <div className="flex-1 flex items-center gap-3 px-4 py-2 min-h-[44px]">
-              {!isRecording ? (
-                <textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  rows={1}
-                  placeholder="Pregunta cualquier cosa"
-                  className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2"
-                  onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = 'auto';
-                    target.style.height = `${target.scrollHeight}px`;
-                  }}
-                />
-              ) : (
-                <div className="flex-1 flex items-center gap-1 h-[44px]">
-                  {[...Array(12)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      animate={{ height: [4, Math.random() * 20 + 8, 4] }}
-                      transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.05 }}
-                      className="w-[3px] bg-white/40 rounded-full"
-                    />
-                  ))}
-                </div>
-              )}
+            {/* Input con Placeholder Lógico */}
+            <div className="flex-1 flex items-center px-4 py-2 min-h-[44px]">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                rows={1}
+                disabled={isRecording}
+                placeholder={isRecording ? "Escuchando..." : "Pregunta cualquier cosa"}
+                className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2 disabled:opacity-50"
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = 'auto';
+                  target.style.height = `${target.scrollHeight}px`;
+                }}
+              />
             </div>
 
-            {/* Mic / Hablar / Detener */}
+            {/* Botones con Funciones Máximas y Definidas */}
             <div className="flex items-center gap-2 pr-1">
+              {/* Botón Micrófono: Solo visible cuando NO se graba y el input está vacío */}
               {!isRecording && !input.trim() && (
                 <button 
                   onClick={toggleVoiceRecording}
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-white active:bg-white/10 transition-all"
+                  aria-label="Iniciar grabación de voz"
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-white active:bg-white/10 transition-all shrink-0"
                 >
                   <Mic size={20} />
                 </button>
               )}
               
+              {/* Botón Dinámico: Hablar / Detener / Enviar */}
               <motion.button
                 onClick={isRecording ? toggleVoiceRecording : isProcessing ? undefined : (input.trim() ? () => handleSend() : toggleVoiceRecording)}
                 whileTap={{ scale: 0.95 }}
+                aria-label={isRecording ? "Detener grabación" : input.trim() ? "Enviar mensaje" : "Hablar con IA"}
                 className={clsx(
-                  "h-11 flex items-center justify-center gap-2 px-5 rounded-full transition-all duration-300 font-bold",
+                  "h-11 flex items-center justify-center gap-2 px-5 rounded-full transition-all duration-300 font-bold shrink-0",
                   isRecording 
-                    ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
-                    : input.trim() 
-                      ? "bg-white text-black" 
-                      : "bg-[#0a0a0a] text-white border border-white/10"
+                    ? "bg-white text-black shadow-lg" 
+                    : "bg-[#0a0a0a] text-white border border-white/10 active:bg-white/5"
                 )}
               >
                 {isRecording ? (
@@ -259,18 +239,14 @@ export default function ChatPage() {
                 ) : isProcessing ? (
                   <Loader2 size={18} className="animate-spin" />
                 ) : input.trim() ? (
-                  <Send size={18} />
+                  <Send size={18} className="text-white" />
                 ) : (
                   <>
-                    <motion.div 
-                      animate={{ scale: [1, 1.2, 1] }} 
-                      transition={{ repeat: Infinity, duration: 2 }}
-                      className="flex gap-0.5 items-end h-3 mr-1"
-                    >
-                      <div className="w-[2px] h-2 bg-white rounded-full" />
+                    <div className="flex gap-0.5 items-end h-3 mr-1">
+                      <div className="w-[2px] h-2 bg-white/60 rounded-full" />
                       <div className="w-[2px] h-3 bg-white rounded-full" />
-                      <div className="w-[2px] h-2 bg-white rounded-full" />
-                    </motion.div>
+                      <div className="w-[2px] h-2 bg-white/60 rounded-full" />
+                    </div>
                     <span className="text-[13px] font-black uppercase italic tracking-tighter">Hablar</span>
                   </>
                 )}
