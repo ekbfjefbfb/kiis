@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  Mic, Square, Calendar, ChevronRight, Clock, Sparkles, Plus, X, Zap, Radio, FileText, BookOpen, Brain
+  Square, Calendar, ChevronRight, Plus, X, Zap, Radio, BookOpen, Brain, Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
@@ -21,6 +21,7 @@ export default function Dashboard() {
   const [isAddingClass, setIsAddingClass] = useState(false);
   const [newClassName, setNewClassName] = useState("");
   const [newClassProfessor, setNewClassProfessor] = useState("");
+  const [primaryMode, setPrimaryMode] = useState<"quick" | "live">("quick");
 
   const today = new Date().toLocaleDateString("es-ES", {
     weekday: "long", month: "long", day: "numeric",
@@ -109,74 +110,145 @@ export default function Dashboard() {
       </div>
 
       <div className="px-5 space-y-5 pt-4">
-        {/* Acciones de Valor - Escala Compacta */}
-        <div className="grid grid-cols-2 gap-3">
-          <motion.button
-            onClick={handleQuickRecord}
-            whileTap={{ scale: 0.96 }}
+        {/* 1) Selector simple (2 opciones) */}
+        <div className="bg-zinc-900/60 border border-white/5 rounded-2xl p-1 flex">
+          <button
+            type="button"
+            onClick={() => setPrimaryMode("quick")}
             className={clsx(
-              "rounded-[20px] p-4 text-left transition-all duration-500 relative overflow-hidden",
-              isRecording ? "bg-red-600 shadow-[0_0_20px_rgba(220,38,38,0.3)]" : "bg-zinc-900 border border-white/5"
+              "flex-1 h-10 rounded-xl text-[11px] font-black uppercase tracking-widest transition-colors",
+              primaryMode === "quick" ? "bg-white text-black" : "text-white/40"
             )}
           >
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center mb-2">
-              {isRecording ? <Square size={16} fill="currentColor" /> : <Zap size={16} className="text-emerald-400" />}
-            </div>
-            <p className="font-black text-sm uppercase italic leading-tight">Nota Rápida</p>
-            <p className="text-[8px] text-white/30 font-bold uppercase tracking-widest mt-0.5">
-              {isRecording ? formatTime(recordingTime) : "CAPTURAR IDEA"}
-            </p>
-          </motion.button>
-
-          <Link to="/live">
-            <motion.div whileTap={{ scale: 0.96 }} className="rounded-[20px] bg-zinc-900 border border-white/5 p-4 text-left h-full active:bg-zinc-800 transition-colors">
-              <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center mb-2">
-                <Radio size={16} className="text-purple-400" />
-              </div>
-              <p className="font-black text-sm uppercase italic leading-tight">Clase en Vivo</p>
-              <p className="text-[8px] text-white/30 font-bold uppercase tracking-widest mt-0.5">ANÁLISIS IA</p>
-            </motion.div>
-          </Link>
+            Nota rápida
+          </button>
+          <button
+            type="button"
+            onClick={() => setPrimaryMode("live")}
+            className={clsx(
+              "flex-1 h-10 rounded-xl text-[11px] font-black uppercase tracking-widest transition-colors",
+              primaryMode === "live" ? "bg-white text-black" : "text-white/40"
+            )}
+          >
+            Clase en vivo
+          </button>
         </div>
 
-        {/* IA Unificada - Foco del valor */}
-        <Link to="/chat">
-          <motion.div whileTap={{ scale: 0.98 }} className="bg-white text-black rounded-[20px] p-4 flex items-center justify-between group active:scale-95 transition-all">
+        {/* 2) CTA principal (solo UNO) */}
+        {primaryMode === "quick" ? (
+          <motion.button
+            type="button"
+            onClick={handleQuickRecord}
+            whileTap={{ scale: 0.99 }}
+            className={clsx(
+              "w-full rounded-3xl p-5 border transition-colors",
+              isRecording ? "bg-red-600 border-red-500/40" : "bg-zinc-900 border-white/5"
+            )}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className={clsx(
+                  "w-10 h-10 rounded-2xl flex items-center justify-center",
+                  isRecording ? "bg-white/15" : "bg-emerald-500/15"
+                )}>
+                  {isRecording ? (
+                    <Square size={18} fill="currentColor" />
+                  ) : (
+                    <Zap size={18} className="text-emerald-400" />
+                  )}
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-black uppercase italic leading-none">Capturar idea</p>
+                  <p className="text-[11px] text-white/40 font-bold uppercase tracking-widest mt-1">
+                    {isRecording ? `Grabando ${formatTime(recordingTime)}` : "1 toque: graba y se guarda"}
+                  </p>
+                </div>
+              </div>
+
+              <div className={clsx(
+                "text-[11px] font-black uppercase tracking-widest",
+                isRecording ? "text-white" : "text-white/60"
+              )}>
+                {isRecording ? "Detener" : "Grabar"}
+              </div>
+            </div>
+          </motion.button>
+        ) : (
+          <Link to="/live" className="block">
+            <motion.div
+              whileTap={{ scale: 0.99 }}
+              className="w-full rounded-3xl p-5 bg-zinc-900 border border-white/5"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-purple-500/15 flex items-center justify-center">
+                    <Radio size={18} className="text-purple-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-black uppercase italic leading-none">Grabar clase</p>
+                    <p className="text-[11px] text-white/40 font-bold uppercase tracking-widest mt-1">
+                      Resume + puntos clave + agenda
+                    </p>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="text-white/20" />
+              </div>
+            </motion.div>
+          </Link>
+        )}
+
+        {/* 3) CTA secundaria pequeña (IA) */}
+        <Link to="/chat" className="block">
+          <motion.div
+            whileTap={{ scale: 0.99 }}
+            className="bg-white text-black rounded-2xl px-4 py-3 flex items-center justify-between"
+          >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-black/5 flex items-center justify-center">
-                <Brain size={18} />
+              <div className="w-9 h-9 rounded-xl bg-black/5 flex items-center justify-center">
+                <Brain size={16} />
               </div>
               <div>
-                <p className="font-black text-base uppercase italic leading-none">Asistente IA</p>
-                <p className="text-[8px] text-black/40 font-bold uppercase tracking-widest mt-1">CHAT & VOZ UNIFICADO</p>
+                <p className="text-[12px] font-black uppercase tracking-tight">Asistente IA</p>
+                <p className="text-[9px] text-black/40 font-bold uppercase tracking-widest mt-0.5">Habla o escribe</p>
               </div>
             </div>
             <ChevronRight size={14} className="text-black/20" />
           </motion.div>
         </Link>
 
-        {/* Listado de Materias - Compacto */}
+        {/* Materias (si está vacío: 1 CTA claro) */}
         <section className="pt-2">
           <div className="flex justify-between items-center mb-3 px-1">
             <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/20">Mis Materias</h3>
             <button onClick={() => setIsAddingClass(true)} className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-white/30 active:scale-90 transition-transform"><Plus size={14} /></button>
           </div>
-          <div className="space-y-2">
-            {CLASSES.map((cls) => (
-              <Link key={cls.id} to={`/class/${cls.id}`}>
-                <motion.div whileTap={{ scale: 0.98 }} className="bg-zinc-900/40 rounded-xl p-3 flex items-center gap-3 border border-white/5 active:bg-zinc-800 transition-all">
-                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                    <BookOpen size={14} className="text-white/40" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-[13px] uppercase tracking-tight truncate leading-none mb-1">{cls.name}</p>
-                    <p className="text-[9px] text-white/20 font-bold uppercase truncate">{cls.professor}</p>
-                  </div>
-                  <ChevronRight size={10} className="text-white/10" />
-                </motion.div>
-              </Link>
-            ))}
-          </div>
+          {CLASSES.length === 0 ? (
+            <button
+              type="button"
+              onClick={() => setIsAddingClass(true)}
+              className="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-left"
+            >
+              <p className="text-sm font-black uppercase italic">Crea tu primera materia</p>
+              <p className="text-[11px] text-white/40 font-bold uppercase tracking-widest mt-1">Toca para empezar</p>
+            </button>
+          ) : (
+            <div className="space-y-2">
+              {CLASSES.map((cls) => (
+                <Link key={cls.id} to={`/class/${cls.id}`}>
+                  <motion.div whileTap={{ scale: 0.99 }} className="bg-zinc-900/40 rounded-xl p-3 flex items-center gap-3 border border-white/5 active:bg-zinc-800 transition-all">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                      <BookOpen size={14} className="text-white/40" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-[13px] uppercase tracking-tight truncate leading-none mb-1">{cls.name}</p>
+                      <p className="text-[9px] text-white/20 font-bold uppercase truncate">{cls.professor}</p>
+                    </div>
+                    <ChevronRight size={10} className="text-white/10" />
+                  </motion.div>
+                </Link>
+              ))}
+            </div>
+          )}
         </section>
       </div>
 
