@@ -1,28 +1,8 @@
 /* 
-  KIIS - ATOMIC ENGINEERING VISUAL ENGINE 
-  Absolute hierarchy, mobile-first centering, and brutalist minimalism.
+   KIIS - ADAPTIVE MINIMALISM ENGINE 
+   Responsive for all devices (iPhone/Android).
 */
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-:root {
-  --black: #000000;
-  --white: #ffffff;
-  --zinc-950: #09090b;
-  --zinc-900: #18181b;
-  --zinc-800: #27272a;
-  --zinc-700: #3f3f46;
-  --zinc-600: #52525b;
-  --zinc-500: #71717a;
-  --zinc-400: #a1a1aa;
-}
-
-/* Fundamental Engine - Radical Minimalism */
 html, body {
   background-color: #000000 !important;
   color: #ffffff !important;
@@ -30,56 +10,111 @@ html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  /* Crucial for mobile viewport adaptation */
+  height: 100dvh;
+  width: 100vw;
 }
 
 #root {
   width: 100%;
   margin: 0 auto;
-  max-width: 420px;
-  min-height: 100dvh;
-  background-color: #000000 !important;
+  max-width: 420px; /* Standard mobile width constraint */
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
-/* Atomic Text Hierarchy */
-h1 { font-size: 1.15rem; font-weight: 900; letter-spacing: -0.02em; color: #ffffff; }
-h2 { font-size: 0.9rem; font-weight: 800; letter-spacing: -0.01em; color: #ffffff; }
-h3 { font-size: 0.8rem; font-weight: 700; color: #e4e4e7; }
-p { font-size: 0.75rem; line-height: 1.4; color: #71717a; }
+/* Typography - Natural & Clear */
+h1 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1rem; font-weight: 700; color: #a1a1aa; }
+h3 { font-size: 0.9rem; font-weight: 600; color: #ffffff; }
+p { font-size: 0.85rem; line-height: 1.5; color: #71717a; }
 
-/* Subtle Technical Elements */
-.btn-massive, .btn-primary {
+/* Ultra Rounded Button System */
+.btn-main-action {
   width: 100%;
   background-color: #ffffff;
   color: #000000;
-  padding: 0.7rem;
-  border-radius: 0.5rem;
-  font-weight: 800;
-  font-size: 0.75rem;
-  text-transform: uppercase;
+  padding: 1.1rem;
+  border-radius: 9999px; /* Absolute rounding */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-weight: 900;
+  font-size: 0.95rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
   border: none;
-  transition: opacity 0.2s;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.btn-massive:active, .btn-primary:active {
-  opacity: 0.8;
+.btn-main-action:active {
+  transform: scale(0.95);
+  background-color: #f4f4f5;
 }
 
-input {
-  background-color: #09090b !important;
-  border: 1px solid #18181b !important;
-  border-radius: 0.5rem !important;
-  padding: 0.6rem 0.75rem !important;
-  color: #ffffff !important;
-  font-size: 0.8rem !important;
+.btn-sub-action {
   width: 100%;
+  background-color: #0a0a0a;
+  color: #a1a1aa;
+  padding: 0.8rem;
+  border-radius: 9999px; /* Absolute rounding */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 1px solid #1c1c1e;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-sub-action:active {
+  background-color: #1c1c1e;
+  color: #ffffff;
+}
+
+/* Value Focused Layouts */
+.border-value {
+  border-left: 2px solid #1c1c1e;
+  padding-left: 1.25rem;
+  transition: border-color 0.2s;
+}
+
+.border-value:active {
+  border-left-color: #ffffff;
+}
+
+/* Zero Noise Inputs */
+input {
+  background-color: #000000 !important;
+  border: 1px solid #1c1c1e !important;
+  border-radius: 9999px !important; /* Rounded inputs */
+  padding: 0.9rem 1.5rem !important;
+  color: #ffffff !important;
+  font-size: 0.95rem !important;
+  width: 100%;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 input:focus {
-  border-color: #27272a !important;
-  outline: none !important;
+  border-color: #ffffff !important;
 }
 
-/* Scrollbar reset */
+/* Utility for mobile space usage */
+.mobile-safe-area {
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+  padding-top: env(safe-area-inset-top, 10px);
+}
+
 ::-webkit-scrollbar {
   display: none;
 }

@@ -32,7 +32,7 @@ export default function ProfilePage() {
             <User size={40} className="text-zinc-400" strokeWidth={1.5} />
           </div>
           <div className="text-center">
-            <h2 className="text-xl font-bold text-white uppercase tracking-tight">ALBERTO_DEV</h2>
+            <h2 className="text-xl font-bold text-white tracking-tight">Tu Perfil</h2>
             <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-widest mt-1">Estudiante</p>
           </div>
         </div>
@@ -50,8 +50,8 @@ export default function ProfilePage() {
                   <Download size={18} className="text-zinc-400" />
                 </div>
                 <div className="text-left">
-                  <h3 className="text-sm font-bold text-zinc-200">Descargar App</h3>
-                  <p className="text-[9px] font-medium text-zinc-500 uppercase tracking-widest">Instalación rápida</p>
+                  <h3 className="text-sm font-bold text-zinc-200">Instalar App</h3>
+                  <p className="text-[9px] font-medium text-zinc-500 uppercase tracking-widest">Acceso directo</p>
                 </div>
               </div>
               <ChevronRight size={16} className="text-zinc-700" />
@@ -64,9 +64,9 @@ export default function ProfilePage() {
             
             <div className="space-y-2">
               {[
-                { icon: <Mail size={16} />, label: "Email", value: "alberto@kiis.dev" },
-                { icon: <Shield size={16} />, label: "Privacidad", value: "Protegida" },
-                { icon: <Bell size={16} />, label: "Avisos", value: "Activos" }
+                { icon: <Mail size={16} />, label: "Email", value: "Verificado" },
+                { icon: <Shield size={16} />, label: "Cuenta", value: "Activa" },
+                { icon: <Bell size={16} />, label: "Notificaciones", value: "Activas" }
               ].map((item, i) => (
                 <button
                   key={i}

@@ -11,9 +11,9 @@ export default function NotesPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const notes = [
-    { id: 1, date: "02 MAR", title: "TEOREMA_DE_BAYES_", subject: "MATEMÁTICAS", summary: "Análisis de probabilidades condicionales..." },
-    { id: 2, date: "28 FEB", title: "REVOLUCIÓN_INDUSTRIAL_", subject: "HISTORIA", summary: "Impacto socioeconómico en Europa..." },
-    { id: 3, date: "25 FEB", title: "LEYES_DE_NEWTON_", subject: "FÍSICA", summary: "Principios de dinámica y estática..." }
+    { id: 1, date: "02 MAR", title: "Teorema de Bayes", subject: "MATEMÁTICAS", summary: "Análisis de probabilidades condicionales..." },
+    { id: 2, date: "28 FEB", title: "Revolución Industrial", subject: "HISTORIA", summary: "Impacto socioeconómico en Europa..." },
+    { id: 3, date: "25 FEB", title: "Leyes de Newton", subject: "FÍSICA", summary: "Principios de dinámica y estática..." }
   ];
 
   return (
@@ -78,10 +78,10 @@ export default function NotesPage() {
           </div>
         </section>
 
-        {/* Terminal Sync Indicator */}
+        {/* Sync Indicator */}
         <div className="py-10 flex flex-col items-center opacity-10">
           <Sparkles size={32} />
-          <p className="text-[10px] font-bold uppercase tracking-[0.5em] mt-4">Cloud_Archive_Ready_</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest mt-4">Sincronizado</p>
         </div>
       </main>
     </div>

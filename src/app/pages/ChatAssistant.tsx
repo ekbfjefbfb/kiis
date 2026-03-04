@@ -1,16 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { 
-  ArrowLeft, Mic, Send, StopCircle, Loader2, 
-  Sparkles, Brain, Volume2
-} from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { ArrowLeft, Mic, ArrowRight } from "lucide-react";
 import { aiService } from "../../services/ai.service";
 import { audioService } from "../../services/audio.service";
 
 interface Message {
   id: string;
-  role: 'user' | 'assistant' | 'ai' | 'system';
+  role: 'user' | 'assistant';
   content: string;
 }
 
@@ -20,7 +16,6 @@ export default function ChatAssistant() {
   const [input, setInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,14 +24,13 @@ export default function ChatAssistant() {
     }
   }, [messages]);
 
-  const handleSend = async (text?: string) => {
-    const messageContent = text || input;
-    if (!messageContent.trim() || isProcessing) return;
+  const handleSend = async () => {
+    if (!input.trim() || isProcessing) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: messageContent
+      content: input
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -48,7 +42,7 @@ export default function ChatAssistant() {
       const assistantMessageId = (Date.now() + 1).toString();
       setMessages(prev => [...prev, { id: assistantMessageId, role: 'assistant', content: "" }]);
 
-      await aiService.chat(messageContent, messages.map(m => ({ 
+      await aiService.chat(input, messages.map(m => ({ 
         role: m.role === 'assistant' ? 'ai' : m.role as any, 
         content: m.content 
       })), (token) => {
@@ -62,121 +56,102 @@ export default function ChatAssistant() {
     }
   };
 
-  const startVoice = async () => {
-    const ok = await audioService.requestPermissions();
-    if (!ok) return;
-    try {
-      await audioService.startAudioRecording();
-      setIsRecording(true);
-    } catch (e) { console.error(e); }
-  };
-
-  const stopVoice = async () => {
-    setIsRecording(false);
-    setIsProcessing(true);
-    try {
-      const audioBlob = await audioService.stopAudioRecording();
-      const response = await aiService.chatVoice(audioBlob);
-      
-      setMessages(prev => [
-        ...prev, 
-        { id: Date.now().toString(), role: 'user', content: response.transcribed },
-        { id: (Date.now() + 1).toString(), role: 'assistant', content: response.response }
-      ]);
-
-      if (response.audio) {
-        setIsSpeaking(true);
-        const audio = new Audio(`data:audio/mp3;base64,${response.audio}`);
-        audio.onended = () => setIsSpeaking(false);
-        audio.play();
+  const toggleVoice = async () => {
+    if (isRecording) {
+      setIsRecording(false);
+      setIsProcessing(true);
+      try {
+        const audioBlob = await audioService.stopAudioRecording();
+        const response = await aiService.chatVoice(audioBlob);
+        setMessages(prev => [
+          ...prev, 
+          { id: Date.now().toString(), role: 'user', content: response.transcribed },
+          { id: (Date.now() + 1).toString(), role: 'assistant', content: response.response }
+        ]);
+        if (response.audio) {
+          const audio = new Audio(`data:audio/mp3;base64,${response.audio}`);
+          audio.play();
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsProcessing(false);
       }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsProcessing(false);
+    } else {
+      const ok = await audioService.requestPermissions();
+      if (!ok) return;
+      try {
+        await audioService.startAudioRecording();
+        setIsRecording(true);
+      } catch (e) { console.error(e); }
     }
   };
 
   return (
-    <div className="h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center overflow-hidden">
-      <header className="w-full max-w-2xl px-5 pt-8 pb-4 flex justify-between items-center sticky top-0 bg-black z-30 shrink-0 border-b border-zinc-900">
-        <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
-          <ArrowLeft size={16} className="text-zinc-400" />
+    <div className="h-[100dvh] bg-black text-white flex flex-col">
+      {/* Header - solo flecha */}
+      <header className="px-5 pt-12 pb-4 flex items-center">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="w-10 h-10 flex items-center justify-center active:opacity-50 transition-opacity"
+        >
+          <ArrowLeft size={22} className="text-white" />
         </button>
-        <h1 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Asistente</h1>
-        <div className="w-9 flex justify-end">
-          {isSpeaking && <Volume2 size={16} className="text-white animate-pulse" />}
-        </div>
       </header>
 
-      <main ref={scrollRef} className="w-full max-w-2xl flex-1 overflow-y-auto px-5 py-6 space-y-6 scrollbar-hide">
-        {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-center space-y-6 opacity-20 py-10">
-            <Sparkles size={48} strokeWidth={1.5} className="text-zinc-500" />
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Listo para consultas</p>
+      {/* Mensajes */}
+      <main ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-6">
+        {messages.map((m) => (
+          <div 
+            key={m.id}
+            className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div className={m.role === 'user' 
+              ? 'bg-zinc-800 text-white px-4 py-3 rounded-2xl text-base max-w-[80%]' 
+              : 'text-white text-base leading-relaxed max-w-[90%]'
+            }>
+              {m.content}
             </div>
           </div>
-        )}
-        
-        <div className="space-y-6">
-          {messages.map((m) => (
-            <div 
-              key={m.id}
-              className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div className={`max-w-[85%] p-4 rounded-2xl shadow-sm relative ${
-                m.role === 'user' 
-                  ? 'bg-zinc-800 text-zinc-100' 
-                  : 'bg-zinc-900/50 border border-zinc-800/50 text-zinc-300'
-              }`}>
-                <p className="text-sm leading-relaxed">{m.content}</p>
-                <span className={`absolute -bottom-5 text-[8px] font-bold uppercase tracking-widest text-zinc-700 ${m.role === 'user' ? 'right-1' : 'left-1'}`}>
-                  {m.role === 'user' ? 'Usuario' : 'IA'}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+        ))}
         
         {isProcessing && (
-          <div className="flex justify-start">
-            <div className="bg-zinc-900/50 border border-zinc-800/50 p-4 rounded-2xl flex items-center gap-3">
-              <Loader2 size={14} className="animate-spin text-zinc-500" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">Procesando</span>
-            </div>
+          <div className="flex justify-start items-center gap-1.5 px-1 py-2">
+            <div className="w-1.5 h-1.5 bg-zinc-600 rounded-full animate-bounce [animation-delay:-0.3s]" />
+            <div className="w-1.5 h-1.5 bg-zinc-600 rounded-full animate-bounce [animation-delay:-0.15s]" />
+            <div className="w-1.5 h-1.5 bg-zinc-600 rounded-full animate-bounce" />
           </div>
         )}
       </main>
 
-      <footer className="w-full max-w-2xl p-5 bg-black border-t border-zinc-900 pb-8">
-        <div className="flex items-center gap-3">
-          <div className="flex-1 relative">
-            <input 
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Escribe un mensaje..."
-              className="w-full bg-zinc-900 border border-zinc-800/50 rounded-xl pl-5 pr-12 py-3.5 text-sm font-medium focus:outline-none focus:border-zinc-700 transition-all text-white placeholder:text-zinc-700"
-            />
-            <button 
-              onClick={() => handleSend()}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center active:scale-95 transition-all"
-            >
-              <Send size={14} className="text-zinc-400" />
-            </button>
-          </div>
+      {/* Footer - input limpio */}
+      <footer className="px-5 pb-8 pt-4">
+        <div className="flex items-center gap-3 bg-zinc-900 rounded-full px-4 py-3">
+          <input 
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            placeholder="Pregunta algo..."
+            className="flex-1 bg-transparent border-none text-white text-base placeholder:text-zinc-600 outline-none"
+          />
           
-          <button 
-            onClick={isRecording ? stopVoice : startVoice}
-            className={`w-12 h-12 rounded-xl flex items-center justify-center border transition-all active:scale-95 ${
-              isRecording 
-                ? 'bg-red-500/10 border-red-500/50 text-red-500 animate-pulse' 
-                : 'bg-zinc-900 border-zinc-800 text-zinc-400'
-            }`}
-          >
-            {isRecording ? <StopCircle size={20} /> : <Mic size={20} />}
-          </button>
+          {input.trim() ? (
+            <button 
+              onClick={handleSend}
+              className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center active:scale-90 transition-transform"
+            >
+              <ArrowRight size={18} />
+            </button>
+          ) : (
+            <button 
+              onClick={toggleVoice}
+              className={`w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-all ${
+                isRecording ? "bg-red-500 text-white" : "bg-white text-black"
+              }`}
+            >
+              <Mic size={18} />
+            </button>
+          )}
         </div>
       </footer>
     </div>

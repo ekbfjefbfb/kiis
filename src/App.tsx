@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router";
 import Dashboard from "./app/pages/Dashboard";
 import ClassDetail from "./app/pages/ClassDetail";
 import LiveRecording from "./app/pages/LiveRecording";
+import LiveRecordingNew from "./app/pages/LiveRecordingNew";
 import ChatAssistant from "./app/pages/ChatAssistant";
 import LoginPage from "./app/pages/LoginPage";
 import RegisterPage from "./app/pages/RegisterPage";
@@ -31,7 +32,7 @@ export default function App() {
         />
         <Route 
           path="/live" 
-          element={isAuthenticated ? <LiveRecording /> : <Navigate to="/login" />} 
+          element={isAuthenticated ? <LiveRecordingNew /> : <Navigate to="/login" />} 
         />
         <Route 
           path="/chat" 

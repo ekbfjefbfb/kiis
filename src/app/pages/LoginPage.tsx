@@ -1,69 +1,83 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { authService } from "../../services/auth.service";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     setLoading(true);
-    setTimeout(() => {
+    
+    try {
+      const success = await authService.login(email, password);
+      if (success) {
+        navigate("/dashboard");
+      } else {
+        setError("Correo o contraseña incorrectos");
+      }
+    } catch (err: any) {
+      setError(err.message || "Error al iniciar sesión");
+    } finally {
       setLoading(false);
-      navigate("/dashboard");
-    }, 1200);
+    }
   };
 
   return (
-    <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center justify-center py-10">
-      <main className="mobile-container flex-1 justify-center space-y-12">
-        {/* Branding Radical Minimal */}
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded flex items-center justify-center">
-            <span className="text-white text-lg font-black tracking-tighter">K</span>
-          </div>
-          <h1 className="text-sm font-bold text-zinc-500 uppercase tracking-[0.3em]">Acceso</h1>
+    <div className="min-h-[100dvh] bg-black text-white flex flex-col px-6 pt-24 pb-8">
+      {/* Logo centrado */}
+      <div className="flex justify-center mb-20">
+        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center">
+          <span className="text-black text-2xl font-bold">K</span>
         </div>
+      </div>
 
-        {/* Formulario Terminal Puro */}
-        <form onSubmit={handleSubmit} className="w-full space-y-3">
-          <div className="space-y-2 mb-6">
-            <input
-              type="email"
-              placeholder="USUARIO"
-              className="w-full bg-black border border-zinc-900 rounded py-2.5 px-4 text-white placeholder:text-zinc-800 focus:outline-none focus:border-zinc-700 transition-all font-bold text-[10px] tracking-[0.2em]"
-              required
-            />
-            <input
-              type="password"
-              placeholder="PASSWORD"
-              className="w-full bg-black border border-zinc-900 rounded py-2.5 px-4 text-white placeholder:text-zinc-800 focus:outline-none focus:border-zinc-700 transition-all font-bold text-[10px] tracking-[0.2em]"
-              required
-            />
-          </div>
-
-          <button 
-            disabled={loading}
-            type="submit"
-            className="w-full bg-zinc-900 border border-zinc-800 text-zinc-400 py-3 rounded flex items-center justify-center gap-2 active:scale-[0.99] transition-all font-bold text-[10px] uppercase tracking-[0.2em]"
-          >
-            {loading ? <Loader2 className="animate-spin" size={14} /> : (
-              <>
-                <span>Entrar</span>
-                <ArrowRight size={14} />
-              </>
-            )}
-          </button>
-        </form>
+      {/* Formulario */}
+      <form onSubmit={handleLogin} className="flex-1 space-y-4">
+        {error && (
+          <p className="text-red-400 text-base text-center">{error}</p>
+        )}
+        
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Correo"
+          className="w-full h-16 bg-zinc-900 rounded-2xl px-5 text-white text-lg placeholder:text-zinc-600 border-none outline-none"
+          required
+        />
+        
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Contraseña"
+          className="w-full h-16 bg-zinc-900 rounded-2xl px-5 text-white text-lg placeholder:text-zinc-600 border-none outline-none"
+          required
+        />
 
         <button 
-          onClick={() => navigate("/register")}
-          className="w-full text-center py-2 text-[10px] font-bold text-zinc-700 active:text-white transition-colors uppercase tracking-widest"
+          disabled={loading}
+          type="submit"
+          className="w-full h-16 bg-white text-black rounded-2xl font-semibold text-lg mt-8 active:scale-95 transition-transform disabled:opacity-50"
         >
-          Nueva cuenta
+          {loading ? <Loader2 className="animate-spin mx-auto" size={22} /> : "Entrar"}
         </button>
-      </main>
+      </form>
+
+      {/* Crear cuenta */}
+      <button 
+        onClick={() => navigate("/register")}
+        className="text-zinc-500 text-lg mt-6 active:text-white transition-colors"
+      >
+        Crear cuenta
+      </button>
     </div>
   );
 }

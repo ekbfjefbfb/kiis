@@ -211,12 +211,18 @@ export const chatWebSocket = new ChatWebSocketService();
 export const aiService = {
   /**
    * Procesa audio usando Groq Whisper Large V3 Turbo para transcripción real.
-   * @param audioBlob - El blob de audio capturado por MediaRecorder
-   * @returns El texto transcrito por Whisper
    */
   async processAudio(audioBlob: Blob): Promise<{ text: string }> {
     const text = await groqService.transcribe(audioBlob, 'es');
     return { text };
+  },
+
+  /**
+   * Solo transcribir audio a texto (SST)
+   */
+  async transcribe(audioBlob: Blob): Promise<string> {
+    const { text } = await this.processAudio(audioBlob);
+    return text;
   },
 
   async summarizeNotes(text: string, onToken?: (token: string) => void): Promise<string> {
