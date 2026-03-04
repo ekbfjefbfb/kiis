@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Plus, X } from "lucide-react";
+import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Plus, Paperclip, Copy, Share2, ThumbsUp, ThumbsDown, Square, Edit3, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate } from "react-router";
@@ -26,7 +26,6 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pendingResponseRef = useRef<string | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
-  const [isVoiceMode, setIsVoiceMode] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -43,9 +42,7 @@ export default function ChatPage() {
           pendingResponseRef.current = null;
           setIsTyping(false);
           if (autoSpeak && cleanedText) {
-            audioService.speak(cleanedText, () => {
-              // En modo voz pura, podríamos auto-activar el micro aquí si quisiéramos manos libres total
-            });
+            audioService.speak(cleanedText, () => {});
           }
         }
       },
@@ -131,41 +128,28 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden selection:bg-white/20">
-      {/* Header Compacto */}
-      <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-20">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
-            <ArrowLeft size={18} />
+    <div className="h-[100dvh] bg-[#0a0a0a] text-white font-sans flex flex-col overflow-hidden selection:bg-white/10">
+      {/* Top Navigation Bar - Ultra Slim */}
+      <div className="px-4 pt-10 pb-2 flex justify-between items-center bg-[#0a0a0a]/80 backdrop-blur-xl shrink-0 z-20">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate(-1)} className="p-2 text-white/60 hover:text-white active:scale-90 transition-all">
+            <Menu size={20} />
           </button>
-          <div className="flex flex-col">
-            <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">IA Unificada</h1>
+          <div className="flex gap-6 items-center">
+            <button className="text-sm font-black uppercase tracking-widest border-b-2 border-white pb-1">Pregunta</button>
+            <button className="text-sm font-bold text-white/30 uppercase tracking-widest pb-1">Imagine</button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={() => setIsVoiceMode(!isVoiceMode)} 
-            className={clsx(
-              "px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest transition-all",
-              isVoiceMode ? "bg-white text-black border-white" : "bg-zinc-900 text-white/40 border-white/10"
-            )}
-          >
-            {isVoiceMode ? "SOLO VOZ" : "VOZ + TEXTO"}
-          </button>
-          <button onClick={() => setIsAddingClass(true)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
-            <Plus size={18} />
-          </button>
-        </div>
+        <button onClick={() => setMessages([])} className="p-2 text-white/60 hover:text-white active:scale-90 transition-all">
+          <Edit3 size={20} />
+        </button>
       </div>
 
-      {/* Messages - Ultra Compacto */}
-      <div className={clsx(
-        "flex-1 px-4 space-y-6 overflow-y-auto scrollbar-hide pt-6 transition-all duration-500",
-        isVoiceMode ? "opacity-10 blur-xl pointer-events-none" : "opacity-100"
-      )}>
+      {/* Chat History Area */}
+      <div className="flex-1 px-6 space-y-8 overflow-y-auto scrollbar-hide pt-6 pb-40">
         {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center opacity-5">
-            <Sparkles size={80} strokeWidth={1} />
+          <div className="h-full flex flex-col items-center justify-center opacity-[0.03]">
+            <Sparkles size={120} strokeWidth={0.5} />
           </div>
         )}
         
@@ -176,114 +160,97 @@ export default function ChatPage() {
             animate={{ opacity: 1, y: 0 }}
             className={clsx("flex flex-col", msg.role === "user" ? "items-end" : "items-start")}
           >
-            <div className={clsx(
-              "max-w-[85%] p-4 rounded-[24px] text-[15px] font-medium leading-snug shadow-2xl transition-all",
-              msg.role === "user" 
-                ? "bg-zinc-800 text-white rounded-tr-sm border border-white/5" 
-                : "bg-white text-black rounded-tl-sm"
-            )}>
-              {msg.content || "..."}
-            </div>
-            <span className="text-[8px] font-black text-white/20 uppercase tracking-widest mt-2 px-2">
-              {msg.role === "user" ? "Tú" : "IA"}
-            </span>
+            {msg.role === "user" ? (
+              <div className="bg-[#1a1a1a] text-white/90 px-5 py-3 rounded-[24px] text-[15px] font-medium max-w-[85%] shadow-sm">
+                {msg.content}
+              </div>
+            ) : (
+              <div className="space-y-4 max-w-full">
+                <div className="text-[16px] leading-relaxed text-white/90 font-medium">
+                  {msg.content || (
+                    <div className="flex gap-1.5 p-1">
+                      <div className="w-1.5 h-1.5 bg-white/20 rounded-full animate-bounce" />
+                      <div className="w-1.5 h-1.5 bg-white/20 rounded-full animate-bounce [animation-delay:0.2s]" />
+                      <div className="w-1.5 h-1.5 bg-white/20 rounded-full animate-bounce [animation-delay:0.4s]" />
+                    </div>
+                  )}
+                </div>
+                {msg.content && (
+                  <div className="flex items-center gap-4 text-white/30">
+                    <button className="hover:text-white transition-colors"><Copy size={16} /></button>
+                    <button className="hover:text-white transition-colors"><Share2 size={16} /></button>
+                    <button className="hover:text-white transition-colors"><ThumbsUp size={16} /></button>
+                    <button className="hover:text-white transition-colors"><ThumbsDown size={16} /></button>
+                  </div>
+                )}
+              </div>
+            )}
           </motion.div>
         ))}
-        {isTyping && (
-          <div className="flex gap-1.5 p-3 bg-zinc-900/50 w-fit rounded-full border border-white/5">
-            <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" />
-            <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.2s]" />
-            <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.4s]" />
-          </div>
+        {isTyping && !messages.find(m => m.role === 'ai' && m.content === '') && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-1.5 p-1">
+            <div className="w-1.5 h-1.5 bg-white/20 rounded-full animate-bounce" />
+            <div className="w-1.5 h-1.5 bg-white/20 rounded-full animate-bounce [animation-delay:0.2s]" />
+            <div className="w-1.5 h-1.5 bg-white/20 rounded-full animate-bounce [animation-delay:0.4s]" />
+          </motion.div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Modo Voz Pura Overlay */}
-      <AnimatePresence>
-        {isVoiceMode && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 backdrop-blur-3xl"
-          >
-            <div className="relative flex items-center justify-center">
-              <motion.div 
-                animate={isRecording ? { scale: [1, 1.5, 1], opacity: [0.1, 0.4, 0.1] } : {}}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="absolute w-64 h-64 bg-white rounded-full blur-[80px]"
-              />
-              <Sparkles size={120} strokeWidth={0.5} className={clsx("transition-all duration-1000", isRecording ? "text-white scale-125" : "text-white/10")} />
-            </div>
-            <div className="mt-16 text-center">
-              <p className="text-lg font-black uppercase italic tracking-[0.5em] text-white/60">
-                {isRecording ? "TE ESCUCHO" : isProcessing ? "PROCESANDO" : "MODO VOZ"}
-              </p>
-              <div className="flex gap-1 justify-center mt-6 h-4">
-                {[...Array(5)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    animate={isRecording ? { height: [4, 16, 4] } : { height: 4 }}
-                    transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }}
-                    className="w-1 bg-white/30 rounded-full"
-                  />
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Brutal Input Bar Area */}
+      <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent z-20">
+        <div className="max-w-2xl mx-auto space-y-4">
+          
+          {/* Quick Action Buttons - Slim Style */}
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-1">
+            <button className="w-12 h-12 bg-[#1a1a1a] rounded-full flex items-center justify-center text-white/60 shrink-0"><Plus size={20} /></button>
+            <button className="w-12 h-12 bg-[#1a1a1a] rounded-full flex items-center justify-center text-white/60 shrink-0"><Volume2 size={20} /></button>
+            <button className="w-12 h-12 bg-[#1a1a1a] rounded-full flex items-center justify-center text-white/60 shrink-0"><Mic size={20} /></button>
+            <button onClick={() => setIsAddingClass(true)} className="w-12 h-12 bg-[#1a1a1a] rounded-full flex items-center justify-center text-white/60 shrink-0"><BookOpen size={20} /></button>
+          </div>
 
-      {/* Input Zone - Eficiencia Máxima */}
-      <div className="shrink-0 p-6 bg-gradient-to-t from-black via-black to-transparent pb-12 z-20">
-        <div className="max-w-md mx-auto flex gap-4 items-center">
-          <motion.button
-            onClick={toggleVoiceRecording}
-            whileTap={{ scale: 0.85 }}
-            className={clsx(
-              "w-20 h-20 rounded-[32px] flex items-center justify-center transition-all duration-500 shrink-0 shadow-2xl",
-              isRecording ? "bg-red-600 shadow-[0_0_40px_rgba(220,38,38,0.5)]" : "bg-white text-black"
-            )}
-          >
-            {isRecording ? <StopCircle size={32} fill="white" /> : <Mic size={32} />}
-          </motion.button>
-
-          {!isVoiceMode && (
-            <div className="flex-1 relative flex items-center group">
+          {/* Combined Input + Stop/Record Button */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 bg-[#1a1a1a] border border-white/[0.03] rounded-[32px] px-5 py-4 flex items-center gap-3">
+              <Paperclip size={20} className="text-white/30" />
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 rows={1}
-                placeholder="Hablemos?"
-                className="w-full bg-zinc-900/80 border border-white/10 rounded-[24px] px-6 py-5 text-[16px] font-medium focus:outline-none focus:ring-1 focus:ring-white/20 resize-none overflow-hidden min-h-[64px] max-h-[140px] placeholder:text-white/10 text-white transition-all shadow-xl"
+                placeholder="Pregunta lo que quieras_"
+                className="flex-1 bg-transparent border-none focus:outline-none text-[15px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px]"
                 onInput={(e) => {
                   const target = e.target as HTMLTextAreaElement;
                   target.style.height = 'auto';
                   target.style.height = `${target.scrollHeight}px`;
                 }}
               />
-              <AnimatePresence>
-                {input.trim() && (
-                  <motion.button
-                    initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
-                    onClick={() => handleSend()}
-                    className="absolute right-3 bottom-3 w-11 h-11 bg-white text-black rounded-2xl flex items-center justify-center active:scale-90 transition-transform shadow-lg"
-                  >
-                    <Send size={20} />
-                  </motion.button>
-                )}
-              </AnimatePresence>
             </div>
-          )}
-          
-          {isVoiceMode && (
-             <div className="flex-1 flex flex-col justify-center py-2">
-                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-2 italic">HABLA AHORA</p>
-                <div className="flex items-center gap-3 mt-2 ml-2">
-                   <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
-                   <p className="text-sm font-bold text-white/60 uppercase tracking-tighter italic">SST + TTS Activo</p>
-                </div>
-             </div>
-          )}
+
+            <motion.button
+              onClick={isRecording ? toggleVoiceRecording : isProcessing ? undefined : () => handleSend()}
+              whileTap={{ scale: 0.92 }}
+              className={clsx(
+                "h-14 min-w-[100px] px-6 rounded-[28px] flex items-center justify-center gap-3 transition-all duration-500 shadow-2xl",
+                isRecording 
+                  ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
+                  : input.trim() 
+                    ? "bg-white text-black" 
+                    : "bg-[#1a1a1a] text-white/40"
+              )}
+            >
+              {isRecording ? (
+                <>
+                  <div className="w-3 h-3 bg-black rounded-[2px]" />
+                  <span className="text-[13px] font-black uppercase italic tracking-tighter">Detener</span>
+                </>
+              ) : isProcessing ? (
+                <Loader2 size={20} className="animate-spin" />
+              ) : (
+                <Send size={20} className={clsx(input.trim() ? "text-black" : "text-white/20")} />
+              )}
+            </motion.button>
+          </div>
         </div>
       </div>
 
