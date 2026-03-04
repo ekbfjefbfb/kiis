@@ -1,24 +1,17 @@
 import { useState, useEffect } from "react";
 import {
-  Calendar, ChevronRight, Plus, X, Radio, BookOpen, Brain, Loader2
+  Calendar, ChevronRight, Plus, X, BookOpen
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { clsx } from "clsx";
 import { Link } from "react-router";
 import { CLASSES, addClass } from "../data/mock";
-import { audioService } from "../../services/audio.service";
 import { notesService, BackendNote } from "../../services/notes.service";
-import { authService } from "../../services/auth.service";
-import { groqService } from "../../services/groq.service";
 
 export default function Dashboard() {
-  const [isProcessing, setIsProcessing] = useState(false);
   const [recentNotes, setRecentNotes] = useState<BackendNote[]>([]);
-  const [tasks, setTasks] = useState<any[]>([]);
   const [isAddingClass, setIsAddingClass] = useState(false);
   const [newClassName, setNewClassName] = useState("");
   const [newClassProfessor, setNewClassProfessor] = useState("");
-  const [primaryMode, setPrimaryMode] = useState<"quick" | "live">("quick");
 
   const today = new Date().toLocaleDateString("es-ES", {
     weekday: "long", month: "long", day: "numeric",
@@ -26,20 +19,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadRecentNotes();
-    loadTasks();
   }, []);
 
   const loadRecentNotes = async () => {
     try {
        const backendNotes = await notesService.listNotes(3, 0);
        setRecentNotes(backendNotes);
-    } catch (e) { console.error(e); }
-  };
-
-  const loadTasks = async () => {
-    try {
-      const stored = localStorage.getItem('user_tasks');
-      if (stored) setTasks(JSON.parse(stored));
     } catch (e) { console.error(e); }
   };
 
@@ -69,73 +54,38 @@ export default function Dashboard() {
       </div>
 
       <div className="px-5 space-y-5 pt-4">
-        {/* 1) Selector simple (2 opciones) */}
-        <div className="bg-zinc-900/60 border border-white/5 rounded-2xl p-1 flex">
-          <button
-            type="button"
-            onClick={() => setPrimaryMode("quick")}
-            className={clsx(
-              "flex-1 h-10 rounded-xl text-[11px] font-black uppercase tracking-widest transition-colors",
-              primaryMode === "quick" ? "bg-white text-black" : "text-white/40"
-            )}
-          >
-            Nota rápida
-          </button>
-          <button
-            type="button"
-            onClick={() => setPrimaryMode("live")}
-            className={clsx(
-              "flex-1 h-10 rounded-xl text-[11px] font-black uppercase tracking-widest transition-colors",
-              primaryMode === "live" ? "bg-white text-black" : "text-white/40"
-            )}
-          >
-            Clase en vivo
-          </button>
-        </div>
-
-        {/* 2) CTA principal (solo UNO) */}
-        {primaryMode === "quick" ? (
+        {/* Acciones (agenda) - lista simple: cada una lleva a una pantalla */}
+        <div className="bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden">
           <Link to="/quick-note" className="block">
-            <motion.div
-              whileTap={{ scale: 0.99 }}
-              className="w-full rounded-3xl p-5 bg-zinc-900 border border-white/5"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-black uppercase italic leading-none">Nota rápida</p>
-                  <p className="text-[11px] text-white/40 font-bold uppercase tracking-widest mt-1">Graba 10s. Se guarda.</p>
-                </div>
-                <ChevronRight size={18} className="text-white/20" />
+            <div className="px-4 py-4 flex items-center justify-between active:bg-zinc-800 transition-colors">
+              <div>
+                <p className="text-[13px] font-black uppercase tracking-tight">Nota rápida</p>
+                <p className="text-[10px] text-white/35 font-bold uppercase tracking-[0.2em] mt-1">Graba 10s. Se guarda</p>
               </div>
-            </motion.div>
-          </Link>
-        ) : (
-          <Link to="/live" className="block">
-            <motion.div
-              whileTap={{ scale: 0.99 }}
-              className="w-full rounded-3xl p-5 bg-zinc-900 border border-white/5"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-black uppercase italic leading-none">Clase en vivo</p>
-                  <p className="text-[11px] text-white/40 font-bold uppercase tracking-widest mt-1">Resumen + agenda</p>
-                </div>
-                <ChevronRight size={18} className="text-white/20" />
-              </div>
-            </motion.div>
-          </Link>
-        )}
-
-        {/* 3) CTA secundaria pequeña (IA) */}
-        <Link to="/chat" className="block">
-          <motion.div whileTap={{ scale: 0.99 }} className="bg-white text-black rounded-2xl px-4 py-3 flex items-center justify-between">
-            <div>
-              <p className="text-[12px] font-black uppercase tracking-tight">Asistente IA</p>
-              <p className="text-[9px] text-black/40 font-bold uppercase tracking-widest mt-0.5">Chat + voz</p>
+              <ChevronRight size={16} className="text-white/15" />
             </div>
-            <ChevronRight size={14} className="text-black/20" />
-          </motion.div>
-        </Link>
+          </Link>
+          <div className="h-px bg-white/5" />
+          <Link to="/live" className="block">
+            <div className="px-4 py-4 flex items-center justify-between active:bg-zinc-800 transition-colors">
+              <div>
+                <p className="text-[13px] font-black uppercase tracking-tight">Clase en vivo</p>
+                <p className="text-[10px] text-white/35 font-bold uppercase tracking-[0.2em] mt-1">Resumen + agenda</p>
+              </div>
+              <ChevronRight size={16} className="text-white/15" />
+            </div>
+          </Link>
+          <div className="h-px bg-white/5" />
+          <Link to="/chat" className="block">
+            <div className="px-4 py-4 flex items-center justify-between active:bg-zinc-800 transition-colors">
+              <div>
+                <p className="text-[13px] font-black uppercase tracking-tight">Asistente IA</p>
+                <p className="text-[10px] text-white/35 font-bold uppercase tracking-[0.2em] mt-1">Habla o escribe</p>
+              </div>
+              <ChevronRight size={16} className="text-white/15" />
+            </div>
+          </Link>
+        </div>
 
         {/* Notas recientes (lista, no botones) */}
         <section className="pt-2">
@@ -200,18 +150,6 @@ export default function Dashboard() {
           )}
         </section>
       </div>
-
-      {/* Overlays de Estado */}
-      <AnimatePresence>
-        {isProcessing && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="fixed bottom-20 left-4 right-4 z-40">
-            <div className="bg-blue-600 rounded-xl p-3 flex items-center gap-2 shadow-2xl">
-              <Loader2 size={14} className="animate-spin" />
-              <p className="font-black text-[9px] uppercase tracking-widest italic">La IA está analizando...</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Modal Nueva Materia - Fit Móvil */}
       <AnimatePresence>
