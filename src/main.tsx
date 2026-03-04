@@ -14,13 +14,15 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>,
 )
 
-registerSW({
-  immediate: true,
-  onNeedRefresh() {
-    // Aplicar update sin preguntar (evita caché viejo y pantallas rotas)
-    window.location.reload()
-  },
-  onOfflineReady() {
-    // no-op
-  },
-})
+if (import.meta.env.PROD) {
+  registerSW({
+    immediate: true,
+    onNeedRefresh() {
+      // Aplicar update sin preguntar (evita caché viejo y pantallas rotas)
+      window.location.reload()
+    },
+    onOfflineReady() {
+      // no-op
+    },
+  })
+}

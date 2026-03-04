@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { motion } from "framer-motion";
 import { ArrowRight, Radio, Brain, Zap, Download } from "lucide-react";
 import { usePWAInstall } from "../../hooks/usePWAInstall";
 
@@ -39,13 +38,12 @@ export default function Onboarding() {
     <div className="min-h-[100dvh] w-full bg-black text-white font-sans flex flex-col items-center py-10 px-6">
       <div className="mobile-container flex flex-col flex-1">
         <header className="flex justify-end pt-2 pb-12 shrink-0">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
+          <button
             onClick={installPWA}
-            className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest transition-all"
+            className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest transition-all active:opacity-60"
           >
             Instalar
-          </motion.button>
+          </button>
         </header>
 
         <main className="flex-1 flex flex-col justify-center space-y-16 pb-12">
