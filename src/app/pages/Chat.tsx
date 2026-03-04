@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Plus, Paperclip, Copy, Share2, ThumbsUp, ThumbsDown, Square, Edit3, Menu, BookOpen } from "lucide-react";
+import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Paperclip, Copy, Share2, ThumbsUp, AudioLines, Plus, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate } from "react-router";
@@ -129,28 +129,22 @@ export default function ChatPage() {
 
   return (
     <div className="h-[100dvh] bg-[#0a0a0a] text-white font-sans flex flex-col overflow-hidden selection:bg-white/10">
-      {/* Top Header - Ultra Minimalist */}
-      <div className="px-4 pt-10 pb-2 flex justify-between items-center bg-[#0a0a0a]/80 backdrop-blur-xl shrink-0 z-20">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="p-2 text-white/60 hover:text-white transition-all">
-            <Menu size={20} />
+      {/* Header Minimalista */}
+      <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-[#0a0a0a]/80 backdrop-blur-xl shrink-0 z-20">
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            <ArrowLeft size={18} />
           </button>
-          <div className="flex gap-6 items-center">
-            <h1 className="text-sm font-black uppercase tracking-widest border-b-2 border-white pb-1">Pregunta</h1>
-            <button className="text-sm font-bold text-white/20 uppercase tracking-widest pb-1 hover:text-white/40 transition-colors">Imagine</button>
-          </div>
+          <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Asistente</h1>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setAutoSpeak(!autoSpeak)} className="p-2 text-white/60 hover:text-white transition-all">
-            {autoSpeak ? <Volume2 size={20} /> : <VolumeX size={20} className="text-white/20" />}
-          </button>
-          <button onClick={() => setMessages([])} className="p-2 text-white/60 hover:text-white transition-all">
-            <Edit3 size={20} />
+          <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/30" />}
           </button>
         </div>
       </div>
 
-      {/* Chat Area - Compact Hierarchy */}
+      {/* Messages - Área de scroll */}
       <div className="flex-1 px-6 space-y-8 overflow-y-auto scrollbar-hide pt-6 pb-40">
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center opacity-[0.02]">
@@ -182,7 +176,7 @@ export default function ChatPage() {
                 </div>
                 {msg.content && (
                   <div className="flex items-center gap-4 text-white/20">
-                    <button className="hover:text-white transition-colors"><Copy size={14} /></button>
+                    <button onClick={() => navigator.clipboard.writeText(msg.content)} className="hover:text-white transition-colors"><Copy size={14} /></button>
                     <button className="hover:text-white transition-colors"><Share2 size={14} /></button>
                     <button className="hover:text-white transition-colors"><ThumbsUp size={14} /></button>
                   </div>
@@ -201,59 +195,74 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Bar - Brutal Clarity */}
+      {/* Brutal Input Area - Inspirada en la imagen */}
       <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent z-20">
-        <div className="max-w-2xl mx-auto flex items-center gap-3">
-          {/* Action Button - Small and well-made */}
-          <button 
-            onClick={() => setIsAddingClass(true)}
-            className="w-12 h-12 bg-[#1a1a1a] rounded-full flex items-center justify-center text-white/40 hover:text-white transition-all shrink-0 border border-white/[0.03]"
-          >
-            <Plus size={20} />
-          </button>
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex flex-col gap-2 shadow-2xl">
+            <div className="px-4 py-2">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                rows={1}
+                placeholder="Pregunta cualquier cosa"
+                className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[44px] max-h-[120px] py-2"
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = 'auto';
+                  target.style.height = `${target.scrollHeight}px`;
+                }}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between px-2 pb-1">
+              <div className="flex items-center gap-1">
+                <button className="w-10 h-10 rounded-full flex items-center justify-center text-white/40 hover:text-white active:bg-white/5 transition-all">
+                  <Paperclip size={20} />
+                </button>
+                <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full border border-white/[0.03]">
+                  <Sparkles size={14} className="text-white/40" />
+                  <span className="text-[11px] font-bold text-white/60 uppercase tracking-widest">Auto</span>
+                  <X size={10} className="text-white/20" />
+                </div>
+              </div>
 
-          {/* Input Field */}
-          <div className="flex-1 bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] px-5 py-4 flex items-center gap-3">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              rows={1}
-              placeholder="Pregunta algo_"
-              className="flex-1 bg-transparent border-none focus:outline-none text-[15px] text-white placeholder:text-white/10 resize-none min-h-[24px] max-h-[120px]"
-              onInput={(e) => {
-                const target = e.target as HTMLTextAreaElement;
-                target.style.height = 'auto';
-                target.style.height = `${target.scrollHeight}px`;
-              }}
-            />
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={toggleVoiceRecording}
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-white active:bg-white/10 transition-all"
+                >
+                  <Mic size={20} />
+                </button>
+                
+                <motion.button
+                  onClick={isRecording ? toggleVoiceRecording : isProcessing ? undefined : (input.trim() ? () => handleSend() : toggleVoiceRecording)}
+                  whileTap={{ scale: 0.95 }}
+                  className={clsx(
+                    "h-11 flex items-center justify-center gap-2 px-5 rounded-full transition-all duration-300 font-bold",
+                    isRecording 
+                      ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
+                      : "bg-[#0a0a0a] text-white border border-white/10"
+                  )}
+                >
+                  {isRecording ? (
+                    <>
+                      <div className="w-2.5 h-2.5 bg-black rounded-[1px]" />
+                      <span className="text-[13px] font-black uppercase italic tracking-tighter">Detener</span>
+                    </>
+                  ) : isProcessing ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : input.trim() ? (
+                    <Send size={18} />
+                  ) : (
+                    <>
+                      <AudioLines size={18} className="text-white" />
+                      <span className="text-[13px] font-black uppercase italic tracking-tighter">Hablar</span>
+                    </>
+                  )}
+                </motion.button>
+              </div>
+            </div>
           </div>
-
-          {/* Dynamic SST Button - The hero element */}
-          <motion.button
-            onClick={isRecording ? toggleVoiceRecording : isProcessing ? undefined : (input.trim() ? () => handleSend() : toggleVoiceRecording)}
-            whileTap={{ scale: 0.92 }}
-            className={clsx(
-              "h-14 min-w-[60px] px-4 rounded-[28px] flex items-center justify-center gap-3 transition-all duration-500 shadow-2xl",
-              isRecording 
-                ? "bg-white text-black w-32 shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
-                : input.trim() 
-                  ? "bg-white text-black w-14" 
-                  : "bg-white text-black w-14"
-            )}
-          >
-            {isRecording ? (
-              <>
-                <div className="w-3 h-3 bg-black rounded-[2px]" />
-                <span className="text-[12px] font-black uppercase italic tracking-tighter">Detener</span>
-              </>
-            ) : isProcessing ? (
-              <Loader2 size={20} className="animate-spin text-black" />
-            ) : input.trim() ? (
-              <Send size={20} />
-            ) : (
-              <Mic size={20} />
-            )}
-          </motion.button>
         </div>
       </div>
 
