@@ -12,7 +12,6 @@ import NotesPage from "./app/pages/NotesPage";
 import NoteDetail from "./app/pages/NoteDetail";
 
 export default function App() {
-  // Simulación simple de auth para desarrollo
   const isAuthenticated = true; 
 
   return (

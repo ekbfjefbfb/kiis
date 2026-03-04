@@ -1,6 +1,6 @@
 /* 
   KIIS - ATOMIC VISIBILITY ENGINE 
-  Elimina variables complejas y opacidades para visibilidad 100% garantizada.
+  Garantiza visibilidad absoluta eliminando variables complejas y opacidades.
 */
 
 * {
@@ -31,6 +31,7 @@ html, body, #root {
 .bg-black { background-color: #000000 !important; }
 .bg-zinc-900 { background-color: #18181b !important; }
 .bg-zinc-800 { background-color: #27272a !important; }
+.bg-zinc-700 { background-color: #3f3f46 !important; }
 .bg-white { background-color: #ffffff !important; }
 
 .text-white { color: #ffffff !important; }
