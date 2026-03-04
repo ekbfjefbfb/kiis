@@ -1,68 +1,94 @@
 /* 
-  KIIS - ATOMIC VISIBILITY ENGINE 
-  Garantiza visibilidad absoluta eliminando variables complejas y opacidades.
+  KIIS - ATOMIC ENGINEERING VISUAL ENGINE 
+  Absolute hierarchy, mobile-first centering, and brutalist minimalism.
 */
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-/* Forzado de visibilidad universal */
-html, body, #root {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-  width: 100% !important;
-  height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-/* Tipografía de ingeniería */
-:root {
-  font-family: 'Plus Jakarta Sans', sans-serif !important;
-  color-scheme: dark !important;
-}
-
-/* REGLAS MAESTRAS DE CONTRASTE (TAILWIND RECOVERY) */
-.bg-black { background-color: #000000 !important; }
-.bg-zinc-900 { background-color: #18181b !important; }
-.bg-zinc-800 { background-color: #27272a !important; }
-.bg-zinc-700 { background-color: #3f3f46 !important; }
-.bg-white { background-color: #ffffff !important; }
-
-.text-white { color: #ffffff !important; }
-.text-zinc-400 { color: #a1a1aa !important; }
-.text-zinc-500 { color: #71717a !important; }
-.text-black { color: #000000 !important; }
-
-.border-zinc-800 { border-color: #27272a !important; }
-.border-zinc-700 { border-color: #3f3f46 !important; }
-
-/* DISABLE ALL HIDDEN STATES */
-.opacity-0, [style*="opacity: 0"], .hidden, [style*="display: none"] {
-  opacity: 1 !important;
-  display: flex !important; 
-  visibility: visible !important;
-}
-
-header {
-  background-color: #000000 !important;
-  border-bottom: 1px solid #27272a !important;
-  z-index: 100 !important;
-}
-
-main {
-  background-color: #000000 !important;
-  flex: 1 !important;
-}
-
-button, a {
-  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  color: inherit;
+}
+
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --zinc-950: #09090b;
+  --zinc-900: #18181b;
+  --zinc-800: #27272a;
+  --zinc-700: #3f3f46;
+  --zinc-600: #52525b;
+  --zinc-500: #71717a;
+  --zinc-400: #a1a1aa;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100dvh;
+  background-color: var(--black) !important;
+  color: var(--white) !important;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Force 100% visibility */
+* {
   opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Absolute centering for mobile */
+.mobile-container {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Premium Button Sizing */
+.btn-massive {
+  height: 80px;
+  border-radius: 40px;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-massive:active {
+  transform: scale(0.96);
+}
+
+/* Brutalist Inputs */
+input {
+  background-color: rgba(24, 24, 27, 0.5) !important;
+  border: 1px solid var(--zinc-800) !important;
+  border-radius: 24px !important;
+  padding: 20px 24px !important;
+  color: var(--white) !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  font-size: 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+input:focus {
+  border-color: var(--zinc-600) !important;
+  background-color: var(--zinc-900) !important;
+  outline: none !important;
+}
+
+/* Scrollbar reset */
+::-webkit-scrollbar {
+  display: none;
 }
