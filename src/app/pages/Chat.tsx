@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Plus, Paperclip, Copy, Share2, ThumbsUp, ThumbsDown, Square, Edit3, Menu } from "lucide-react";
+import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Plus, Paperclip, Copy, Share2, ThumbsUp, ThumbsDown, Square, Edit3, Menu, BookOpen } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate } from "react-router";
@@ -203,10 +203,26 @@ export default function ChatPage() {
           
           {/* Quick Action Buttons - Slim Style */}
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-1">
-            <button className="w-12 h-12 bg-[#1a1a1a] rounded-full flex items-center justify-center text-white/60 shrink-0"><Plus size={20} /></button>
-            <button className="w-12 h-12 bg-[#1a1a1a] rounded-full flex items-center justify-center text-white/60 shrink-0"><Volume2 size={20} /></button>
-            <button className="w-12 h-12 bg-[#1a1a1a] rounded-full flex items-center justify-center text-white/60 shrink-0"><Mic size={20} /></button>
-            <button onClick={() => setIsAddingClass(true)} className="w-12 h-12 bg-[#1a1a1a] rounded-full flex items-center justify-center text-white/60 shrink-0"><BookOpen size={20} /></button>
+            <button className="w-10 h-10 bg-[#1a1a1a] rounded-full flex items-center justify-center text-white/60 shrink-0 active:scale-90 transition-all"><Plus size={18} /></button>
+            <button 
+              onClick={() => setAutoSpeak(!autoSpeak)}
+              className={clsx(
+                "w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all",
+                autoSpeak ? "bg-white text-black" : "bg-[#1a1a1a] text-white/60"
+              )}
+            >
+              {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} />}
+            </button>
+            <button 
+              onClick={toggleVoiceRecording}
+              className={clsx(
+                "w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all",
+                isRecording ? "bg-red-500 text-white animate-pulse" : "bg-[#1a1a1a] text-white/60"
+              )}
+            >
+              <Mic size={18} />
+            </button>
+            <button onClick={() => setIsAddingClass(true)} className="w-10 h-10 bg-[#1a1a1a] rounded-full flex items-center justify-center text-white/60 shrink-0 active:scale-90 transition-all"><BookOpen size={18} /></button>
           </div>
 
           {/* Combined Input + Stop/Record Button */}
