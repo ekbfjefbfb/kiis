@@ -9,8 +9,7 @@ export default function Layout() {
 
   const navItems = [
     { icon: LayoutDashboard, label: "Inicio", path: "/dashboard" },
-    { icon: MessageCircle, label: "Chat", path: "/chat" },
-    { icon: AudioLines, label: "Voz IA", path: "/voice" },
+    { icon: MessageCircle, label: "IA Chat", path: "/chat" },
     { icon: User, label: "Perfil", path: "/profile" },
   ];
 

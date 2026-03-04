@@ -108,70 +108,67 @@ export default function Dashboard() {
       </div>
 
       <div className="px-6 space-y-6">
-        {/* Acciones de Valor Real */}
         <div className="grid grid-cols-2 gap-3">
           <motion.button
             onClick={handleQuickRecord}
             whileTap={{ scale: 0.96 }}
             className={clsx(
-              "rounded-[28px] p-5 text-left transition-all duration-500 relative overflow-hidden",
+              "rounded-[24px] p-4 text-left transition-all duration-500 relative overflow-hidden",
               isRecording ? "bg-red-600" : "bg-zinc-900 border border-white/5"
             )}
           >
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-3">
-              {isRecording ? <Square size={20} fill="currentColor" /> : <Zap size={20} className="text-emerald-400" />}
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-2">
+              {isRecording ? <Square size={18} fill="currentColor" /> : <Zap size={18} className="text-emerald-400" />}
             </div>
-            <p className="font-black text-lg uppercase italic leading-none mb-1">Nota Rápida</p>
-            <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest leading-tight">
-              {isRecording ? formatTime(recordingTime) : "Graba y resume ya"}
+            <p className="font-black text-base uppercase italic leading-none mb-1">Nota Rápida</p>
+            <p className="text-[9px] text-white/40 font-bold uppercase tracking-widest leading-tight">
+              {isRecording ? formatTime(recordingTime) : "CAPTURAR IDEA"}
             </p>
           </motion.button>
 
           <Link to="/live">
-            <motion.div whileTap={{ scale: 0.96 }} className="rounded-[28px] bg-zinc-900 border border-white/5 p-5 text-left h-full">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center mb-3">
-                <Radio size={20} className="text-purple-400" />
+            <motion.div whileTap={{ scale: 0.96 }} className="rounded-[24px] bg-zinc-900 border border-white/5 p-4 text-left h-full">
+              <div className="w-9 h-9 rounded-xl bg-purple-500/20 flex items-center justify-center mb-2">
+                <Radio size={18} className="text-purple-400" />
               </div>
-              <p className="font-black text-lg uppercase italic leading-none mb-1">Clase en Vivo</p>
-              <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest leading-tight">Análisis IA profundo</p>
+              <p className="font-black text-base uppercase italic leading-none mb-1">Clase en Vivo</p>
+              <p className="text-[9px] text-white/40 font-bold uppercase tracking-widest leading-tight">ANÁLISIS PROFUNDO</p>
             </motion.div>
           </Link>
         </div>
 
-        {/* Unificado: Chat & Voz */}
         <Link to="/chat">
-          <motion.div whileTap={{ scale: 0.98 }} className="bg-white text-black rounded-[28px] p-6 flex items-center justify-between group shadow-xl active:scale-95 transition-transform">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-black/5 flex items-center justify-center">
-                <Brain size={24} />
+          <motion.div whileTap={{ scale: 0.98 }} className="bg-white text-black rounded-[24px] p-4 flex items-center justify-between group shadow-xl active:scale-95 transition-transform">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-black/5 flex items-center justify-center">
+                <Brain size={20} />
               </div>
               <div>
-                <p className="font-black text-xl uppercase italic leading-none">Pregunta a la IA</p>
-                <p className="text-[10px] text-black/40 font-bold uppercase tracking-widest">Chat & Voz Combinados</p>
+                <p className="font-black text-lg uppercase italic leading-none">Pregunta a la IA</p>
+                <p className="text-[9px] text-black/40 font-bold uppercase tracking-widest">CHAT & VOZ UNIFICADO</p>
               </div>
             </div>
-            <ChevronRight size={20} className="text-black/20 group-hover:translate-x-1 transition-transform" />
+            <ChevronRight size={16} className="text-black/20 group-hover:translate-x-1 transition-transform" />
           </motion.div>
         </Link>
 
-        {/* Secciones Compactas */}
         <section>
-          <div className="flex justify-between items-end mb-4 px-1">
+          <div className="flex justify-between items-end mb-3 px-1">
             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/30">Materias</h3>
-            <button onClick={() => setIsAddingClass(true)} className="text-white/30 hover:text-white transition-colors"><Plus size={18} /></button>
+            <button onClick={() => setIsAddingClass(true)} className="text-white/30 hover:text-white transition-colors"><Plus size={16} /></button>
           </div>
           <div className="grid grid-cols-1 gap-2">
             {CLASSES.map((cls) => (
               <Link key={cls.id} to={`/class/${cls.id}`}>
-                <motion.div whileTap={{ scale: 0.98 }} className="bg-zinc-900/50 rounded-2xl p-4 flex items-center gap-4 border border-white/5 active:scale-95 transition-all">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
-                    <BookOpen size={18} className="text-white/60" />
+                <motion.div whileTap={{ scale: 0.98 }} className="bg-zinc-900/50 rounded-xl p-3 flex items-center gap-3 border border-white/5 active:scale-95 transition-all">
+                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                    <BookOpen size={16} className="text-white/60" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-sm uppercase tracking-tight truncate leading-none mb-1">{cls.name}</p>
-                    <p className="text-[10px] text-white/30 font-bold uppercase truncate">{cls.professor}</p>
+                    <p className="font-bold text-xs uppercase tracking-tight truncate leading-none mb-1">{cls.name}</p>
+                    <p className="text-[9px] text-white/30 font-bold uppercase truncate">{cls.professor}</p>
                   </div>
-                  <ChevronRight size={14} className="text-white/10" />
+                  <ChevronRight size={12} className="text-white/10" />
                 </motion.div>
               </Link>
             ))}
@@ -179,27 +176,25 @@ export default function Dashboard() {
         </section>
       </div>
 
-      {/* Estados Animados */}
       <AnimatePresence>
         {isProcessing && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="fixed bottom-24 left-6 right-6 z-40">
             <div className="bg-blue-600 rounded-2xl p-4 flex items-center gap-3 shadow-2xl">
-              <Sparkles size={20} className="animate-pulse" />
-              <p className="font-black text-xs uppercase tracking-widest italic">La IA está pensando...</p>
+              <Sparkles size={18} className="animate-pulse" />
+              <p className="font-black text-[10px] uppercase tracking-widest italic">La IA está pensando...</p>
             </div>
           </motion.div>
         )}
         {showSuccess && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="fixed bottom-24 left-6 right-6 z-40">
             <div className="bg-emerald-600 rounded-2xl p-4 flex items-center gap-3 shadow-2xl">
-              <Zap size={20} fill="white" />
-              <p className="font-black text-xs uppercase tracking-widest italic">Captura guardada con éxito</p>
+              <Zap size={18} fill="white" />
+              <p className="font-black text-[10px] uppercase tracking-widest italic">Captura guardada</p>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Modal Compacto */}
       <AnimatePresence>
         {isAddingClass && (
           <>

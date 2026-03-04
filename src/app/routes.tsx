@@ -11,7 +11,6 @@ import ProfilePage from "./pages/Profile";
 import CalendarPage from "./pages/CalendarPage";
 import ClassDetailPage from "./pages/ClassDetailPage";
 import SearchPage from "./pages/SearchPage";
-import VoiceChatPage from "./pages/VoiceChatPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 
@@ -41,7 +40,6 @@ export const router = createBrowserRouter([
       { path: "calendar", Component: CalendarPage },
       { path: "class/:id", Component: ClassDetailPage },
       { path: "search", Component: SearchPage },
-      { path: "voice", Component: VoiceChatPage },
     ],
   },
   {
