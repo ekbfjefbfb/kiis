@@ -8,6 +8,7 @@ import { TASKS, EXAMS, IMPORTANT_DATES, CLASSES } from "../data/mock";
 interface CalendarEvent {
   date: string;
   title: string;
+  description?: string;
   type: "task" | "exam" | "important";
   classId?: string;
   completed: boolean;
@@ -18,6 +19,7 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeEvent, setActiveEvent] = useState<CalendarEvent | null>(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -52,6 +54,7 @@ export default function CalendarPage() {
         ...tasks.map((t: any) => ({
           date: t.date,
           title: t.title,
+          description: t.description || t.details || t.note || t.title,
           type: "task" as const,
           classId: t.classId,
           completed: t.completed,
@@ -59,6 +62,7 @@ export default function CalendarPage() {
         ...sessions.filter((s: any) => s.session_datetime).map((s: any) => ({
           date: s.session_datetime.split('T')[0],
           title: s.class_name || "Clase grabada",
+          description: s.summary || s.notes || "",
           type: "important" as const,
           classId: null,
           completed: false,
@@ -72,6 +76,7 @@ export default function CalendarPage() {
       setEvents(TASKS.map((t) => ({
         date: t.date,
         title: t.title,
+        description: (t as any).description || t.title,
         type: "task" as const,
         classId: t.classId,
         completed: t.completed,
@@ -309,47 +314,104 @@ export default function CalendarPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
                       className={clsx(
-                        "p-5 rounded-3xl border transition-colors",
+                        "p-0 rounded-3xl border transition-colors overflow-hidden",
                         "bg-card border-border shadow-sm"
                       )}
                     >
-                      <div className="flex items-start gap-4">
-                        <div className="mt-1 text-muted-foreground">
-                           {ev.type === "task" && <CheckSquare size={18} />}
-                           {ev.type === "exam" && <BookOpen size={18} />}
-                           {ev.type === "important" && <Star size={18} />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-1.5">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                              {eventLabel(ev.type)}
-                            </span>
-                            {ev.completed && (
-                              <span className="text-[9px] bg-foreground text-background rounded-full px-2 py-0.5 font-bold uppercase tracking-wider">
-                                Hecho
+                      <button
+                        type="button"
+                        onClick={() => setActiveEvent(ev)}
+                        className="w-full text-left p-5 active:opacity-90 transition-opacity"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="mt-1 text-muted-foreground">
+                            {ev.type === "task" && <CheckSquare size={18} />}
+                            {ev.type === "exam" && <BookOpen size={18} />}
+                            {ev.type === "important" && <Star size={18} />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-3 mb-1.5">
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                {eventLabel(ev.type)}
                               </span>
+                              {ev.completed && (
+                                <span className="text-[9px] bg-foreground text-background rounded-full px-2 py-0.5 font-bold uppercase tracking-wider">
+                                  Hecho
+                                </span>
+                              )}
+                            </div>
+                            <h4
+                              className={clsx(
+                                "font-semibold text-[17px] tracking-tight text-foreground",
+                                ev.completed && "line-through text-muted-foreground"
+                              )}
+                            >
+                              {ev.title}
+                            </h4>
+                            {cls && (
+                              <p className="text-[13px] text-muted-foreground mt-1">
+                                {cls.name}
+                              </p>
                             )}
                           </div>
-                          <h4
-                            className={clsx(
-                              "font-semibold text-[17px] tracking-tight text-foreground",
-                              ev.completed && "line-through text-muted-foreground"
-                            )}
-                          >
-                            {ev.title}
-                          </h4>
-                          {cls && (
-                            <p className="text-[13px] text-muted-foreground mt-1">
-                              {cls.name}
-                            </p>
-                          )}
                         </div>
-                      </div>
+                      </button>
                     </motion.div>
                   );
                 })
               )}
             </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Event detail modal */}
+        <AnimatePresence>
+          {activeEvent && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/70 z-40"
+                onClick={() => setActiveEvent(null)}
+              />
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 24 }}
+                className="fixed left-4 right-4 bottom-6 z-50 max-w-md mx-auto"
+              >
+                <div className="bg-card border border-border rounded-3xl p-5 shadow-2xl">
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                        {eventLabel(activeEvent.type)}
+                      </p>
+                      <h3 className="text-[18px] font-semibold tracking-tight text-foreground leading-snug">
+                        {activeEvent.title}
+                      </h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setActiveEvent(null)}
+                      className="w-9 h-9 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center"
+                      aria-label="Cerrar"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Qué tienes que hacer
+                    </p>
+                    <p className="text-[14px] text-foreground/90 leading-relaxed whitespace-pre-wrap">
+                      {activeEvent.description?.trim() ? activeEvent.description : "Sin descripción"}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
 
