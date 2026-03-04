@@ -184,7 +184,7 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Zone - Lógica Estructurada y Compacta */}
+      {/* Input Zone - Lógica Estructurada */}
       <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-black via-black to-transparent z-20">
         <div className="max-w-2xl mx-auto">
           <div className="bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex items-center gap-2 shadow-2xl">
@@ -218,8 +218,9 @@ export default function ChatPage() {
               )}
             </div>
 
-            {/* Botones con Funciones Máximas */}
+            {/* Botones con Funciones Máximas y Definidas */}
             <div className="flex items-center gap-2 pr-1">
+              {/* Botón Micrófono: Solo visible cuando NO se graba y el input está vacío */}
               {!isRecording && !input.trim() && (
                 <button 
                   onClick={toggleVoiceRecording}
@@ -230,6 +231,7 @@ export default function ChatPage() {
                 </button>
               )}
               
+              {/* Botón Dinámico: Hablar / Detener / Enviar */}
               <motion.button
                 onClick={isRecording ? toggleVoiceRecording : isProcessing ? undefined : (input.trim() ? () => handleSend() : toggleVoiceRecording)}
                 whileTap={{ scale: 0.95 }}
@@ -248,13 +250,13 @@ export default function ChatPage() {
                 ) : isProcessing ? (
                   <Loader2 size={18} className="animate-spin" />
                 ) : input.trim() ? (
-                  <Send size={18} />
+                  <Send size={18} className="text-white" />
                 ) : (
                   <>
                     <div className="flex gap-0.5 items-end h-3 mr-1">
-                      <div className="w-[2px] h-2 bg-white rounded-full" />
+                      <div className="w-[2px] h-2 bg-white/60 rounded-full" />
                       <div className="w-[2px] h-3 bg-white rounded-full" />
-                      <div className="w-[2px] h-2 bg-white rounded-full" />
+                      <div className="w-[2px] h-2 bg-white/60 rounded-full" />
                     </div>
                     <span className="text-[13px] font-black uppercase italic tracking-tighter">Hablar</span>
                   </>
