@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   ArrowLeft, Calendar, User, Trash2, Plus, X, ChevronRight, Zap, 
-  MessageCircle, Mic, Square, Loader2, Star, BookOpen, Clock
+  MessageCircle, Mic, Square, Loader2, Star, BookOpen, Clock, CheckSquare
 } from "lucide-react";
 import { useParams, Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
@@ -18,6 +18,7 @@ export default function ClassDetailPage() {
   const navigate = useNavigate();
   const [cls] = useState(CLASSES.find((c) => c.id === id));
   const [activeTab, setActiveTab] = useState<TabType>("chat");
+  const [activeTask, setActiveTask] = useState<any | null>(null);
 
   // Chat/Recording Unified State
   const [messages, setMessages] = useState<Array<{ role: "user" | "ai"; text: string; id: string }>>([
@@ -194,15 +195,21 @@ export default function ClassDetailPage() {
                 </div>
               ))}
               {classTasks.map(t => (
-                <div key={t.id} className="bg-white/5 p-6 rounded-[32px] flex items-center gap-5 border border-white/5">
-                  <div className={clsx("w-8 h-8 rounded-full border-2 flex items-center justify-center", t.completed ? "bg-emerald-500 border-emerald-500" : "border-white/20")}>
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setActiveTask(t)}
+                  className="w-full text-left bg-white/5 p-6 rounded-[32px] flex items-center gap-5 border border-white/5 active:opacity-90 transition-opacity"
+                >
+                  <div className={clsx("w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0", t.completed ? "bg-emerald-500 border-emerald-500" : "border-white/20")}>
                     {t.completed && <CheckSquare size={18} className="text-black" />}
                   </div>
-                  <div>
-                    <p className={clsx("font-black text-xl uppercase italic leading-none mb-1", t.completed && "line-through text-white/20")}>{t.title}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className={clsx("font-black text-xl uppercase italic leading-none mb-1 truncate", t.completed && "line-through text-white/20")}>{t.title}</p>
                     <p className="text-white/40 text-sm font-bold uppercase tracking-widest">{t.date}</p>
                   </div>
-                </div>
+                  <ChevronRight size={18} className="text-white/10" />
+                </button>
               ))}
             </motion.div>
           )}
@@ -238,6 +245,53 @@ export default function ClassDetailPage() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Task detail modal */}
+      <AnimatePresence>
+        {activeTask && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/70 z-40"
+              onClick={() => setActiveTask(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 24 }}
+              className="fixed left-4 right-4 bottom-6 z-50 max-w-md mx-auto"
+            >
+              <div className="bg-zinc-900 border border-white/10 rounded-[28px] p-5 shadow-2xl">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Tarea</p>
+                    <h3 className="text-[18px] font-black uppercase italic tracking-tight leading-snug">
+                      {activeTask.title}
+                    </h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTask(null)}
+                    className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-white/70"
+                    aria-label="Cerrar"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Qué tienes que hacer</p>
+                  <p className="text-[14px] text-white/80 leading-relaxed whitespace-pre-wrap">
+                    {(activeTask.description || activeTask.details || activeTask.note || activeTask.title || "").toString()}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
