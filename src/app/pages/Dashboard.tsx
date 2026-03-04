@@ -19,20 +19,20 @@ export default function Dashboard() {
   return (
     <div className="h-[100dvh] w-full bg-black flex flex-col overflow-hidden relative" style={{ backgroundColor: '#000000' }}>
       {/* Header - Engineering Minimal Apple/Tesla Style */}
-      <header className="w-full bg-black z-30 pt-8 pb-6 shrink-0">
-        <div className="mobile-container flex-row justify-between items-end">
-          <div className="space-y-1">
-            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Hoy</p>
-            <h1 className="text-xl font-bold text-white lowercase first-letter:uppercase">
-              {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}
+      <header className="w-full bg-black pt-10 pb-4 shrink-0">
+        <div className="mobile-container flex-row justify-between items-center">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em] mb-0.5">Hoy</span>
+            <h1 className="text-lg font-black text-white tracking-tight">
+              {new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long' }).toLowerCase()}
             </h1>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => navigate("/calendar")} className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
-              <Calendar size={16} className="text-zinc-400" />
+            <button onClick={() => navigate("/calendar")} className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
+              <Calendar size={16} className="text-zinc-500" />
             </button>
-            <button onClick={() => navigate("/profile")} className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
-              <User size={16} className="text-zinc-400" />
+            <button onClick={() => navigate("/profile")} className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-800/50 flex items-center justify-center active:scale-95 transition-all">
+              <User size={16} className="text-zinc-500" />
             </button>
           </div>
         </div>
@@ -40,67 +40,54 @@ export default function Dashboard() {
 
       <main className="flex-1 overflow-y-auto scrollbar-hide py-10">
         <div className="mobile-container space-y-16">
-          {/* Main Action - Simple & Balanced */}
-          <section className="mb-8">
+          {/* Main Action - Extremely Minimal */}
+          <section>
             <button 
               onClick={() => navigate("/live")}
-              className="w-full bg-zinc-900 border border-zinc-800/50 p-5 rounded-2xl flex items-center gap-4 active:scale-[0.98] transition-all group"
+              className="w-full bg-zinc-900/50 border border-zinc-800/40 py-4 px-5 rounded-xl flex items-center justify-between active:scale-[0.98] transition-all group"
             >
-              <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
-                <Mic size={20} className="text-zinc-400 group-active:text-white transition-colors" />
+              <div className="flex items-center gap-3">
+                <Mic size={18} className="text-zinc-500 group-active:text-white transition-colors" />
+                <span className="text-sm font-bold text-zinc-300">Grabar ahora</span>
               </div>
-              <div className="text-left">
-                <h2 className="text-base font-bold text-zinc-200">Grabar clase</h2>
-                <p className="text-[10px] font-medium text-zinc-500">Inicia la captura de audio</p>
-              </div>
+              <ChevronRight size={14} className="text-zinc-700" />
             </button>
           </section>
 
-          {/* Agenda Section - Centralized Intelligence */}
-          <section className="space-y-6">
+          {/* Agenda Section - Pure Hierarchy */}
+          <section className="space-y-4">
             <div className="flex items-center justify-between px-1">
-              <div className="flex items-center gap-2 text-zinc-500">
-                <BookOpen size={14} strokeWidth={2.5} />
-                <h2 className="text-[11px] font-bold uppercase tracking-wider">Mi Agenda Académica</h2>
-              </div>
+              <h2 className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em]">Agenda</h2>
               <button 
                 onClick={() => setShowAddClass(true)}
-                className="text-[10px] font-bold text-zinc-400 hover:text-white transition-colors"
+                className="text-[9px] font-bold text-zinc-700 hover:text-zinc-400 transition-colors uppercase tracking-widest"
               >
-                + AÑADIR MATERIA
+                + añadir
               </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-3">
+            <div className="space-y-2.5">
               {CLASSES.map((cls) => (
                 <button
                   key={cls.id}
                   onClick={() => navigate(`/class/${cls.id}`)}
-                  className="w-full bg-zinc-900/40 border border-zinc-800/50 p-5 rounded-2xl flex flex-col gap-4 text-left group active:bg-zinc-800/60 transition-all"
+                  className="w-full bg-zinc-900/30 border border-zinc-800/30 p-4 rounded-xl flex flex-col gap-3 text-left active:bg-zinc-800/40 transition-all"
                 >
-                  <div className="flex justify-between items-start w-full">
-                    <div className="space-y-1">
-                      <h3 className="text-base font-bold text-white leading-tight group-hover:text-blue-400 transition-colors">{cls.name}</h3>
-                      <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide">{cls.professor}</p>
+                  <div className="flex justify-between items-center w-full">
+                    <div className="flex flex-col">
+                      <h3 className="text-sm font-bold text-zinc-200">{cls.name}</h3>
+                      <span className="text-[9px] font-medium text-zinc-600 uppercase tracking-wider">{cls.professor}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {cls.nextTask && (
-                        <div className="px-2 py-1 bg-zinc-800 rounded-md border border-zinc-700">
-                          <span className="text-[8px] font-bold text-zinc-400">PENDIENTE</span>
-                        </div>
-                      )}
-                      <ChevronRight size={16} className="text-zinc-700" />
-                    </div>
+                    <ChevronRight size={14} className="text-zinc-800" />
                   </div>
 
                   {cls.nextTask && (
-                    <div className="pt-3 border-t border-zinc-800/50 space-y-2">
-                      <div className="flex items-center gap-2 text-zinc-400">
-                        <Sparkles size={12} className="text-zinc-500" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Próxima Tarea:</span>
+                    <div className="pt-2.5 border-t border-zinc-800/30 flex items-center justify-between">
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        <div className="w-1 h-1 rounded-full bg-blue-500/50" />
+                        <p className="text-[11px] text-zinc-500 font-medium truncate italic">{cls.nextTask}</p>
                       </div>
-                      <p className="text-xs text-zinc-300 font-medium line-clamp-1 italic">{cls.nextTask}</p>
-                      <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">{cls.taskDate}</p>
+                      <span className="text-[8px] font-bold text-zinc-700 uppercase tracking-tighter shrink-0 ml-2">{cls.taskDate}</span>
                     </div>
                   )}
                 </button>
