@@ -13,8 +13,18 @@ import ClassDetailPage from "./pages/ClassDetailPage";
 import SearchPage from "./pages/SearchPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import OnboardingPage from "./pages/OnboardingPage";
+
+function OnboardingGate() {
+  const done = typeof window !== "undefined" && localStorage.getItem("onboarding_done") === "true";
+  return <Navigate to={done ? "/dashboard" : "/onboarding"} replace />;
+}
 
 export const router = createBrowserRouter([
+  {
+    path: "/onboarding",
+    Component: OnboardingPage,
+  },
   {
     path: "/login",
     Component: LoginPage,
@@ -27,7 +37,7 @@ export const router = createBrowserRouter([
     path: "/",
     Component: Layout,
     children: [
-      { index: true, element: <Navigate to="/dashboard" replace /> },
+      { index: true, element: <OnboardingGate /> },
       { path: "dashboard", Component: Dashboard },
       { path: "home", element: <Navigate to="/dashboard" replace /> },
       { path: "notes", Component: NotesPage },

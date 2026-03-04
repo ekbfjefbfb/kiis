@@ -16,6 +16,7 @@ export default function Layout() {
   const isAuthPage = 
     location.pathname.includes("/login") || 
     location.pathname.includes("/register") || 
+    location.pathname.includes("/onboarding") ||
     location.pathname === "/";
   const shouldHideNav = isAuthPage;
 
