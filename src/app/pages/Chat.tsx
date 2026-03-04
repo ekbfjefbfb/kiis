@@ -206,8 +206,9 @@ export default function ChatPage() {
               />
             </div>
 
-            {/* Botones con Funciones Definidas */}
+            {/* Botones con Funciones Máximas y Definidas */}
             <div className="flex items-center gap-2 pr-1">
+              {/* Botón Micrófono: Solo visible cuando NO se graba y el input está vacío */}
               {!isRecording && !input.trim() && (
                 <button 
                   onClick={toggleVoiceRecording}
@@ -218,6 +219,7 @@ export default function ChatPage() {
                 </button>
               )}
               
+              {/* Botón Dinámico: Hablar / Detener / Enviar */}
               <motion.button
                 onClick={isRecording ? toggleVoiceRecording : isProcessing ? undefined : (input.trim() ? () => handleSend() : toggleVoiceRecording)}
                 whileTap={{ scale: 0.95 }}
