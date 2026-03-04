@@ -42,7 +42,7 @@ export default function Dashboard() {
         <section>
           <button 
             onClick={() => navigate("/live")}
-            className="w-full bg-white text-black p-10 rounded-[48px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_30px_70px_rgba(255,255,255,0.1)]"
+            className="w-full bg-white text-black p-10 rounded-[48px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_30px_70px_rgba(255,255,255,0.15)]"
           >
             <div className="flex items-center gap-8">
               <div className="w-16 h-16 rounded-[24px] bg-black flex items-center justify-center shadow-lg">
