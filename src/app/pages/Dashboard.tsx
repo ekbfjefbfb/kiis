@@ -41,21 +41,21 @@ export default function Dashboard() {
       <main className="flex-1 overflow-y-auto scrollbar-hide py-10">
         <div className="mobile-container space-y-16">
           {/* Main Action - Centered & Massive Impact */}
-          <section className="mb-14">
+          <section className="mb-10">
             <button 
               onClick={() => navigate("/live")}
-              className="w-full bg-white text-black p-10 rounded-[48px] flex items-center justify-between group active:scale-[0.96] transition-all shadow-[0_30px_100px_rgba(255,255,255,0.15)] border-none"
+              className="w-full bg-white text-black p-6 rounded-[24px] flex items-center justify-between group active:scale-[0.97] transition-all shadow-xl border-none"
             >
-              <div className="flex items-center gap-10">
-                <div className="w-20 h-20 rounded-[28px] bg-black flex items-center justify-center shadow-2xl">
-                  <Mic size={40} className="text-white" />
+              <div className="flex items-center gap-6">
+                <div className="w-12 h-12 rounded-[16px] bg-black flex items-center justify-center shadow-lg">
+                  <Mic size={24} className="text-white" />
                 </div>
-                <div className="text-left space-y-2">
-                  <h2 className="text-3xl font-black italic uppercase tracking-tighter leading-none text-black">Grabar_Ahora_</h2>
-                  <p className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.4em]">IA_Realtime_Engine_</p>
+                <div className="text-left space-y-0.5">
+                  <h2 className="text-xl font-black italic uppercase tracking-tighter leading-none text-black">Grabar_Ahora_</h2>
+                  <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">IA_Realtime_Engine_</p>
                 </div>
               </div>
-              <ChevronRight size={40} strokeWidth={3} className="text-black/10 group-hover:text-black transition-colors" />
+              <ChevronRight size={24} strokeWidth={3} className="text-black/20 group-hover:text-black transition-colors" />
             </button>
           </section>
 

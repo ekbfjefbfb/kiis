@@ -57,56 +57,54 @@ html, body {
 .text-zinc-600 { color: #52525b !important; }
 .text-black { color: #000000 !important; }
 
-/* Premium Button Sizing - Brutalist & Tactile */
+/* Premium Button Sizing - Compact & Elegant */
 .btn-massive {
   width: 100%;
   background-color: #ffffff;
   color: #000000;
-  padding: 1.5rem 2rem;
-  border-radius: 1.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 0.75rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 1rem;
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
   border: none;
-  box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
   cursor: pointer;
 }
 
 .btn-massive:active {
-  transform: scale(0.96);
-  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.05);
+  transform: scale(0.97);
 }
 
-/* Typography for Eye Comfort - Plus Jakarta Sans */
+/* Typography for Eye Comfort */
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Plus Jakarta Sans', sans-serif !important;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   font-weight: 800;
 }
 
 p, span, label, input {
   font-family: 'Plus Jakarta Sans', sans-serif !important;
-  line-height: 1.6;
+  line-height: 1.5;
   letter-spacing: 0.01em;
 }
 
-/* Brutalist Inputs - Premium Touch */
+/* Brutalist Inputs - Simplified */
 input {
   background-color: #121212 !important;
-  border: 2px solid #27272a !important;
-  border-radius: 1.25rem !important;
-  padding: 1.25rem 1.5rem !important;
+  border: 1.5px solid #27272a !important;
+  border-radius: 0.85rem !important;
+  padding: 1rem 1.25rem !important;
   color: #ffffff !important;
   font-weight: 600 !important;
-  font-size: 1rem !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease !important;
   width: 100%;
 }
 
