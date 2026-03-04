@@ -90,16 +90,16 @@ export default function Dashboard() {
       <section className="mb-12">
         <button 
           onClick={() => navigate("/record")}
-          className="w-full aspect-[16/7] bg-white text-black rounded-[2.5rem] flex flex-col items-center justify-center gap-2 active:scale-[0.98] transition-all duration-300 shadow-2xl shadow-white/5"
+          className="w-full h-32 bg-white text-black rounded-[2rem] flex flex-col items-center justify-center gap-1 active:scale-[0.98] transition-all duration-300 shadow-xl shadow-white/5"
         >
-          <span className="text-sm font-bold uppercase tracking-widest opacity-60">
+          <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">
             {currentClass ? "En curso" : "Listo para grabar"}
           </span>
-          <span className="text-3xl font-bold tracking-tight">
+          <span className="text-2xl font-bold tracking-tight">
             {currentClass ? `Grabar ${currentClass.name}` : "Grabar Clase"}
           </span>
           {nextClass && !currentClass && (
-            <span className="text-xs font-medium opacity-40">
+            <span className="text-[10px] font-medium opacity-30">
               Próxima: {nextClass.name} a las {nextClass.schedule[0].time}
             </span>
           )}
@@ -183,9 +183,9 @@ export default function Dashboard() {
       <footer className="mt-8">
         <button 
           onClick={() => navigate("/assistant")}
-          className="w-full h-16 bg-zinc-900 text-white rounded-[2rem] font-bold text-base flex items-center justify-center gap-3 active:scale-[0.98] transition-all border border-white/5"
+          className="w-full h-14 bg-zinc-900 text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all border border-white/5"
         >
-          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 animate-pulse" />
+          <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 animate-pulse" />
           Pregunta a tu Asistente
         </button>
       </footer>

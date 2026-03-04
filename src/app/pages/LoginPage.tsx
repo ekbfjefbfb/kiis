@@ -39,16 +39,16 @@ export default function LoginPage() {
   return (
     <div className="min-h-[100dvh] bg-black text-white flex flex-col px-6 pt-24 pb-8">
       {/* Logo centrado */}
-      <div className="flex justify-center mb-20">
-        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center">
-          <span className="text-black text-2xl font-bold">K</span>
+      <div className="flex justify-center mb-16">
+        <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg">
+          <span className="text-black text-xl font-bold">K</span>
         </div>
       </div>
 
       {/* Formulario */}
-      <form onSubmit={handleLogin} className="flex-1 space-y-4">
+      <form onSubmit={handleLogin} className="flex-1 space-y-3">
         {error && (
-          <p className="text-red-400 text-base text-center">{error}</p>
+          <p className="text-red-400 text-sm text-center bg-red-400/10 py-2 rounded-xl border border-red-400/20">{error}</p>
         )}
         
         <input
@@ -56,7 +56,7 @@ export default function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Correo"
-          className="w-full h-16 bg-zinc-900 rounded-2xl px-5 text-white text-lg placeholder:text-zinc-600 border-none outline-none"
+          className="w-full h-14 bg-zinc-900 rounded-xl px-5 text-white text-base placeholder:text-zinc-600 border border-white/5 outline-none focus:border-white/20 transition-all"
           required
         />
         
@@ -65,23 +65,22 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Contraseña"
-          className="w-full h-16 bg-zinc-900 rounded-2xl px-5 text-white text-lg placeholder:text-zinc-600 border-none outline-none"
+          className="w-full h-14 bg-zinc-900 rounded-xl px-5 text-white text-base placeholder:text-zinc-600 border border-white/5 outline-none focus:border-white/20 transition-all"
           required
         />
 
         <button 
           disabled={loading}
           type="submit"
-          className="w-full h-16 bg-white text-black rounded-2xl font-semibold text-lg mt-8 active:scale-95 transition-transform disabled:opacity-50"
+          className="w-full h-14 bg-white text-black rounded-xl font-bold text-base mt-6 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center shadow-md shadow-white/5"
         >
-          {loading ? <Loader2 className="animate-spin mx-auto" size={22} /> : "Entrar"}
+          {loading ? <Loader2 className="animate-spin" size={20} /> : "Entrar"}
         </button>
       </form>
 
-      {/* Crear cuenta */}
       <button 
         onClick={() => navigate("/register")}
-        className="text-zinc-500 text-lg mt-6 active:text-white transition-colors"
+        className="text-zinc-500 text-sm mt-4 active:text-white transition-colors"
       >
         Crear cuenta
       </button>

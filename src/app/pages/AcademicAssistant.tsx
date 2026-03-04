@@ -134,10 +134,16 @@ export default function AcademicAssistant() {
       {/* Header con glassmorphism - Altura fija */}
       <header className="flex-none px-7 pt-12 pb-6 border-b border-white/5 bg-black/80 backdrop-blur-xl z-20">
         <div className="flex items-center gap-4 mb-6">
-          <button onClick={() => navigate("/")} className="w-10 h-10 flex-none flex items-center justify-center bg-zinc-900 rounded-2xl active:scale-90 transition-all border border-white/5">
-            <ArrowLeft size={22} />
+          <button 
+            onClick={() => navigate("/")}
+            className="w-10 h-10 bg-zinc-900 rounded-full flex items-center justify-center active:scale-90 transition-transform"
+          >
+            <ArrowLeft size={20} />
           </button>
-          <h1 className="text-2xl font-bold tracking-tight truncate">Asistente IA</h1>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">IA</h1>
+            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Asistente Académico</p>
+          </div>
         </div>
         <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
           <div className="flex-none px-3 py-1.5 bg-zinc-900 rounded-xl text-[10px] font-bold text-zinc-400 border border-white/5 uppercase tracking-wider">📚 {stats.classes} Clases</div>
@@ -155,11 +161,14 @@ export default function AcademicAssistant() {
           <div className="space-y-8 pb-4">
             {messages.map((m) => (
               <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[85%] ${m.role === 'user' 
-                  ? 'bg-white text-black px-5 py-3.5 rounded-[1.8rem] rounded-tr-sm font-semibold shadow-lg shadow-white/5' 
-                  : 'text-white'
-                }`}>
-                  <p className="text-[17px] leading-relaxed font-medium break-words">{m.content}</p>
+                <div 
+                  className={`max-w-[85%] p-4 rounded-[2rem] ${
+                    m.role === 'user' 
+                      ? 'bg-zinc-900 text-zinc-300 self-end rounded-tr-none' 
+                      : 'bg-white/5 text-white self-start rounded-tl-none border border-white/5'
+                  }`}
+                >
+                  <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">{m.content}</p>
                   {m.actions && (
                     <div className="flex flex-wrap gap-2 mt-5">
                       {m.actions.map((action, idx) => (
@@ -187,21 +196,24 @@ export default function AcademicAssistant() {
       </main>
 
       {/* Footer - Área fija abajo */}
-      <footer className="flex-none px-7 pb-10 pt-4 bg-gradient-to-t from-black via-black to-transparent z-20">
-        <div className="flex items-center gap-3 bg-zinc-900/90 backdrop-blur-2xl border border-white/10 rounded-[2.2rem] px-5 py-3.5 shadow-2xl ring-1 ring-white/5">
-          <input 
+      <footer className="flex-none p-6 pb-10 bg-black/80 backdrop-blur-xl border-t border-white/5">
+        <div className="relative flex items-center gap-3">
+          <input
+            type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage(input)}
-            placeholder="Escribe aquí..."
-            className="flex-1 bg-transparent border-none text-white text-[16px] placeholder:text-zinc-600 outline-none font-medium"
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage(input)}
+            placeholder="Pregunta algo..."
+            className="flex-1 h-14 bg-zinc-900 rounded-full px-6 text-sm focus:outline-none border border-white/5 focus:border-white/20 transition-all"
           />
-          <button 
+          <button
             onClick={() => sendMessage(input)}
             disabled={!input.trim() || isProcessing}
-            className="w-11 h-11 flex-none bg-white text-black rounded-full flex items-center justify-center disabled:opacity-20 active:scale-90 transition-all shadow-xl hover:bg-zinc-100"
+            className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${
+              isProcessing ? 'bg-zinc-900 animate-pulse' : 'bg-white text-black'
+            }`}
           >
-            <Send size={18} strokeWidth={2.5} />
+            <Send size={20} />
           </button>
         </div>
       </footer>
