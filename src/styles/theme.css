@@ -41,20 +41,20 @@ html, body {
 }
 
 /* Atomic Text Hierarchy */
-h1 { font-size: 1.25rem; font-weight: 900; letter-spacing: -0.02em; color: #ffffff; }
-h2 { font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; color: #ffffff; }
-h3 { font-size: 0.875rem; font-weight: 700; color: #e4e4e7; }
-p { font-size: 0.8125rem; line-height: 1.5; color: #a1a1aa; }
+h1 { font-size: 1.15rem; font-weight: 900; letter-spacing: -0.02em; color: #ffffff; }
+h2 { font-size: 0.9rem; font-weight: 800; letter-spacing: -0.01em; color: #ffffff; }
+h3 { font-size: 0.8rem; font-weight: 700; color: #e4e4e7; }
+p { font-size: 0.75rem; line-height: 1.4; color: #71717a; }
 
 /* Subtle Technical Elements */
 .btn-massive, .btn-primary {
   width: 100%;
   background-color: #ffffff;
   color: #000000;
-  padding: 0.75rem;
+  padding: 0.7rem;
   border-radius: 0.5rem;
   font-weight: 800;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   border: none;
   transition: opacity 0.2s;
@@ -66,16 +66,16 @@ p { font-size: 0.8125rem; line-height: 1.5; color: #a1a1aa; }
 
 input {
   background-color: #09090b !important;
-  border: 1px solid #27272a !important;
+  border: 1px solid #18181b !important;
   border-radius: 0.5rem !important;
-  padding: 0.75rem !important;
+  padding: 0.6rem 0.75rem !important;
   color: #ffffff !important;
-  font-size: 0.875rem !important;
+  font-size: 0.8rem !important;
   width: 100%;
 }
 
 input:focus {
-  border-color: #52525b !important;
+  border-color: #27272a !important;
   outline: none !important;
 }
 

@@ -56,7 +56,7 @@ export default function Dashboard() {
             </button>
           </section>
 
-          {/* Agenda Section - Pure Hierarchy */}
+          {/* Agenda Section - Total Hierarchy */}
           <section className="space-y-3">
             <div className="flex items-center justify-between px-1">
               <h2 className="text-[9px] font-bold text-zinc-600 uppercase tracking-[0.3em]">Agenda Académica</h2>
@@ -73,21 +73,21 @@ export default function Dashboard() {
                 <button
                   key={cls.id}
                   onClick={() => navigate(`/class/${cls.id}`)}
-                  className="w-full bg-zinc-900/40 border border-zinc-800/40 p-4 rounded-xl flex flex-col gap-3 text-left active:bg-zinc-800/60 transition-all"
+                  className="w-full bg-zinc-900/40 border border-zinc-800/40 p-4 rounded-xl flex flex-col gap-2.5 text-left active:bg-zinc-800/60 transition-all shadow-sm"
                 >
-                  <div className="flex justify-between items-center w-full">
+                  <div className="flex justify-between items-start w-full">
                     <div className="flex flex-col">
-                      <h3 className="text-sm font-bold text-white">{cls.name}</h3>
+                      <h3 className="text-sm font-bold text-white tracking-tight">{cls.name}</h3>
                       <span className="text-[9px] font-medium text-zinc-600 uppercase tracking-widest">{cls.professor}</span>
                     </div>
                     <ChevronRight size={14} className="text-zinc-800" />
                   </div>
 
                   {cls.nextTask && (
-                    <div className="pt-2.5 border-t border-zinc-800/50 flex items-center justify-between">
+                    <div className="pt-2 border-t border-zinc-800/50 flex items-center justify-between">
                       <div className="flex items-center gap-2 overflow-hidden">
-                        <Sparkles size={10} className="text-blue-500/50" />
-                        <p className="text-[11px] text-zinc-500 font-medium truncate italic">{cls.nextTask}</p>
+                        <div className="w-1 h-1 rounded-full bg-blue-500/40" />
+                        <p className="text-[11px] text-zinc-500 font-medium truncate">{cls.nextTask}</p>
                       </div>
                       <span className="text-[8px] font-bold text-zinc-700 uppercase shrink-0 ml-2">{cls.taskDate}</span>
                     </div>
@@ -98,14 +98,13 @@ export default function Dashboard() {
           </section>
 
           {/* Recent Activity */}
-          <section className="space-y-8 pb-20">
-            <div className="flex items-center gap-3 text-zinc-600 px-6">
-              <Clock size={18} className="opacity-40" />
-              <span className="text-[11px] font-black uppercase tracking-[0.8em]">Recientes_</span>
+          <section className="space-y-4 pb-20">
+            <div className="flex items-center gap-3 text-zinc-600 px-1">
+              <Clock size={14} className="opacity-40" />
+              <span className="text-[9px] font-bold uppercase tracking-[0.3em]">Recientes</span>
             </div>
-            <div className="w-full bg-zinc-900/10 border border-dashed border-zinc-800/20 rounded-[56px] p-24 flex flex-col items-center justify-center text-center space-y-8">
-              <Sparkles size={40} className="text-zinc-900 animate-pulse" />
-              <p className="text-[11px] font-black uppercase tracking-[0.8em] text-zinc-900 italic">No_System_Activity_</p>
+            <div className="w-full bg-zinc-900/20 border border-dashed border-zinc-800/30 rounded-2xl py-12 flex flex-col items-center justify-center text-center">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-800">Sin actividad reciente</p>
             </div>
           </section>
         </div>

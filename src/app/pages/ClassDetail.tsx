@@ -77,26 +77,22 @@ export default function ClassDetail() {
             {activeTab === 'grabar' && (
               <motion.div 
                 key="grabar"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.05 }}
-                className="h-full flex flex-col items-center justify-center space-y-8 py-10"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="h-full flex flex-col items-center justify-center space-y-6 py-10"
               >
-                <div className="relative group">
-                  <button 
-                    onClick={() => navigate("/live")}
-                    className="relative w-32 h-32 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-[0.98] transition-all"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center border border-zinc-700">
-                      <Mic size={24} className="text-zinc-400" fill="none" />
-                    </div>
-                  </button>
-                </div>
-                <div className="text-center space-y-2">
-                  <h2 className="text-lg font-bold text-zinc-200">Grabar clase</h2>
-                  <p className="text-[11px] font-medium text-zinc-500 uppercase tracking-widest max-w-[200px] mx-auto">
-                    Captura el audio de la sesión actual
-                  </p>
+                <button 
+                  onClick={() => navigate("/live")}
+                  className="w-20 h-20 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center active:scale-[0.98] transition-all group"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-zinc-800 flex items-center justify-center border border-zinc-700 group-active:bg-white group-active:border-white transition-all">
+                    <Mic size={18} className="text-zinc-500 group-active:text-black transition-colors" />
+                  </div>
+                </button>
+                <div className="text-center">
+                  <h2 className="text-sm font-bold text-zinc-300">Capturar audio</h2>
+                  <p className="text-[10px] font-medium text-zinc-600 uppercase tracking-widest mt-1">Sesión en vivo</p>
                 </div>
               </motion.div>
             )}
@@ -108,23 +104,23 @@ export default function ClassDetail() {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-4"
               >
-                <div className="bg-zinc-900 border border-zinc-800/50 rounded-xl p-5 space-y-5">
-                  <div className="flex items-center gap-3 text-zinc-500">
+                <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-2xl p-6">
+                  <div className="flex items-center gap-3 text-zinc-500 mb-6">
                     <Sparkles size={14} />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Análisis de Materia</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Inteligencia de Materia</span>
                   </div>
-                  <div className="space-y-4">
-                    <p className="text-sm text-zinc-400 leading-relaxed font-medium">
-                      Inicia una grabación para generar el resumen inteligente y las tareas de esta clase.
+                  <div className="space-y-6">
+                    <p className="text-sm text-zinc-400 leading-relaxed italic">
+                      Inicia una captura para generar el resumen inteligente y la lista de tareas de esta clase.
                     </p>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-zinc-950 p-3 rounded-lg border border-zinc-800/50">
-                        <p className="text-[8px] font-bold text-zinc-600 uppercase mb-1">Clases</p>
-                        <p className="text-lg font-bold text-zinc-300">0</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-tighter">Sesiones</p>
+                        <p className="text-xl font-black text-zinc-300">0</p>
                       </div>
-                      <div className="bg-zinc-950 p-3 rounded-lg border border-zinc-800/50">
-                        <p className="text-[8px] font-bold text-zinc-600 uppercase mb-1">Tareas</p>
-                        <p className="text-lg font-bold text-zinc-300">0</p>
+                      <div className="space-y-1">
+                        <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-tighter">Tareas</p>
+                        <p className="text-xl font-black text-zinc-300">0</p>
                       </div>
                     </div>
                   </div>
@@ -140,21 +136,21 @@ export default function ClassDetail() {
                 className="space-y-2"
               >
                 {history.length === 0 ? (
-                  <div className="py-20 flex flex-col items-center justify-center text-center space-y-4 opacity-20">
-                    <History size={40} strokeWidth={1.5} />
-                    <p className="text-[10px] font-bold uppercase tracking-widest">Sin grabaciones</p>
+                  <div className="py-20 flex flex-col items-center justify-center opacity-20">
+                    <History size={32} strokeWidth={1.5} />
+                    <p className="text-[10px] font-bold uppercase tracking-widest mt-4">Vacío</p>
                   </div>
                 ) : (
                   history.map((session: any) => (
                     <button
                       key={session.id}
-                      className="w-full bg-zinc-900 border border-zinc-800/50 p-4 rounded-xl flex items-center justify-between group active:bg-zinc-800/40 transition-all text-left"
+                      className="w-full bg-zinc-900/30 border border-zinc-800/30 p-4 rounded-xl flex items-center justify-between active:bg-zinc-800/40 transition-all text-left"
                     >
-                      <div className="space-y-1">
-                        <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">{session.date}</span>
-                        <h4 className="text-sm font-bold text-zinc-200 leading-tight">{session.topic}</h4>
+                      <div className="space-y-0.5">
+                        <span className="text-[8px] font-bold text-zinc-600 uppercase tracking-tighter">{session.date}</span>
+                        <h4 className="text-sm font-bold text-zinc-300 leading-tight">{session.topic}</h4>
                       </div>
-                      <ChevronRight size={14} className="text-zinc-700" />
+                      <ChevronRight size={14} className="text-zinc-800" />
                     </button>
                   ))
                 )}
