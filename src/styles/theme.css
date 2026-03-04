@@ -1,62 +1,70 @@
-/* RESET GLOBAL ABSOLUTO PARA VISIBILIDAD GARANTIZADA */
+/* 
+  KIIS - ATOMIC VISIBILITY ENGINE 
+  Garantiza visibilidad absoluta eliminando variables complejas y opacidades.
+*/
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-:root {
+/* Forzado de visibilidad universal durante la carga y ejecución */
+html, body, #root {
   background-color: #000000 !important;
   color: #ffffff !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Tipografía de ingeniería */
+:root {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
   color-scheme: dark !important;
 }
 
-html, body {
-  width: 100% !important;
-  height: 100% !important;
-  background-color: #000000 !important;
-  color: #ffffff !important;
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  -webkit-font-smoothing: antialiased !important;
-  overflow-x: hidden !important;
-}
-
-#root {
-  width: 100% !important;
-  min-height: 100% !important;
-  background-color: #000000 !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-/* FORZADO DE CLASES TAILWIND (CONTRASTE CRÍTICO) */
+/* REGLAS MAESTRAS DE CONTRASTE (TAILWIND RECOVERY) */
 .bg-black { background-color: #000000 !important; }
 .bg-zinc-900 { background-color: #18181b !important; }
 .bg-zinc-800 { background-color: #27272a !important; }
 .bg-white { background-color: #ffffff !important; }
 
 .text-white { color: #ffffff !important; }
-.text-black { color: #000000 !important; }
-.text-zinc-200 { color: #e4e4e7 !important; }
 .text-zinc-400 { color: #a1a1aa !important; }
 .text-zinc-500 { color: #71717a !important; }
+.text-black { color: #000000 !important; }
 
 .border-zinc-800 { border-color: #27272a !important; }
-.border-white\/10 { border-color: rgba(255, 255, 255, 0.1) !important; }
+.border-zinc-700 { border-color: #3f3f46 !important; }
 
-/* ELIMINAR CUALQUIER ESTADO OCULTO QUE PUEDA CAUSAR PANTALLA NEGRA */
+/* DISABLE ALL HIDDEN STATES - Previene que Framer Motion u otras librerías oculten el contenido */
 .opacity-0, [style*="opacity: 0"], .hidden, [style*="display: none"] {
   opacity: 1 !important;
-  display: block !important;
+  display: flex !important; /* La mayoría de los contenedores en esta app son flex */
   visibility: visible !important;
 }
 
+/* Estructura crítica del Header */
 header {
-  background-color: rgba(0, 0, 0, 0.9) !important;
-  backdrop-filter: blur(16px) !important;
+  background-color: #000000 !important;
   border-bottom: 1px solid #27272a !important;
+  z-index: 100 !important;
 }
 
+/* Estructura crítica del Main */
 main {
   background-color: #000000 !important;
+  flex: 1 !important;
+}
+
+/* Botones y Enlaces visibles siempre */
+button, a {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  color: inherit;
+  opacity: 1 !important;
 }

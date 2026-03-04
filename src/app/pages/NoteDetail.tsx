@@ -1,122 +1,142 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
-import { ArrowLeft, Trash2, Clock, Calendar, FileText, Zap, Share2 } from "lucide-react";
-import { motion } from "motion/react";
-import { notesService, BackendNote } from "../../services/notes.service";
+import { useState, useRef, useEffect } from "react";
+import { ArrowLeft, Mic, StopCircle, Loader2, Sparkles, CheckCircle2, ChevronRight, Zap } from "lucide-react";
+import { useNavigate } from "react-router";
+import { motion, AnimatePresence } from "motion/react";
+import { clsx } from "clsx";
+import { audioService } from "../../services/audio.service";
+import { groqService } from "../../services/groq.service";
+import { aiService } from "../../services/ai.service";
+import { notesService } from "../../services/notes.service";
 
-export default function NoteDetail() {
-  const { id } = useParams<{ id: string }>();
+export default function QuickNotePage() {
   const navigate = useNavigate();
-  const [note, setNote] = useState<BackendNote | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [result, setResult] = useState<{ title: string; summary: string } | null>(null);
+  const [transcript, setTranscript] = useState<string>("");
+  const wakeLockRef = useRef<any>(null);
 
-  useEffect(() => {
-    if (id) loadNote(id);
-  }, [id]);
-
-  const loadNote = async (noteId: string) => {
-    setLoading(true);
+  const requestWakeLock = async () => {
     try {
-      const data = await notesService.getNote(noteId);
-      setNote(data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+      if ('wakeLock' in navigator) {
+        wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+      }
+    } catch (err) { console.error(err); }
   };
 
-  const handleDelete = async () => {
-    if (!note || !confirm("¿Eliminar esta nota?")) return;
-    try {
-      await notesService.deleteNote(note.id);
-      navigate("/notes", { replace: true });
-    } catch (e) {
-      console.error(e);
+  const toggleRecording = async () => {
+    if (isRecording) {
+      setIsRecording(false);
+      setIsProcessing(true);
+      if (wakeLockRef.current) wakeLockRef.current.release();
+      
+      try {
+        const audioBlob = await audioService.stopAudioRecording();
+        const text = await groqService.transcribe(audioBlob, "es");
+        setTranscript(text);
+
+        const prompt = `Genera un título ultracorto (3-4 palabras) y un resumen de una oración para esta nota rápida. 
+        Responde en JSON: { "title": "...", "summary": "..." }
+        Texto: ${text}`;
+        
+        let aiResponse = "";
+        await aiService.chat(prompt, [], (token) => { aiResponse += token; });
+        
+        const jsonStr = aiResponse.substring(aiResponse.indexOf('{'), aiResponse.lastIndexOf('}') + 1);
+        const parsed = JSON.parse(jsonStr);
+        
+        await notesService.createNote({
+          title: parsed.title.toUpperCase(),
+          transcript: text,
+          summary: parsed.summary
+        });
+
+        setResult(parsed);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsProcessing(false);
+      }
+    } else {
+      const ok = await audioService.requestPermissions();
+      if (!ok) return;
+      await audioService.startAudioRecording();
+      setIsRecording(true);
+      await requestWakeLock();
     }
   };
-
-  if (loading) return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-    </div>
-  );
-
-  if (!note) return (
-    <div className="min-h-screen bg-black text-white p-6 flex flex-col items-center justify-center text-center">
-      <p className="text-white/40 uppercase font-black text-xs tracking-widest mb-4">Error</p>
-      <h1 className="text-2xl font-black uppercase italic tracking-tighter mb-6">Nota no encontrada</h1>
-      <button onClick={() => navigate(-1)} className="bg-white text-black px-8 py-3 rounded-xl font-black uppercase italic tracking-tight">Volver</button>
-    </div>
-  );
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-white/30 pb-20">
-      {/* Header Fijo */}
-      <div className="px-6 pt-10 pb-6 flex items-center justify-between border-b border-white/5 sticky top-0 bg-black/80 backdrop-blur-xl z-20">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
-          <ArrowLeft size={20} />
-        </button>
-        <div className="flex items-center gap-2">
-          <button onClick={handleDelete} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-red-400 active:scale-90 transition-transform">
-            <Trash2 size={18} />
+    <div className="h-[100dvh] w-full bg-black text-white font-sans overflow-hidden flex flex-col relative selection:bg-white/20">
+      <header className="px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] pt-[max(env(safe-area-inset-top,2rem),3rem)] pb-6 flex justify-between items-end border-b border-white/5 bg-black/80 backdrop-blur-xl sticky top-0 z-20 shrink-0">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate(-1)} className="w-11 h-11 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            <ArrowLeft size={20} />
           </button>
+          <div>
+            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-1.5 text-left">Acción_Rápida</p>
+            <h1 className="text-2xl font-extrabold uppercase italic tracking-tighter leading-none">Nota_Flash</h1>
+          </div>
         </div>
-      </div>
+        <div className="w-11 h-11 rounded-full bg-emerald-500/10 flex items-center justify-center">
+          <Zap size={20} className="text-emerald-500/60" />
+        </div>
+      </header>
 
-      <div className="px-6 pt-8 space-y-8">
-        {/* Título y Meta */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="px-2 py-0.5 rounded-md bg-white/10 text-[9px] font-black uppercase tracking-[0.2em] text-white/50">Nota</span>
-            <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
-              • {new Date(note.created_at || "").toLocaleDateString("es-ES", { day: 'numeric', month: 'long', year: 'numeric' })}
-            </span>
-          </div>
-          <h1 className="text-4xl font-black uppercase italic tracking-tighter leading-[1.1] text-white">
-            {note.title || "Nota sin título"}
-          </h1>
-        </motion.div>
-
-        {/* Resumen Inteligente */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ delay: 0.1 }}
-          className="bg-zinc-900 border border-white/10 rounded-[32px] p-7 shadow-2xl relative overflow-hidden"
-        >
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-4">
-              <Zap size={16} className="text-emerald-400" />
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 italic">Resumen IA</p>
-            </div>
-            <p className="text-lg text-white/90 leading-relaxed font-medium">
-              {note.summary || "No hay resumen disponible para esta nota."}
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Transcripción Completa */}
-        {note.transcript && (
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.2 }}
-            className="space-y-4 pb-10"
-          >
-            <div className="flex items-center gap-2 px-1">
-              <FileText size={14} className="text-white/20" />
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 italic">Transcripción completa</p>
-            </div>
-            <div className="bg-white/5 border border-white/5 rounded-[24px] p-6">
-              <p className="text-[15px] text-white/60 leading-relaxed font-medium whitespace-pre-wrap">
-                {note.transcript}
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </div>
+      <main className="flex-1 p-8 flex flex-col items-center justify-center max-w-2xl mx-auto w-full relative">
+        <AnimatePresence mode="wait">
+          {!result && !isProcessing ? (
+            <motion.div key="rec" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.1 }} className="flex flex-col items-center gap-16">
+              <div className="relative">
+                {isRecording && (
+                  <motion.div animate={{ scale: [1, 2.2, 1], opacity: [0.2, 0, 0.2] }} transition={{ repeat: Infinity, duration: 2.5 }} className="absolute inset-0 bg-white/5 rounded-full" />
+                )}
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={toggleRecording}
+                  className={clsx(
+                    "w-48 h-48 rounded-[64px] flex items-center justify-center border-2 transition-all duration-700 shadow-2xl relative z-10",
+                    isRecording ? "bg-white border-white" : "bg-zinc-900 border-white/5"
+                  )}
+                >
+                  {isRecording ? <StopCircle size={64} fill="black" className="text-black" /> : <Mic size={64} className="text-zinc-700" />}
+                </motion.button>
+              </div>
+              <div className="text-center space-y-4">
+                <h2 className="text-4xl font-extrabold uppercase italic tracking-tighter leading-none">{isRecording ? "Escuchando_" : "Toca_Graba"}</h2>
+                <p className="text-[11px] text-zinc-600 font-bold uppercase tracking-[0.4em] max-w-[240px] leading-relaxed">Captura una idea rápida. La IA hará el resto.</p>
+              </div>
+            </motion.div>
+          ) : isProcessing ? (
+            <motion.div key="proc" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-8 text-center">
+              <Loader2 size={80} className="animate-spin text-white/5" strokeWidth={1} />
+              <h2 className="text-3xl font-extrabold uppercase italic tracking-tighter text-white/40">Sintetizando_</h2>
+            </motion.div>
+          ) : (
+            <motion.div key="res" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="w-full space-y-10">
+              <div className="bg-zinc-900/40 border border-white/5 rounded-[48px] p-10 space-y-8 shadow-2xl relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500/20" />
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-emerald-500/40">
+                    <Sparkles size={16} />
+                    <span className="text-[10px] font-black uppercase tracking-[0.5em]">IA_Resultado</span>
+                  </div>
+                  <h3 className="text-3xl font-extrabold uppercase italic tracking-tighter leading-tight text-white">{result.title}</h3>
+                  <p className="text-xl font-bold leading-relaxed text-zinc-400 italic tracking-tight">{result.summary}</p>
+                </div>
+              </div>
+              <motion.button
+                whileTap={{ scale: 0.96 }}
+                onClick={() => navigate('/dashboard')}
+                className="w-full h-20 bg-white text-black rounded-[40px] font-extrabold uppercase italic tracking-tighter text-xl shadow-2xl flex items-center justify-center gap-4 active:bg-zinc-200 transition-colors"
+              >
+                <span>Listo_</span>
+                <CheckCircle2 size={28} />
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
     </div>
   );
 }

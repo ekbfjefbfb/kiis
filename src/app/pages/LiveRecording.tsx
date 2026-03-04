@@ -1,450 +1,202 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Mic, Square, Wifi, WifiOff, Sparkles, CheckCircle2, AlertCircle } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
-import { clsx } from "clsx";
-import { audioService } from "../../services/audio.service";
 import { 
-  agendaService, 
-  AgendaSession, 
-  WSChunkRelevance, 
-  WSAgendaState 
-} from "../../services/agenda.service";
+  Mic, StopCircle, Loader2, Sparkles, ArrowLeft, 
+  CheckCircle2, AlertCircle, BookOpen, ChevronRight
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { audioService } from "../../services/audio.service";
+import { groqService } from "../../services/groq.service";
+import { aiService } from "../../services/ai.service";
+import { CLASSES } from "../data/mock";
+
+interface SessionResult {
+  topic: string;
+  summary: string;
+  tasks: Array<{ id: string; title: string; dueDate: string; completed: boolean }>;
+}
 
 export default function LiveRecording() {
   const navigate = useNavigate();
-  
-  // Session state
-  const [session, setSession] = useState<AgendaSession | null>(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
-  
-  // WebSocket state
-  const [isConnected, setIsConnected] = useState(false);
-  const [lastRelevance, setLastRelevance] = useState<WSChunkRelevance | null>(null);
-  const [agendaState, setAgendaState] = useState<WSAgendaState | null>(null);
-  
-  // Transcription
-  const [currentTranscript, setCurrentTranscript] = useState("");
-  const [fullTranscript, setFullTranscript] = useState("");
-  
-  // Audio chunks for periodic upload
-  const audioChunksRef = useRef<Blob[]>([]);
-  const lastUploadTimeRef = useRef<number>(Date.now());
-  const UPLOAD_INTERVAL_MS = 10000; // 10 segundos
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const [result, setResult] = useState<SessionResult | null>(null);
+  const [selectedClassId, setSelectedClassId] = useState("");
+  const [showClassSelector, setShowClassSelector] = useState(false);
+  const wakeLockRef = useRef<any>(null);
 
   useEffect(() => {
-    initializeSession();
+    startRecording();
     return () => {
-      cleanup();
+      if (isRecording) stopRecording();
     };
   }, []);
 
-  useEffect(() => {
-    let interval: any;
-    if (isRecording) {
-      interval = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
-        checkAndUploadAudio();
-      }, 1000);
-    } else {
-      setRecordingTime(0);
-    }
-    return () => clearInterval(interval);
-  }, [isRecording]);
-
-  const initializeSession = async () => {
-    try {
-      // Crear sesión
-      const newSession = await agendaService.createSession({
-        class_name: "Grabación en Vivo",
-        topic_hint: "Clase grabada desde PWA"
-      });
-      
-      setSession(newSession);
-      
-      // Conectar WebSocket
-      agendaService.connectWebSocket(newSession.id, {
-        onChunkRelevance: (data) => {
-          console.log('📊 Relevancia:', data.relevance);
-          setLastRelevance(data);
-        },
-        onAgendaState: (data) => {
-          console.log('📝 Estado actualizado:', data.state);
-          setAgendaState(data);
-        },
-        onConnected: () => {
-          console.log('✅ Conectado al backend');
-          setIsConnected(true);
-        },
-        onDisconnected: () => {
-          console.log('❌ Desconectado del backend');
-          setIsConnected(false);
-        },
-        onError: (error) => {
-          console.error('Error WebSocket:', error);
-        }
-      });
-    } catch (error) {
-      console.error('Error inicializando sesión:', error);
-      alert('Error al conectar con el servidor');
-    }
-  };
-
-  const handleRecord = async () => {
-    if (isRecording) {
-      await stopRecording();
-    } else {
-      await startRecording();
-    }
-  };
-
   const startRecording = async () => {
-    const hasPermission = await audioService.requestPermissions();
-    if (!hasPermission) {
-      alert("Se necesitan permisos de micrófono");
+    const ok = await audioService.requestPermissions();
+    if (!ok) {
+      navigate(-1);
       return;
     }
-
     try {
-      // Iniciar grabación de audio
       await audioService.startAudioRecording();
-      
-      // Iniciar STT del navegador para preview
-      if (audioService.isSupported()) {
-        audioService.startRecording((text) => {
-          setCurrentTranscript(text);
-          setFullTranscript(text);
-        });
-      }
-
       setIsRecording(true);
-      setRecordingTime(0);
-      lastUploadTimeRef.current = Date.now();
-    } catch (error) {
-      console.error("Error al iniciar grabación:", error);
-      alert("Error al iniciar grabación");
+      if ('wakeLock' in navigator) {
+        wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+      }
+    } catch (e) {
+      console.error(e);
+      navigate(-1);
     }
   };
 
   const stopRecording = async () => {
+    setIsRecording(false);
+    setIsProcessing(true);
+    if (wakeLockRef.current) wakeLockRef.current.release();
+    
     try {
-      // Detener STT del navegador
-      if (audioService.getIsRecording()) {
-        audioService.stopRecording();
-      }
-
-      // Detener grabación de audio
       const audioBlob = await audioService.stopAudioRecording();
+      const text = await groqService.transcribe(audioBlob, 'es');
+      setTranscript(text);
       
-      setIsRecording(false);
-
-      // Subir último chunk de audio
-      if (audioBlob.size > 0) {
-        await uploadAudioChunk(audioBlob);
-      }
-
-      // Finalizar sesión
-      if (session) {
-        const finalized = await agendaService.finalizeSession(session.id);
-        
-        // Guardar en localStorage para Dashboard
-        const stored = localStorage.getItem('recent_sessions');
-        const sessions = stored ? JSON.parse(stored) : [];
-        sessions.unshift({
-          id: session.id,
-          class_name: session.class_name,
-          session_datetime: session.session_datetime,
-          summary: agendaState?.state.summary || '',
-          created_at: new Date().toISOString()
-        });
-        localStorage.setItem('recent_sessions', JSON.stringify(sessions.slice(0, 10)));
-        
-        // Desconectar WebSocket
-        agendaService.disconnect();
-        
-        // Navegar a detalle de sesión
-        navigate(`/session/${session.id}`);
-      }
-    } catch (error) {
-      console.error("Error al detener grabación:", error);
-    }
-  };
-
-  const checkAndUploadAudio = async () => {
-    const now = Date.now();
-    if (now - lastUploadTimeRef.current >= UPLOAD_INTERVAL_MS) {
-      // Obtener audio acumulado
-      try {
-        const audioBlob = await audioService.stopAudioRecording();
-        if (audioBlob.size > 0) {
-          await uploadAudioChunk(audioBlob);
-        }
-        // Reiniciar grabación
-        await audioService.startAudioRecording();
-        lastUploadTimeRef.current = now;
-      } catch (error) {
-        console.error('Error en upload periódico:', error);
-      }
-    }
-  };
-
-  const uploadAudioChunk = async (audioBlob: Blob) => {
-    if (!session || !isConnected) return;
-
-    try {
-      // Transcribir con Groq
-      const result = await agendaService.transcribeAudio(audioBlob);
+      const prompt = `Analiza esta clase y genera un resumen y tareas. 
+      Responde JSON: { "summary": "...", "topic": "...", "tasks": [{"id": "uuid", "title": "...", "dueDate": "...", "completed": false}] }
+      Transcripción: ${text}`;
       
-      if (result.text && result.text.trim()) {
-        // Enviar al WebSocket para clasificación y extracción
-        agendaService.sendTranscriptChunk(result.text, {
-          min_ai_interval_sec: 6
-        });
-      }
-    } catch (error) {
-      console.error('Error subiendo audio:', error);
+      let aiResponse = "";
+      await aiService.chat(prompt, [], (token) => { aiResponse += token; });
+
+      const jsonStr = aiResponse.substring(aiResponse.indexOf('{'), aiResponse.lastIndexOf('}') + 1);
+      const parsed = JSON.parse(jsonStr);
+      setResult(parsed);
+      setShowClassSelector(true);
+    } catch (e) { 
+      console.error(e); 
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const cleanup = () => {
-    if (audioService.getIsRecording()) {
-      audioService.stopRecording();
-    }
-    agendaService.disconnect();
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const getRelevanceColor = (label?: string) => {
-    switch (label) {
-      case 'IMPORTANTE': return 'text-green-600 bg-green-500/10';
-      case 'SECUNDARIO': return 'text-yellow-600 bg-yellow-500/10';
-      case 'IRRELEVANTE': return 'text-red-600 bg-red-500/10';
-      default: return 'text-muted-foreground bg-muted/30';
-    }
+  const saveToClass = (classId: string) => {
+    if (!result) return;
+    
+    const newSession = {
+      id: Date.now().toString(),
+      date: new Date().toLocaleDateString(),
+      topic: result.topic,
+      summary: result.summary,
+      tasks: result.tasks
+    };
+    
+    const historyKey = `class_history_${classId}`;
+    const existing = JSON.parse(localStorage.getItem(historyKey) || '[]');
+    localStorage.setItem(historyKey, JSON.stringify([...existing, newSession]));
+    
+    navigate(`/class/${classId}`);
   };
 
   return (
-    <div className="min-h-[100dvh] bg-background px-6 pb-32 flex flex-col">
-      {/* Header */}
-      <header className="mb-6 mt-8">
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-            Grabación IA
-          </h1>
-          <div className="flex items-center gap-2">
-            {isConnected ? (
-              <Wifi className="w-5 h-5 text-green-600" />
-            ) : (
-              <WifiOff className="w-5 h-5 text-red-600" />
-            )}
-          </div>
+    <div className="h-[100dvh] w-full bg-black text-white font-sans overflow-hidden flex flex-col relative" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
+      <header className="px-6 pt-12 pb-6 flex justify-between items-center border-b border-zinc-800 bg-black sticky top-0 z-20">
+        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+          <ArrowLeft size={18} className="text-zinc-400" />
+        </button>
+        <div className="flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-zinc-700'}`} />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+            {isRecording ? 'Grabando_' : isProcessing ? 'Procesando_' : 'Finalizado_'}
+          </span>
         </div>
-        <p className="text-sm text-muted-foreground">
-          {isConnected ? 'Conectado al servidor' : 'Desconectado'}
-        </p>
+        <div className="w-10" />
       </header>
 
-      {/* Recording Button */}
-      <div className="flex flex-col items-center justify-center flex-1 min-h-[40vh]">
-        <motion.button
-          onClick={handleRecord}
-          whileTap={{ scale: 0.92 }}
-          className={clsx(
-            "relative flex items-center justify-center w-32 h-32 rounded-full transition-colors duration-500",
-            isRecording 
-              ? "bg-destructive text-destructive-foreground shadow-[0_0_40px_-5px_rgba(255,0,0,0.3)]" 
-              : "bg-foreground text-background shadow-2xl"
-          )}
-        >
-          {isRecording ? (
-            <Square size={36} strokeWidth={2} fill="currentColor" />
-          ) : (
-            <Mic size={40} strokeWidth={1.5} />
-          )}
+      <main className="flex-1 flex flex-col items-center justify-center px-6 relative overflow-y-auto pb-20">
+        <AnimatePresence mode="wait">
           {isRecording && (
-            <motion.div
-              className="absolute inset-0 rounded-full border border-destructive"
-              animate={{ scale: [1, 1.4, 1], opacity: [0.8, 0, 0.8] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            />
-          )}
-        </motion.button>
-
-        {/* Timer & Transcript */}
-        <div className="text-center mt-12 w-full max-w-md">
-          {isRecording && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <p className="text-4xl font-light tabular-nums tracking-tighter text-foreground mb-4">
-                {formatTime(recordingTime)}
-              </p>
-              <div className="bg-muted/30 rounded-2xl p-4 min-h-[80px] max-h-[120px] overflow-y-auto">
-                <p className="text-sm text-foreground leading-relaxed">
-                  {currentTranscript || "Escuchando..."}
-                </p>
+            <motion.div 
+              key="recording"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.1 }}
+              className="flex flex-col items-center gap-12"
+            >
+              <div className="relative">
+                <motion.div 
+                  animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.1, 0.3] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  className="absolute inset-0 bg-white/10 rounded-full -z-10"
+                />
+                <button 
+                  onClick={stopRecording}
+                  className="w-32 h-32 rounded-[48px] bg-white flex items-center justify-center shadow-[0_0_50px_rgba(255,255,255,0.2)]"
+                >
+                  <StopCircle size={48} className="text-black" fill="currentColor" />
+                </button>
+              </div>
+              <div className="text-center space-y-4">
+                <h2 className="text-3xl font-black uppercase italic tracking-tighter">Capturando_</h2>
+                <p className="text-[11px] font-medium text-zinc-500 uppercase tracking-[0.4em]">La IA está procesando el audio...</p>
               </div>
             </motion.div>
           )}
-        </div>
-      </div>
 
-      {/* Real-time Analysis */}
-      {isRecording && agendaState && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4 mt-6"
-        >
-          {/* Summary Card */}
-          {agendaState.state.summary && (
-            <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-2xl p-5 border border-indigo-500/20">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-indigo-600" />
-                </div>
-                <h3 className="text-sm font-bold text-foreground">Resumen de la Clase</h3>
+          {isProcessing && (
+            <motion.div 
+              key="processing"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center gap-8"
+            >
+              <Loader2 size={48} className="text-white animate-spin" />
+              <div className="text-center space-y-2">
+                <h2 className="text-2xl font-bold uppercase italic tracking-tighter">Sintetizando_</h2>
+                <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-widest">Generando resumen y tareas...</p>
               </div>
-              <p className="text-sm text-foreground leading-relaxed">
-                {agendaState.state.summary}
-              </p>
-            </div>
+            </motion.div>
           )}
 
-          {/* Last Relevance Indicator */}
-          {lastRelevance && (
-            <div className="bg-muted/30 rounded-2xl p-4 border border-border/50">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-muted-foreground uppercase">
-                  Último fragmento
-                </span>
-                <div className={clsx(
-                  "px-2.5 py-1 rounded-full text-xs font-bold",
-                  getRelevanceColor(lastRelevance.relevance.relevance_label)
-                )}>
-                  {lastRelevance.relevance.relevance_label}
+          {result && showClassSelector && (
+            <motion.div 
+              key="result"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full max-w-md space-y-8 py-10"
+            >
+              <div className="bg-zinc-900 border border-zinc-800 rounded-[40px] p-8 space-y-6">
+                <div className="flex items-center gap-3 text-white/40">
+                  <Sparkles size={16} />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.4em]">Resultado_</span>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-black uppercase italic tracking-tighter leading-none">{result.topic}</h3>
+                  <p className="text-zinc-400 text-sm leading-relaxed italic">{result.summary}</p>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground italic">
-                {lastRelevance.relevance.relevance_reason}
-              </p>
-            </div>
-          )}
 
-          {/* Lecture Notes (Markdown) */}
-          {agendaState.state.lecture_notes && (
-            <div className="bg-muted/30 rounded-2xl p-5 border border-border/50">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <h3 className="text-sm font-bold text-foreground">Apuntes de Clase</h3>
-              </div>
-              <div className="prose prose-sm max-w-none text-foreground">
-                <div className="text-sm leading-relaxed whitespace-pre-wrap max-h-[200px] overflow-y-auto">
-                  {agendaState.state.lecture_notes}
+              <div className="space-y-4">
+                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] px-4">Asignar a materia_</p>
+                <div className="grid grid-cols-1 gap-2">
+                  {CLASSES.map((cls) => (
+                    <button
+                      key={cls.id}
+                      onClick={() => saveToClass(cls.id)}
+                      className="w-full bg-zinc-900 border border-zinc-800 p-5 rounded-[28px] flex items-center justify-between active:bg-white active:text-black transition-all group"
+                    >
+                      <div className="flex items-center gap-4">
+                        <BookOpen size={18} className="group-active:text-black text-zinc-500" />
+                        <span className="font-bold uppercase italic tracking-tight">{cls.name}</span>
+                      </div>
+                      <ChevronRight size={18} className="text-zinc-700" />
+                    </button>
+                  ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
-
-          {/* Tasks */}
-          {agendaState.state.tasks.length > 0 && (
-            <div className="bg-muted/30 rounded-2xl p-5 border border-border/50">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center">
-                  <CheckCircle2 className="w-4 h-4 text-yellow-600" />
-                </div>
-                <h3 className="text-sm font-bold text-foreground">
-                  Tareas Detectadas ({agendaState.state.tasks.length})
-                </h3>
-              </div>
-              <div className="space-y-2">
-                {agendaState.state.tasks.map((task, idx) => (
-                  <div key={idx} className="flex items-start gap-3 p-3 bg-background rounded-xl border border-border/30">
-                    <div className={clsx(
-                      "w-2 h-2 rounded-full mt-1.5 flex-shrink-0",
-                      task.priority === 3 ? "bg-red-500" :
-                      task.priority === 2 ? "bg-yellow-500" : "bg-green-500"
-                    )} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-foreground font-medium">{task.text}</p>
-                      {task.due_date && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          📅 {task.due_date}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Key Points */}
-          {agendaState.state.key_points.length > 0 && (
-            <div className="bg-muted/30 rounded-2xl p-5 border border-border/50">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <AlertCircle className="w-4 h-4 text-green-600" />
-                </div>
-                <h3 className="text-sm font-bold text-foreground">
-                  Puntos Clave ({agendaState.state.key_points.length})
-                </h3>
-              </div>
-              <div className="space-y-2">
-                {agendaState.state.key_points.map((point, idx) => (
-                  <div key={idx} className="flex items-start gap-3 p-3 bg-background rounded-xl border border-border/30">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2 flex-shrink-0" />
-                    <p className="text-sm text-foreground leading-relaxed">{point}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Important Signals */}
-          {agendaState.state.relevance.important_signals.length > 0 && (
-            <div className="bg-muted/30 rounded-2xl p-4 border border-border/50">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2">
-                Señales Importantes Detectadas
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {agendaState.state.relevance.important_signals.map((signal, idx) => (
-                  <span key={idx} className="px-2.5 py-1 bg-red-500/10 text-red-600 text-xs font-medium rounded-full border border-red-500/20">
-                    {signal}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </motion.div>
-      )}
-
-      {/* Empty State when recording but no data yet */}
-      {isRecording && !agendaState && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mt-6 text-center py-12"
-        >
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted/30 flex items-center justify-center">
-            <Sparkles className="w-8 h-8 text-muted-foreground animate-pulse" />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Analizando contenido...
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Los datos aparecerán en unos segundos
-          </p>
-        </motion.div>
-      )}
+        </AnimatePresence>
+      </main>
     </div>
   );
 }
