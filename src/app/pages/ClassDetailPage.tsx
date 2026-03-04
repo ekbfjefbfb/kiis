@@ -28,7 +28,7 @@ export default function ClassDetailPage() {
   const navigate = useNavigate();
   const [cls] = useState(CLASSES.find((c) => c.id === id));
 
-  const [section, setSection] = useState<Section>("actions");
+  const [section, setSection] = useState<Section>("agenda");
 
   // Unified Chat + Voice
   const [messages, setMessages] = useState<Array<{ role: "user" | "ai"; text: string; id: string }>>([
