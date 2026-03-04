@@ -1,10 +1,9 @@
 import { Routes, Route, Navigate } from "react-router";
 import Dashboard from "./pages/Dashboard";
-import ChatPage from "./pages/ChatPage";
-import LiveClass from "./pages/LiveClass";
-import QuickNote from "./pages/QuickNote";
+import ChatAssistant from "./pages/ChatAssistant";
+import LiveRecording from "./pages/LiveRecording";
 import ClassDetail from "./pages/ClassDetail";
-import Notes from "./pages/Notes";
+import NotesPage from "./pages/NotesPage";
 import CalendarPage from "./pages/CalendarPage";
 import ProfilePage from "./pages/ProfilePage";
 import Onboarding from "./pages/Onboarding";
@@ -18,12 +17,11 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/chat" element={<ChatPage />} />
-      <Route path="/live" element={<LiveClass />} />
-      <Route path="/live/:classId" element={<LiveClass />} />
-      <Route path="/quick-note" element={<QuickNote />} />
+      <Route path="/chat" element={<ChatAssistant />} />
+      <Route path="/live" element={<LiveRecording />} />
+      <Route path="/live/:classId" element={<LiveRecording />} />
       <Route path="/class/:classId" element={<ClassDetail />} />
-      <Route path="/notes" element={<Notes />} />
+      <Route path="/notes" element={<NotesPage />} />
       <Route path="/calendar" element={<CalendarPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
