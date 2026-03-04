@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Paperclip, Copy, Share2, ThumbsUp, AudioLines } from "lucide-react";
+import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Copy, Share2, ThumbsUp, Check } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate } from "react-router";
@@ -140,7 +140,7 @@ export default function ChatPage() {
         </button>
       </div>
 
-      {/* Messages - Área de scroll limpia */}
+      {/* Messages */}
       <div className="flex-1 px-6 space-y-8 overflow-y-auto scrollbar-hide pt-6 pb-40">
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center opacity-[0.02]">
@@ -191,67 +191,86 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Zone - Brutal y Compacta */}
+      {/* Brutal Input Area - Rediseñada según imagen */}
       <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-black via-black to-transparent z-20">
         <div className="max-w-2xl mx-auto">
-          <div className="bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex flex-col gap-2 shadow-2xl">
-            <div className="px-4 py-2">
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                rows={1}
-                placeholder="Pregunta cualquier cosa"
-                className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[44px] max-h-[120px] py-2"
-                onInput={(e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  target.style.height = 'auto';
-                  target.style.height = `${target.scrollHeight}px`;
-                }}
-              />
-            </div>
+          <div className={clsx(
+            "bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex items-center gap-2 shadow-2xl transition-all duration-500",
+            isRecording && "bg-gradient-to-r from-zinc-900 via-[#1a1a1a] to-zinc-900 border-white/10"
+          )}>
             
-            <div className="flex items-center justify-between px-2 pb-1">
-              <div className="flex items-center gap-1">
-                <button className="w-10 h-10 rounded-full flex items-center justify-center text-white/40 hover:text-white active:bg-white/5 transition-all">
-                  <Paperclip size={20} />
-                </button>
-              </div>
+            {/* Input / Animación */}
+            <div className="flex-1 flex items-center gap-3 px-4 py-2">
+              {!isRecording ? (
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  rows={1}
+                  placeholder="Pregunta cualquier cosa"
+                  className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[44px] max-h-[120px] py-2"
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = `${target.scrollHeight}px`;
+                  }}
+                />
+              ) : (
+                <div className="flex-1 flex items-center gap-1.5 h-[44px]">
+                  {[...Array(24)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{ height: [2, Math.random() * 16 + 4, 2] }}
+                      transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.02 }}
+                      className="w-[2px] bg-white/30 rounded-full"
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
 
-              <div className="flex items-center gap-2">
+            {/* Mic / Speak Buttons */}
+            <div className="flex items-center gap-2 pr-1">
+              {!isRecording && !input.trim() && (
                 <button 
                   onClick={toggleVoiceRecording}
                   className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-white active:bg-white/10 transition-all"
                 >
                   <Mic size={20} />
                 </button>
-                
-                <motion.button
-                  onClick={isRecording ? toggleVoiceRecording : isProcessing ? undefined : (input.trim() ? () => handleSend() : toggleVoiceRecording)}
-                  whileTap={{ scale: 0.95 }}
-                  className={clsx(
-                    "h-11 flex items-center justify-center gap-2 px-5 rounded-full transition-all duration-300 font-bold",
-                    isRecording 
-                      ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
+              )}
+              
+              <motion.button
+                onClick={isRecording ? toggleVoiceRecording : isProcessing ? undefined : (input.trim() ? () => handleSend() : toggleVoiceRecording)}
+                whileTap={{ scale: 0.95 }}
+                className={clsx(
+                  "h-11 flex items-center justify-center gap-2 px-5 rounded-full transition-all duration-300 font-bold",
+                  isRecording 
+                    ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
+                    : input.trim() 
+                      ? "bg-white text-black" 
                       : "bg-[#0a0a0a] text-white border border-white/10"
-                  )}
-                >
-                  {isRecording ? (
-                    <>
-                      <div className="w-2.5 h-2.5 bg-black rounded-[1px]" />
-                      <span className="text-[13px] font-black uppercase italic tracking-tighter">Detener</span>
-                    </>
-                  ) : isProcessing ? (
-                    <Loader2 size={18} className="animate-spin" />
-                  ) : input.trim() ? (
-                    <Send size={18} />
-                  ) : (
-                    <>
-                      <AudioLines size={18} className="text-white" />
-                      <span className="text-[13px] font-black uppercase italic tracking-tighter">Hablar</span>
-                    </>
-                  )}
-                </motion.button>
-              </div>
+                )}
+              >
+                {isRecording ? (
+                  <>
+                    <div className="w-2.5 h-2.5 bg-black rounded-[1px]" />
+                    <span className="text-[13px] font-black uppercase italic tracking-tighter">Detener</span>
+                  </>
+                ) : isProcessing ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : input.trim() ? (
+                  <Send size={18} />
+                ) : (
+                  <>
+                    <div className="flex gap-0.5 items-end h-3 mr-1">
+                      <div className="w-[2px] h-2 bg-white/60 rounded-full" />
+                      <div className="w-[2px] h-3 bg-white rounded-full" />
+                      <div className="w-[2px] h-2 bg-white/60 rounded-full" />
+                    </div>
+                    <span className="text-[13px] font-black uppercase italic tracking-tighter text-white">Hablar</span>
+                  </>
+                )}
+              </motion.button>
             </div>
           </div>
         </div>
