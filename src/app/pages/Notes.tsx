@@ -1,152 +1,123 @@
 import { useState, useEffect } from "react";
-import { Search, ChevronRight, ArrowUpDown, ArrowLeft, Loader2, FileText, X, BookOpen } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { 
+  ArrowLeft, Search, Plus, ChevronRight, FileText, Calendar, 
+  Trash2, Filter, Layout, Sparkles, Clock
+} from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
-import { useNavigate, Link } from "react-router";
 import { notesService, BackendNote } from "../../services/notes.service";
 import AddClassModal from "../components/AddClassModal";
-
-type SortOption = "recent" | "oldest" | "title";
 
 export default function NotesPage() {
   const navigate = useNavigate();
   const [notes, setNotes] = useState<BackendNote[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("recent");
-  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
   const [isAddingClass, setIsAddingClass] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadNotes();
   }, []);
 
   const loadNotes = async () => {
-    setLoading(true);
     try {
-       const backendNotes = await notesService.listNotes(100, 0);
-       setNotes(backendNotes);
-    } catch(e) {
-       console.error("Error loading notes", e);
+      const data = await notesService.listNotes(50, 0);
+      setNotes(data);
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredNotes = notes.filter((note) => {
-    const titleMatch = (note.title || "").toLowerCase().includes(searchQuery.toLowerCase());
-    const contentMatch = (note.summary || note.transcript || "").toLowerCase().includes(searchQuery.toLowerCase());
-    return titleMatch || contentMatch;
-  }).sort((a, b) => {
-    if (sortBy === "recent") return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
-    if (sortBy === "oldest") return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
-    if (sortBy === "title") return (a.title || "").localeCompare(b.title || "");
-    return 0;
-  });
-
-  const getTimeAgo = (isoDate: string | null) => {
-    if (!isoDate) return "Reciente";
-    const diff = Date.now() - new Date(isoDate).getTime();
-    const h = Math.floor(diff / 3600000);
-    const d = Math.floor(diff / 86400000);
-    if (d > 0) return `${d}d`;
-    if (h > 0) return `${h}h`;
-    return "Ahora";
-  };
+  const filteredNotes = notes.filter(n => 
+    (n.title?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (n.summary?.toLowerCase() || "").includes(search.toLowerCase())
+  );
 
   return (
-    <div className="min-h-[100dvh] bg-black text-white font-sans selection:bg-white/30">
-      {/* Header Compacto */}
-      <div className="px-6 pt-10 pb-6 flex items-center justify-between border-b border-white/5 sticky top-0 bg-black/80 backdrop-blur-xl z-20">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center active:scale-95 transition-transform">
-            <ArrowLeft size={16} />
+    <div className="min-h-[100dvh] w-full bg-black text-white font-sans selection:bg-white/30 overflow-x-hidden flex flex-col">
+      {/* Header Brutalista y Adaptativo */}
+      <header className="px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] pt-[max(env(safe-area-inset-top,2rem),3rem)] pb-6 flex justify-between items-end border-b border-white/5 bg-black/80 backdrop-blur-xl sticky top-0 z-20">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate("/dashboard")} className="w-11 h-11 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            <ArrowLeft size={20} />
           </button>
-          <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Mis Notas</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsAddingClass(true)}
-            className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform"
-          >
-            <BookOpen size={16} />
-          </button>
-          <div className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 flex items-center gap-1.5">
-            <ArrowUpDown size={12} className="text-white/30" />
-            <select 
-              value={sortBy} 
-              onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="bg-transparent text-[10px] font-black uppercase tracking-widest outline-none text-white/70"
-            >
-              <option value="recent">Recientes</option>
-              <option value="title">A-Z</option>
-            </select>
+          <div>
+            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-1">Archivo</p>
+            <h1 className="text-2xl font-black uppercase italic tracking-tighter leading-none">Mis Notas</h1>
           </div>
+        </div>
+        <button 
+          onClick={() => setIsAddingClass(true)}
+          className="w-11 h-11 rounded-full bg-white text-black flex items-center justify-center active:scale-90 transition-transform shadow-xl"
+        >
+          <Plus size={20} />
+        </button>
+      </header>
+
+      {/* Search Area - Ruido Cero */}
+      <div className="px-[env(safe-area-inset-left,1.5rem)] pr-[env(safe-area-inset-right,1.5rem)] pt-6">
+        <div className="relative group max-w-2xl mx-auto">
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-white transition-colors" size={18} />
+          <input 
+            type="text"
+            placeholder="Buscar en el historial_"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-zinc-900/40 border border-white/5 rounded-[24px] pl-14 pr-6 py-5 text-lg font-bold placeholder:text-zinc-800 focus:outline-none focus:border-white/10 transition-all"
+          />
         </div>
       </div>
 
-      <div className="px-5 pt-6 space-y-6">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
-          <input 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="BUSCAR NOTAS..."
-            className="w-full bg-zinc-900 border border-white/5 rounded-2xl py-4 pl-11 pr-4 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all uppercase text-white"
-          />
-          {searchQuery && (
-            <button onClick={() => setSearchQuery("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20">
-              <X size={16} />
-            </button>
-          )}
-        </div>
-
+      {/* Main List */}
+      <main className="flex-1 px-[env(safe-area-inset-left,1.25rem)] pr-[env(safe-area-inset-right,1.25rem)] py-8 max-w-2xl mx-auto w-full pb-32">
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="animate-spin text-white/20" size={24} />
+          <div className="py-20 text-center opacity-20 animate-pulse">
+            <Clock size={48} className="mx-auto mb-4" strokeWidth={1} />
+            <p className="text-[11px] font-black uppercase tracking-[0.5em]">Cargando archivo...</p>
           </div>
         ) : filteredNotes.length === 0 ? (
-          <div className="bg-zinc-900/40 border border-white/5 rounded-[24px] p-10 text-center">
-            <FileText size={32} className="mx-auto text-white/10 mb-4" />
-            <p className="text-[13px] font-black uppercase italic tracking-tight text-white/60">No hay notas</p>
-            <Link to="/quick-note" className="inline-block mt-4 text-[10px] font-black uppercase tracking-widest text-white/30 border-b border-white/10 pb-1">Grabar algo ahora</Link>
+          <div className="py-20 text-center space-y-6 opacity-20">
+            <FileText size={64} className="mx-auto" strokeWidth={1} />
+            <p className="text-[11px] font-black uppercase tracking-[0.5em] leading-relaxed">
+              {search ? "No hay coincidencias" : "El archivo está vacío"}
+            </p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {filteredNotes.map((note, i) => (
-              <motion.div
-                key={note.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-              >
-                <Link to={`/note/${note.id}`} className="block group">
-                  <div className="bg-zinc-900/40 border border-white/5 rounded-[20px] p-5 flex items-center justify-between transition-all active:bg-zinc-800">
-                    <div className="min-w-0 flex-1 pr-4">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/25">
-                          {getTimeAgo(note.created_at)}
-                        </span>
-                      </div>
-                      <h4 className="text-[15px] font-black uppercase italic tracking-tight truncate leading-none text-white/90">
+          <div className="space-y-4">
+            {filteredNotes.map((note) => (
+              <Link key={note.id} to={`/note/${note.id}`} className="block group">
+                <motion.div 
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-zinc-900/40 border border-white/5 rounded-[28px] p-6 flex items-center justify-between transition-all active:bg-zinc-800"
+                >
+                  <div className="flex items-center gap-5 min-w-0">
+                    <div className="w-12 h-12 rounded-2xl bg-zinc-800 border border-white/5 flex items-center justify-center shrink-0">
+                      <FileText size={20} className="text-zinc-500" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">
+                        {new Date(note.created_at || Date.now()).toLocaleDateString()}
+                      </p>
+                      <p className="text-lg font-black uppercase italic tracking-tight leading-tight text-zinc-200 truncate">
                         {note.title || "Nota sin título"}
-                      </h4>
-                      <p className="text-[11px] text-white/30 font-medium line-clamp-1 mt-2 leading-tight">
-                        {note.summary || note.transcript || "Procesando contenido..."}
+                      </p>
+                      <p className="text-[11px] text-zinc-500 truncate mt-1 line-clamp-1 italic">
+                        {note.summary || note.transcript || "Ver detalles"}
                       </p>
                     </div>
-                    <ChevronRight size={14} className="text-white/10 group-active:text-white/30 transition-colors" />
                   </div>
-                </Link>
-              </motion.div>
+                  <ChevronRight size={20} className="text-zinc-800 shrink-0" />
+                </motion.div>
+              </Link>
             ))}
           </div>
         )}
-      </div>
+      </main>
 
-      <AddClassModal 
-        isOpen={isAddingClass} 
-        onClose={() => setIsAddingClass(false)} 
-      />
+      <AddClassModal isOpen={isAddingClass} onClose={() => setIsAddingClass(false)} />
     </div>
   );
 }
