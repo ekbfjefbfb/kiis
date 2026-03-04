@@ -129,12 +129,13 @@ export default function ChatPage() {
 
   return (
     <div className="h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden selection:bg-white/20">
+      {/* Header Compacto - Solo lo necesario */}
       <div className="px-6 pt-12 pb-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-20">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
             <ArrowLeft size={18} />
           </button>
-          <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Asistente</h1>
+          <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none text-white/90">Asistente</h1>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setAutoSpeak(!autoSpeak)} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
@@ -146,6 +147,7 @@ export default function ChatPage() {
         </div>
       </div>
 
+      {/* Messages - Ultra Compacto y Sin Ruido */}
       <div className="flex-1 px-4 space-y-6 overflow-y-auto scrollbar-hide pt-6 pb-32">
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center opacity-[0.03]">
@@ -183,8 +185,10 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Input Zone - Compacta y Unificada (SST/TTS) */}
       <div className="shrink-0 p-6 bg-gradient-to-t from-black via-black/90 to-transparent pb-12 z-20">
         <div className="max-w-md mx-auto flex gap-4 items-center">
+          {/* Botón SST - Destacado y bien hecho */}
           <motion.button
             onClick={toggleVoiceRecording}
             whileTap={{ scale: 0.85 }}
