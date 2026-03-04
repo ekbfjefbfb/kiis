@@ -1,244 +1,364 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-  ArrowLeft, Calendar, User, Trash2, Plus, X, ChevronRight, Zap, 
-  MessageCircle, Mic, Square, Loader2, Star, BookOpen, Clock, CheckSquare
+  ArrowLeft,
+  Trash2,
+  ChevronRight,
+  MessageCircle,
+  Mic,
+  Square,
+  Star,
+  BookOpen,
+  Clock,
+  X,
+  CheckSquare,
+  Loader2,
 } from "lucide-react";
 import { useParams, Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
-import { CLASSES, TASKS, EXAMS, removeClass, addExam, removeExam } from "../data/mock";
+import { CLASSES, TASKS, EXAMS, removeClass } from "../data/mock";
 import { aiService } from "../../services/ai.service";
 import { audioService } from "../../services/audio.service";
 import { groqService } from "../../services/groq.service";
 
-type TabType = "chat" | "info" | "tasks";
+type Section = "actions" | "chat" | "agenda" | "info";
 
 export default function ClassDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [cls] = useState(CLASSES.find((c) => c.id === id));
-  const [activeTab, setActiveTab] = useState<TabType>("chat");
-  const [activeTask, setActiveTask] = useState<any | null>(null);
 
-  // Chat/Recording Unified State
+  const [section, setSection] = useState<Section>("actions");
+
+  // Unified Chat + Voice
   const [messages, setMessages] = useState<Array<{ role: "user" | "ai"; text: string; id: string }>>([
-    { id: "1", role: "ai", text: "¡Hola! Soy tu asistente para esta clase. Puedo ayudarte con dudas, resumir lo que grabes o repasar temas." },
+    {
+      id: "1",
+      role: "ai",
+      text: "Dime qué necesitas de esta clase (pregunta o graba).",
+    },
   ]);
   const [chatInput, setChatInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
 
+  // Task detail
+  const [activeTask, setActiveTask] = useState<any | null>(null);
+
+  useEffect(() => {
+    let interval: any;
+    if (isRecording) {
+      interval = setInterval(() => setRecordingTime((p) => p + 1), 1000);
+    } else {
+      setRecordingTime(0);
+    }
+    return () => clearInterval(interval);
+  }, [isRecording]);
+
   if (!cls) return null;
 
   const classTasks = TASKS.filter((t) => t.classId === id);
   const classExams = EXAMS.filter((e) => e.classId === id);
 
+  const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+
   const handleSendChat = async (textOverride?: string) => {
-    const msg = textOverride || chatInput.trim();
+    const msg = textOverride ?? chatInput.trim();
     if (!msg || isProcessing) return;
-    
+
     setChatInput("");
     const userMsgId = Date.now().toString();
-    setMessages(prev => [...prev, { id: userMsgId, role: "user", text: msg }]);
+    setMessages((prev) => [...prev, { id: userMsgId, role: "user", text: msg }]);
     setIsProcessing(true);
 
     try {
       const response = await aiService.chat(
         `CONTEXTO CLASE: ${cls.name}. PROFE: ${cls.professor}. TEMAS: ${cls.importantTopics.join(", ")}. PREGUNTA: ${msg}`
       );
-      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: "ai", text: response }]);
+      setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: "ai", text: response }]);
     } catch {
-      setMessages(prev => [...prev, { id: "err", role: "ai", text: "Error de conexión. Reintenta." }]);
+      setMessages((prev) => [...prev, { id: (Date.now() + 2).toString(), role: "ai", text: "Error de conexión. Reintenta." }]);
     } finally {
       setIsProcessing(false);
     }
   };
 
   const toggleRecording = async () => {
+    if (isProcessing) return;
+
     if (isRecording) {
       setIsRecording(false);
       setIsProcessing(true);
       try {
         const audioBlob = await audioService.stopAudioRecording();
-        const transcript = await groqService.transcribe(audioBlob, 'es');
-        await handleSendChat(`He grabado esto de la clase, por favor resúmelo y extrae puntos clave: ${transcript}`);
+        const transcript = await groqService.transcribe(audioBlob, "es");
+        await handleSendChat(`Esto es lo que grabé. Resúmelo y saca puntos clave: ${transcript}`);
       } catch (err) {
         console.error(err);
         setIsProcessing(false);
       }
-    } else {
-      const ok = await audioService.requestPermissions();
-      if (!ok) return;
-      try {
-        await audioService.startAudioRecording();
-        setIsRecording(true);
-        setRecordingTime(0);
-      } catch (e) { console.error(e); }
+      return;
+    }
+
+    const ok = await audioService.requestPermissions();
+    if (!ok) return;
+    try {
+      await audioService.startAudioRecording();
+      setIsRecording(true);
+    } catch (e) {
+      console.error(e);
     }
   };
 
-  const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
-
   return (
-    <div className="min-h-[100dvh] bg-black text-white pb-24 font-sans flex flex-col">
-      {/* Header Minimalista */}
-      <div className="px-6 pt-10 pb-6 flex items-center justify-between sticky top-0 bg-black/80 backdrop-blur-xl z-20">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
-            <ArrowLeft size={24} />
+    <div className="min-h-[100dvh] bg-black text-white font-sans pb-24">
+      {/* Header - same style as Dashboard */}
+      <div className="px-6 pt-8 pb-4 flex items-center justify-between bg-black/80 backdrop-blur-xl sticky top-0 z-20 border-b border-white/5">
+        <div className="flex items-center gap-3 min-w-0">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center active:scale-95 transition-transform"
+          >
+            <ArrowLeft size={16} />
           </button>
-          <div>
-            <h1 className="text-2xl font-black uppercase italic tracking-tighter leading-none">{cls.name}</h1>
-            <p className="text-sm font-bold text-white/40 uppercase tracking-widest mt-1">{cls.professor}</p>
+          <div className="min-w-0">
+            <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] truncate">Materia</p>
+            <p className="text-sm font-bold text-white/80 tracking-tight truncate">{cls.name}</p>
           </div>
         </div>
-        <button onClick={() => { if(confirm("¿Eliminar clase?")) { removeClass(cls.id); navigate("/dashboard"); } }} className="text-red-500/50 p-2 active:text-red-500 transition-colors">
-          <Trash2 size={20} />
+
+        <button
+          type="button"
+          onClick={() => {
+            if (confirm("¿Eliminar clase?")) {
+              removeClass(cls.id);
+              navigate("/dashboard", { replace: true });
+            }
+          }}
+          className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-red-400 active:scale-95 transition-transform"
+        >
+          <Trash2 size={16} />
         </button>
       </div>
 
-      {/* Selector de Tabs Gigante */}
-      <div className="px-6 mb-6">
-        <div className="flex bg-white/5 rounded-[24px] p-1.5">
-          {(["chat", "tasks", "info"] as TabType[]).map((t) => (
-            <button
-              key={t}
-              onClick={() => setActiveTab(t)}
-              className={clsx(
-                "flex-1 py-4 rounded-[18px] text-sm font-black uppercase italic transition-all",
-                activeTab === t ? "bg-white text-black shadow-xl scale-100" : "text-white/30 scale-95"
-              )}
-            >
-              {t === "chat" && "Chat & Voz"}
-              {t === "tasks" && "Agenda"}
-              {t === "info" && "Info"}
-            </button>
-          ))}
+      <div className="px-5 pt-4 space-y-5">
+        {/* Simple section chooser: looks like Dashboard action list */}
+        <div className="bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setSection("chat")}
+            className="w-full px-4 py-4 flex items-center justify-between text-left active:bg-zinc-800 transition-colors"
+          >
+            <div>
+              <p className="text-[13px] font-black uppercase tracking-tight">Chat + voz</p>
+              <p className="text-[10px] text-white/35 font-bold uppercase tracking-[0.2em] mt-1">Pregunta o graba</p>
+            </div>
+            <ChevronRight size={16} className="text-white/15" />
+          </button>
+          <div className="h-px bg-white/5" />
+          <button
+            type="button"
+            onClick={() => setSection("agenda")}
+            className="w-full px-4 py-4 flex items-center justify-between text-left active:bg-zinc-800 transition-colors"
+          >
+            <div>
+              <p className="text-[13px] font-black uppercase tracking-tight">Agenda</p>
+              <p className="text-[10px] text-white/35 font-bold uppercase tracking-[0.2em] mt-1">Tareas y exámenes</p>
+            </div>
+            <ChevronRight size={16} className="text-white/15" />
+          </button>
+          <div className="h-px bg-white/5" />
+          <button
+            type="button"
+            onClick={() => setSection("info")}
+            className="w-full px-4 py-4 flex items-center justify-between text-left active:bg-zinc-800 transition-colors"
+          >
+            <div>
+              <p className="text-[13px] font-black uppercase tracking-tight">Info</p>
+              <p className="text-[10px] text-white/35 font-bold uppercase tracking-[0.2em] mt-1">Horario y temas</p>
+            </div>
+            <ChevronRight size={16} className="text-white/15" />
+          </button>
         </div>
-      </div>
 
-      {/* Contenido Principal */}
-      <div className="flex-1 px-6">
+        {/* Content area - does NOT look like another app */}
         <AnimatePresence mode="wait">
-          {activeTab === "chat" && (
-            <motion.div key="chat" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-10}} className="flex flex-col h-[calc(100dvh-320px)]">
-              <div className="flex-1 space-y-6 overflow-y-auto scrollbar-hide pb-10">
-                {messages.map((m) => (
+          {section === "chat" && (
+            <motion.div
+              key="chat"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-3"
+            >
+              <div className="bg-zinc-900/40 border border-white/5 rounded-2xl p-3 space-y-3">
+                {messages.slice(-6).map((m) => (
                   <div key={m.id} className={clsx("flex", m.role === "user" ? "justify-end" : "justify-start")}>
-                    <div className={clsx(
-                      "max-w-[90%] p-6 rounded-[32px] text-xl font-medium leading-tight shadow-2xl",
-                      m.role === "user" ? "bg-emerald-500 text-white rounded-tr-sm" : "bg-zinc-900 text-white rounded-tl-sm border border-white/5"
-                    )}>
+                    <div
+                      className={clsx(
+                        "max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-snug",
+                        m.role === "user" ? "bg-white text-black" : "bg-black/30 text-white border border-white/5"
+                      )}
+                    >
                       {m.text}
                     </div>
                   </div>
                 ))}
+
                 {isProcessing && (
-                  <div className="flex gap-2 p-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]" />
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:0.4s]" />
+                  <div className="flex items-center gap-2 px-1">
+                    <Loader2 size={14} className="animate-spin text-white/40" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Procesando</span>
+                  </div>
+                )}
+
+                <div className="flex gap-2 items-end">
+                  <button
+                    type="button"
+                    onClick={toggleRecording}
+                    className={clsx(
+                      "w-12 h-12 rounded-xl flex items-center justify-center border",
+                      isRecording
+                        ? "bg-red-600 border-red-500/40"
+                        : "bg-zinc-900 border-white/10"
+                    )}
+                  >
+                    {isRecording ? <Square size={18} fill="white" /> : <Mic size={18} />}
+                  </button>
+
+                  <div className="flex-1 relative">
+                    <textarea
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      rows={1}
+                      placeholder={isRecording ? `Grabando ${formatTime(recordingTime)}...` : "Escribe..."}
+                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-[13px] font-medium focus:outline-none focus:ring-1 focus:ring-white/20 resize-none overflow-hidden min-h-[48px] max-h-[120px] placeholder:text-white/10"
+                      onInput={(e) => {
+                        const t = e.target as HTMLTextAreaElement;
+                        t.style.height = "auto";
+                        t.style.height = `${t.scrollHeight}px`;
+                      }}
+                    />
+                    <AnimatePresence>
+                      {chatInput.trim() && !isRecording && (
+                        <motion.button
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          type="button"
+                          onClick={() => handleSendChat()}
+                          className="absolute right-2 bottom-2 w-9 h-9 bg-white text-black rounded-lg flex items-center justify-center"
+                        >
+                          <MessageCircle size={16} />
+                        </motion.button>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {section === "agenda" && (
+            <motion.div
+              key="agenda"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-3"
+            >
+              <div className="space-y-2">
+                {classExams.map((e) => (
+                  <div key={e.id} className="bg-zinc-900/40 border border-white/5 rounded-2xl p-4 flex items-center gap-3">
+                    <Star size={16} className="text-amber-400" />
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-black uppercase tracking-tight truncate">Examen: {e.title}</p>
+                      <p className="text-[10px] text-white/35 font-bold uppercase tracking-[0.2em] mt-1">{e.date}</p>
+                    </div>
+                  </div>
+                ))}
+
+                {classTasks.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setActiveTask(t)}
+                    className="w-full text-left bg-zinc-900/40 border border-white/5 rounded-2xl p-4 flex items-center justify-between gap-3 active:bg-zinc-800 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={clsx(
+                        "w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0",
+                        t.completed ? "bg-emerald-500 border-emerald-500" : "border-white/20"
+                      )}>
+                        {t.completed && <CheckSquare size={14} className="text-black" />}
+                      </div>
+                      <div className="min-w-0">
+                        <p className={clsx("text-[13px] font-black uppercase tracking-tight truncate", t.completed && "line-through text-white/20")}>
+                          {t.title}
+                        </p>
+                        <p className="text-[10px] text-white/35 font-bold uppercase tracking-[0.2em] mt-1">{t.date}</p>
+                      </div>
+                    </div>
+                    <ChevronRight size={14} className="text-white/10" />
+                  </button>
+                ))}
+
+                {classExams.length === 0 && classTasks.length === 0 && (
+                  <div className="bg-zinc-900/40 border border-white/5 rounded-2xl p-4">
+                    <p className="text-[13px] font-black uppercase tracking-tight">Sin agenda</p>
+                    <p className="text-[10px] text-white/35 font-bold uppercase tracking-[0.2em] mt-1">
+                      Cuando grabes clases, aquí aparece todo.
+                    </p>
                   </div>
                 )}
               </div>
-
-              {/* Botones de Acción Gigantes para el Chat */}
-              <div className="fixed bottom-6 left-6 right-6 flex gap-3 items-end z-30">
-                <motion.button
-                  onClick={toggleRecording}
-                  whileTap={{ scale: 0.9 }}
-                  className={clsx(
-                    "w-24 h-24 rounded-[35px] flex items-center justify-center transition-all duration-500 shadow-2xl",
-                    isRecording ? "bg-red-600 animate-pulse" : "bg-zinc-900 border border-white/10"
-                  )}
-                >
-                  {isRecording ? <Square size={36} fill="white" /> : <Mic size={36} />}
-                </motion.button>
-
-                <div className="flex-1 relative">
-                  <textarea
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    rows={1}
-                    placeholder={isRecording ? "Grabando..." : "Pregunta algo..."}
-                    className="w-full bg-zinc-900 border border-white/10 rounded-[35px] px-8 py-8 text-xl font-medium focus:outline-none focus:ring-2 focus:ring-white/20 resize-none overflow-hidden h-[96px]"
-                  />
-                  <AnimatePresence>
-                    {chatInput.trim() && (
-                      <motion.button
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        onClick={() => handleSendChat()}
-                        className="absolute right-4 bottom-4 w-16 h-16 bg-white text-black rounded-3xl flex items-center justify-center active:scale-90 transition-transform"
-                      >
-                        <MessageCircle size={28} />
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
             </motion.div>
           )}
 
-          {activeTab === "tasks" && (
-            <motion.div key="tasks" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-10}} className="space-y-4">
-              <h3 className="text-xl font-black uppercase italic tracking-tighter text-white/40 mb-2">Próximos Eventos</h3>
-              {classExams.map(e => (
-                <div key={e.id} className="bg-amber-500/10 border border-amber-500/20 p-6 rounded-[32px] flex items-center gap-5">
-                  <Star className="text-amber-500 fill-amber-500" size={28} />
+          {section === "info" && (
+            <motion.div
+              key="info"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-3"
+            >
+              <div className="bg-zinc-900/40 border border-white/5 rounded-2xl p-4">
+                <div className="flex items-center gap-3">
+                  <Clock size={16} className="text-white/40" />
                   <div>
-                    <p className="font-black text-xl uppercase italic leading-none mb-1">Examen: {e.title}</p>
-                    <p className="text-amber-500/60 font-bold uppercase text-xs tracking-widest">{e.date}</p>
-                  </div>
-                </div>
-              ))}
-              {classTasks.map(t => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setActiveTask(t)}
-                  className="w-full text-left bg-white/5 p-6 rounded-[32px] flex items-center gap-5 border border-white/5 active:opacity-90 transition-opacity"
-                >
-                  <div className={clsx("w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0", t.completed ? "bg-emerald-500 border-emerald-500" : "border-white/20")}>
-                    {t.completed && <CheckSquare size={18} className="text-black" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={clsx("font-black text-xl uppercase italic leading-none mb-1 truncate", t.completed && "line-through text-white/20")}>{t.title}</p>
-                    <p className="text-white/40 text-sm font-bold uppercase tracking-widest">{t.date}</p>
-                  </div>
-                  <ChevronRight size={18} className="text-white/10" />
-                </button>
-              ))}
-            </motion.div>
-          )}
-
-          {activeTab === "info" && (
-            <motion.div key="info" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-10}} className="space-y-6">
-              <div className="bg-zinc-900 rounded-[40px] p-8 border border-white/5 space-y-8">
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 rounded-3xl bg-blue-500/20 flex items-center justify-center shadow-inner"><Clock className="text-blue-400" size={32} /></div>
-                  <div>
-                    <p className="text-white/40 text-xs font-black uppercase tracking-[0.2em] mb-1">Horario</p>
-                    <p className="font-black text-2xl uppercase italic tracking-tight">{cls.time}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 rounded-3xl bg-purple-500/20 flex items-center justify-center shadow-inner"><BookOpen className="text-purple-400" size={32} /></div>
-                  <div>
-                    <p className="text-white/40 text-xs font-black uppercase tracking-[0.2em] mb-1">Aula</p>
-                    <p className="font-black text-2xl uppercase italic tracking-tight">{cls.room}</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Horario</p>
+                    <p className="text-[13px] font-bold text-white/80">{cls.time}</p>
                   </div>
                 </div>
               </div>
-              
-              <div className="space-y-4 px-2">
-                <h3 className="text-xl font-black uppercase italic tracking-tighter text-white/40">Temas de la Clase</h3>
-                <div className="flex flex-wrap gap-2">
-                  {cls.importantTopics.map(t => (
-                    <span key={t} className="px-6 py-3 bg-white/5 rounded-full text-sm font-black uppercase italic border border-white/10">{t}</span>
+
+              <div className="bg-zinc-900/40 border border-white/5 rounded-2xl p-4">
+                <div className="flex items-center gap-3">
+                  <BookOpen size={16} className="text-white/40" />
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Aula</p>
+                    <p className="text-[13px] font-bold text-white/80">{cls.room}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-900/40 border border-white/5 rounded-2xl p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Temas</p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {cls.importantTopics.map((t) => (
+                    <span
+                      key={t}
+                      className="px-3 py-2 bg-black/30 border border-white/5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] text-white/70"
+                    >
+                      {t}
+                    </span>
                   ))}
+                  {cls.importantTopics.length === 0 && (
+                    <p className="text-[12px] text-white/40">Sin temas todavía</p>
+                  )}
                 </div>
               </div>
             </motion.div>
