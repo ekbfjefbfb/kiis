@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Copy, Share2, ThumbsUp, Check } from "lucide-react";
+import { Mic, Send, StopCircle, Volume2, VolumeX, ArrowLeft, Sparkles, Loader2, Copy, Share2, ThumbsUp } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { useNavigate } from "react-router";
@@ -191,23 +191,23 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Brutal Input Area - Rediseñada según imagen */}
+      {/* Input Zone - Brutal y Compacta */}
       <div className="shrink-0 px-4 pb-10 bg-gradient-to-t from-black via-black to-transparent z-20">
         <div className="max-w-2xl mx-auto">
           <div className={clsx(
             "bg-[#1a1a1a] border border-white/[0.05] rounded-[32px] p-2 flex items-center gap-2 shadow-2xl transition-all duration-500",
-            isRecording && "bg-gradient-to-r from-zinc-900 via-[#1a1a1a] to-zinc-900 border-white/10"
+            isRecording && "bg-[#1a1a1a]"
           )}>
             
             {/* Input / Animación */}
-            <div className="flex-1 flex items-center gap-3 px-4 py-2">
+            <div className="flex-1 flex items-center gap-3 px-4 py-2 min-h-[44px]">
               {!isRecording ? (
                 <textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   rows={1}
                   placeholder="Pregunta cualquier cosa"
-                  className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[44px] max-h-[120px] py-2"
+                  className="w-full bg-transparent border-none focus:outline-none text-[16px] text-white placeholder:text-white/20 resize-none min-h-[24px] max-h-[120px] py-2"
                   onInput={(e) => {
                     const target = e.target as HTMLTextAreaElement;
                     target.style.height = 'auto';
@@ -215,20 +215,20 @@ export default function ChatPage() {
                   }}
                 />
               ) : (
-                <div className="flex-1 flex items-center gap-1.5 h-[44px]">
-                  {[...Array(24)].map((_, i) => (
+                <div className="flex-1 flex items-center gap-1 h-[44px]">
+                  {[...Array(12)].map((_, i) => (
                     <motion.div
                       key={i}
-                      animate={{ height: [2, Math.random() * 16 + 4, 2] }}
-                      transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.02 }}
-                      className="w-[2px] bg-white/30 rounded-full"
+                      animate={{ height: [4, Math.random() * 20 + 8, 4] }}
+                      transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.05 }}
+                      className="w-[3px] bg-white/40 rounded-full"
                     />
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Mic / Speak Buttons */}
+            {/* Mic / Hablar / Detener */}
             <div className="flex items-center gap-2 pr-1">
               {!isRecording && !input.trim() && (
                 <button 
@@ -262,12 +262,16 @@ export default function ChatPage() {
                   <Send size={18} />
                 ) : (
                   <>
-                    <div className="flex gap-0.5 items-end h-3 mr-1">
-                      <div className="w-[2px] h-2 bg-white/60 rounded-full" />
+                    <motion.div 
+                      animate={{ scale: [1, 1.2, 1] }} 
+                      transition={{ repeat: Infinity, duration: 2 }}
+                      className="flex gap-0.5 items-end h-3 mr-1"
+                    >
+                      <div className="w-[2px] h-2 bg-white rounded-full" />
                       <div className="w-[2px] h-3 bg-white rounded-full" />
-                      <div className="w-[2px] h-2 bg-white/60 rounded-full" />
-                    </div>
-                    <span className="text-[13px] font-black uppercase italic tracking-tighter text-white">Hablar</span>
+                      <div className="w-[2px] h-2 bg-white rounded-full" />
+                    </motion.div>
+                    <span className="text-[13px] font-black uppercase italic tracking-tighter">Hablar</span>
                   </>
                 )}
               </motion.button>
