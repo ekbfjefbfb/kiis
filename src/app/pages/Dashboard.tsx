@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  Calendar, ChevronRight, Plus, BookOpen, Brain, Radio, Zap, User, Clock, FileText
+  Calendar, ChevronRight, Plus, BookOpen, Brain, Radio, User, Clock, FileText
 } from "lucide-react";
 import { motion } from "motion/react";
 import { Link } from "react-router";
@@ -63,23 +63,48 @@ export default function Dashboard() {
             </motion.div>
           </Link>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Link to="/quick-note" className="block">
-              <motion.div whileTap={{ scale: 0.97 }} className="bg-zinc-900/30 border border-white/5 rounded-[28px] p-5 flex flex-col items-center justify-center gap-3 text-center active:bg-zinc-800 transition-all py-6">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <Zap size={20} className="text-emerald-500/60" />
-                </div>
-                <p className="text-[11px] font-black uppercase italic tracking-tighter">Nota_Rápida</p>
-              </motion.div>
-            </Link>
-            <Link to="/chat" className="block">
-              <motion.div whileTap={{ scale: 0.97 }} className="bg-zinc-900/30 border border-white/5 rounded-[28px] p-5 flex flex-col items-center justify-center gap-3 text-center active:bg-zinc-800 transition-all py-6">
+          <Link to="/chat" className="block">
+            <motion.div whileTap={{ scale: 0.98 }} className="bg-zinc-900/30 border border-white/5 rounded-[28px] p-5 flex items-center justify-between transition-all active:bg-zinc-800 relative overflow-hidden group">
+              <div className="flex items-center gap-5">
                 <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center">
                   <Brain size={20} className="text-zinc-500" />
                 </div>
-                <p className="text-[11px] font-black uppercase italic tracking-tighter">Asistente_IA</p>
-              </motion.div>
-            </Link>
+                <div className="text-left">
+                  <p className="text-base font-extrabold uppercase italic leading-none tracking-tight">Asistente_IA</p>
+                  <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest mt-1">Consulta inteligente</p>
+                </div>
+              </div>
+              <ChevronRight size={18} className="text-zinc-800" />
+            </motion.div>
+          </Link>
+        </section>
+
+        <section className="space-y-5">
+          <div className="flex justify-between items-center px-2 text-left">
+            <div className="flex items-center gap-3 text-zinc-600">
+              <BookOpen size={16} />
+              <h3 className="text-[10px] font-black uppercase tracking-[0.5em] italic">Materias_</h3>
+            </div>
+            <button onClick={() => setIsAddingClass(true)} className="w-9 h-9 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-600 active:scale-90 active:bg-white/5 transition-all shadow-lg">
+              <Plus size={16} />
+            </button>
+          </div>
+          <div className="space-y-3">
+            {CLASSES.map((cls) => (
+              <Link key={cls.id} to={`/class/${cls.id}`} className="block group">
+                <motion.div whileTap={{ scale: 0.99 }} className="bg-zinc-900/40 border border-white/5 rounded-[28px] p-5 flex items-center gap-5 active:bg-zinc-800 transition-all text-left relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-white/[0.03] group-active:bg-white/10 transition-colors" />
+                  <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center shrink-0 shadow-inner">
+                    <BookOpen size={18} className="text-zinc-700" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-base font-extrabold uppercase italic tracking-tighter truncate leading-none mb-1 text-zinc-200">{cls.name}</p>
+                    <p className="text-[9px] text-zinc-600 font-black uppercase truncate tracking-[0.2em]">{cls.professor}</p>
+                  </div>
+                  <ChevronRight size={18} className="text-zinc-800 shrink-0" />
+                </motion.div>
+              </Link>
+            ))}
           </div>
         </section>
 
@@ -111,35 +136,6 @@ export default function Dashboard() {
               ))}
             </div>
           )}
-        </section>
-
-        <section className="space-y-5">
-          <div className="flex justify-between items-center px-2 text-left">
-            <div className="flex items-center gap-3 text-zinc-600">
-              <BookOpen size={16} />
-              <h3 className="text-[10px] font-black uppercase tracking-[0.5em] italic">Materias_</h3>
-            </div>
-            <button onClick={() => setIsAddingClass(true)} className="w-9 h-9 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-600 active:scale-90 active:bg-white/5 transition-all shadow-lg">
-              <Plus size={16} />
-            </button>
-          </div>
-          <div className="space-y-3">
-            {CLASSES.map((cls) => (
-              <Link key={cls.id} to={`/class/${cls.id}`} className="block group">
-                <motion.div whileTap={{ scale: 0.99 }} className="bg-zinc-900/40 border border-white/5 rounded-[28px] p-5 flex items-center gap-5 active:bg-zinc-800 transition-all text-left relative overflow-hidden group">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-white/[0.03] group-active:bg-white/10 transition-colors" />
-                  <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center shrink-0 shadow-inner">
-                    <BookOpen size={18} className="text-zinc-700" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-base font-extrabold uppercase italic tracking-tighter truncate leading-none mb-1 text-zinc-200">{cls.name}</p>
-                    <p className="text-[9px] text-zinc-600 font-black uppercase truncate tracking-[0.2em]">{cls.professor}</p>
-                  </div>
-                  <ChevronRight size={18} className="text-zinc-800 shrink-0" />
-                </motion.div>
-              </Link>
-            ))}
-          </div>
         </section>
       </main>
 
