@@ -50,7 +50,7 @@ export class AuthService {
 
   async loginOAuth(provider: 'google' | 'apple', idToken: string, name?: string): Promise<boolean> {
     try {
-      const response = await apiService.post<AuthResponse>('/auth/oauth', {
+      const response = await apiService.post<AuthResponse>('/api/auth/oauth', {
         provider,
         id_token: idToken,
         name
@@ -71,7 +71,7 @@ export class AuthService {
     if (!this.refreshToken) return false;
     
     try {
-      const response = await apiService.post<{ access_token: string; token_type: string }>('/auth/refresh', {
+      const response = await apiService.post<{ access_token: string; token_type: string }>('/api/auth/refresh', {
         refresh_token: this.refreshToken
       });
       

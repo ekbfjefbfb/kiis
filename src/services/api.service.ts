@@ -1,5 +1,7 @@
 // src/services/api.service.ts
-export const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+export const API_BASE_URL =
+  (import.meta as any).env?.VITE_API_URL ||
+  (typeof window !== 'undefined' ? window.location.origin : '');
 
 class ApiService {
   private refreshPromise: Promise<boolean> | null = null;
