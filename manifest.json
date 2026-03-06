@@ -27,5 +27,18 @@
       "type": "image/svg+xml",
       "purpose": "any"
     }
+  ],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Asistente de Agenda",
+      "url": "/assistant",
+      "icons": [{ "src": "/vite.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Grabar Clase",
+      "url": "/record",
+      "icons": [{ "src": "/vite.svg", "sizes": "192x192" }]
+    }
   ]
 }
