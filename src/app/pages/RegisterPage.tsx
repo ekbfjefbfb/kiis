@@ -7,7 +7,6 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +22,8 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const success = await authService.register(email, password, name);
+      // Usamos el flujo OAuth para registro también (Passwordless/OLED Style)
+      const success = await authService.loginOAuth('google', btoa(email), name);
       if (!success) {
         setError("Error al crear la cuenta");
         return;
@@ -31,6 +31,24 @@ export default function RegisterPage() {
       navigate("/", { replace: true });
     } catch (err: any) {
       setError(err.message || "Error de registro");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOAuthRegister = async (provider: 'google' | 'apple') => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const mockToken = `mock_${provider}_reg_${Date.now()}`;
+      const success = await authService.loginOAuth(provider, mockToken);
+      if (success) {
+        navigate("/", { replace: true });
+      } else {
+        setError(`Error al registrarse con ${provider}`);
+      }
+    } catch (err: any) {
+      setError(err.message || "Error de conexión");
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +72,7 @@ export default function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Nombre completo"
-              className="w-full h-18 bg-zinc-900/50 rounded-[2rem] px-8 text-lg font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
+              className="w-full h-20 bg-zinc-900/50 rounded-[2rem] px-8 text-lg font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
               required
             />
             
@@ -63,25 +81,37 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Correo electrónico"
-              className="w-full h-18 bg-zinc-900/50 rounded-[2rem] px-8 text-lg font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
-              required
-            />
-            
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Contraseña"
-              className="w-full h-18 bg-zinc-900/50 rounded-[2rem] px-8 text-lg font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
+              className="w-full h-20 bg-zinc-900/50 rounded-[2rem] px-8 text-lg font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
               required
             />
           </div>
 
           {error && (
-            <div className="px-6 py-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
+            <div className="px-6 py-4 bg-red-500/10 border border-red-500/20 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-500">
               <p className="text-red-500 text-sm font-bold tracking-tight text-center">{error}</p>
             </div>
           )}
+
+          <div className="grid grid-cols-2 gap-4 mt-8">
+            <button
+              type="button"
+              onClick={() => handleOAuthRegister('google')}
+              disabled={isLoading}
+              className="h-20 bg-zinc-900/50 border border-white/5 rounded-[2rem] flex items-center justify-center gap-3 active:scale-[0.97] transition-all hover:bg-zinc-900"
+            >
+              <img src="https://www.google.com/favicon.ico" className="w-6 h-6 grayscale" alt="Google" />
+              <span className="font-bold">Google</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleOAuthRegister('apple')}
+              disabled={isLoading}
+              className="h-20 bg-zinc-900/50 border border-white/5 rounded-[2rem] flex items-center justify-center gap-3 active:scale-[0.97] transition-all hover:bg-zinc-900"
+            >
+              <span className="text-2xl mb-1"></span>
+              <span className="font-bold">Apple</span>
+            </button>
+          </div>
 
           <button 
             disabled={isLoading}

@@ -22,11 +22,32 @@ export default function LoginPage() {
     setLoading(true);
     
     try {
-      const success = await authService.login(email, password);
+      // Intentamos login con el flujo OAuth usando el email como id_token para pruebas
+      // En producción esto vendría de Google/Apple SDK
+      const success = await authService.loginOAuth('google', btoa(email), email.split('@')[0]);
       if (success) {
         navigate("/", { replace: true });
       } else {
-        setError("Credenciales incorrectas");
+        setError("Error de autenticación");
+      }
+    } catch (err: any) {
+      setError(err.message || "Error de conexión");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOAuthLogin = async (provider: 'google' | 'apple') => {
+    setLoading(true);
+    setError("");
+    try {
+      // Simulación de token de proveedor
+      const mockToken = `mock_${provider}_token_${Date.now()}`;
+      const success = await authService.loginOAuth(provider, mockToken);
+      if (success) {
+        navigate("/", { replace: true });
+      } else {
+        setError(`Error al conectar con ${provider}`);
       }
     } catch (err: any) {
       setError(err.message || "Error de conexión");
@@ -58,17 +79,6 @@ export default function LoginPage() {
                 required
               />
             </div>
-            
-            <div className="relative group">
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Contraseña"
-                className="w-full h-20 bg-zinc-900/50 rounded-[2rem] px-8 text-xl font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
-                required
-              />
-            </div>
           </div>
 
           {error && (
@@ -77,16 +87,37 @@ export default function LoginPage() {
             </div>
           )}
 
+          <div className="grid grid-cols-2 gap-4 mt-8">
+            <button
+              type="button"
+              onClick={() => handleOAuthLogin('google')}
+              disabled={loading}
+              className="h-20 bg-zinc-900/50 border border-white/5 rounded-[2rem] flex items-center justify-center gap-3 active:scale-[0.97] transition-all hover:bg-zinc-900"
+            >
+              <img src="https://www.google.com/favicon.ico" className="w-6 h-6 grayscale" alt="Google" />
+              <span className="font-bold">Google</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleOAuthLogin('apple')}
+              disabled={loading}
+              className="h-20 bg-zinc-900/50 border border-white/5 rounded-[2rem] flex items-center justify-center gap-3 active:scale-[0.97] transition-all hover:bg-zinc-900"
+            >
+              <span className="text-2xl mb-1"></span>
+              <span className="font-bold">Apple</span>
+            </button>
+          </div>
+
           <button 
             disabled={loading}
             type="submit"
-            className="w-full h-20 bg-white text-black rounded-[2rem] font-bold text-xl mt-10 active:scale-[0.97] transition-all duration-300 disabled:opacity-50 flex items-center justify-center shadow-[0_20px_40px_rgba(255,255,255,0.1)] group"
+            className="w-full h-20 bg-white text-black rounded-[2rem] font-bold text-xl mt-4 active:scale-[0.97] transition-all duration-300 disabled:opacity-50 flex items-center justify-center shadow-[0_20px_40px_rgba(255,255,255,0.1)] group"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={28} strokeWidth={2.5} />
             ) : (
               <div className="flex items-center gap-3">
-                <span>Entrar</span>
+                <span>Continuar</span>
                 <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
               </div>
             )}
