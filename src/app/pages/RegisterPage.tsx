@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Loader2, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
+import { Loader2, ArrowRight, CheckCircle2, AlertCircle, Download } from "lucide-react";
 import { authService } from "../../services/auth.service";
+import { usePWAInstall } from "../../hooks/usePWAInstall";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { isInstallable, installPWA } = usePWAInstall();
 
   useEffect(() => {
     if (authService.isAuthenticated()) {
@@ -89,22 +91,15 @@ export default function RegisterPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Contraseña"
+                placeholder="Contraseña (mínimo 8 caracteres)"
                 className={`w-full h-20 bg-zinc-900/40 backdrop-blur-xl border rounded-[2.5rem] px-8 text-xl font-semibold placeholder:text-zinc-800 outline-none transition-all duration-500 ${
                   password && password.length < 8 ? 'border-amber-500/50' : password ? 'border-green-500/30' : 'border-white/5'
                 } focus:bg-zinc-900/60`}
                 required
               />
-              <div className="px-8 mt-2 flex gap-1">
-                {[1, 2, 3, 4].map((i) => (
-                  <div 
-                    key={i} 
-                    className={`h-1 flex-1 rounded-full transition-all duration-500 ${
-                      password.length >= i * 2 ? 'bg-white/40' : 'bg-white/5'
-                    }`} 
-                  />
-                ))}
-              </div>
+              {password && password.length < 8 && (
+                <p className="px-8 mt-2 text-amber-500/70 text-xs font-semibold">Mínimo 8 caracteres requeridos</p>
+              )}
             </div>
           </div>
 
@@ -134,6 +129,15 @@ export default function RegisterPage() {
       </main>
 
       <footer className="p-10 flex flex-col items-center gap-4 bg-black/80 backdrop-blur-lg border-t border-white/5">
+        {isInstallable && (
+          <button 
+            onClick={installPWA}
+            className="flex items-center gap-3 px-8 py-4 bg-zinc-900/50 border border-white/10 rounded-full text-white font-bold text-sm tracking-tight active:scale-95 transition-all duration-300 hover:bg-zinc-800/50 mb-4"
+          >
+            <Download size={18} />
+            <span>DESCARGAR APP</span>
+          </button>
+        )}
         <button 
           onClick={() => navigate("/login")}
           className="text-zinc-500 text-sm font-bold uppercase tracking-[0.3em] active:text-white transition-all duration-300 italic flex items-center gap-2"

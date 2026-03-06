@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Loader2, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
+import { Loader2, ArrowRight, CheckCircle2, AlertCircle, Download } from "lucide-react";
 import { authService } from "../../services/auth.service";
+import { usePWAInstall } from "../../hooks/usePWAInstall";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -9,6 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { isInstallable, installPWA } = usePWAInstall();
 
   useEffect(() => {
     if (authService.isAuthenticated()) {
@@ -73,10 +75,15 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Contraseña"
-                className="w-full h-20 bg-zinc-900/40 backdrop-blur-xl border border-white/5 rounded-[2.5rem] px-8 text-xl font-semibold placeholder:text-zinc-800 outline-none focus:border-white/20 focus:bg-zinc-900/60 transition-all duration-500"
+                placeholder="Contraseña (mínimo 8 caracteres)"
+                className={`w-full h-20 bg-zinc-900/40 backdrop-blur-xl border rounded-[2.5rem] px-8 text-xl font-semibold placeholder:text-zinc-800 outline-none transition-all duration-500 ${
+                  password && password.length < 8 ? 'border-amber-500/50' : password ? 'border-green-500/30' : 'border-white/5'
+                } focus:bg-zinc-900/60`}
                 required
               />
+              {password && password.length < 8 && (
+                <p className="px-8 mt-2 text-amber-500/70 text-xs font-semibold">Mínimo 8 caracteres requeridos</p>
+              )}
             </div>
           </div>
 
@@ -106,6 +113,15 @@ export default function LoginPage() {
       </main>
 
       <footer className="p-12 flex flex-col items-center gap-6">
+        {isInstallable && (
+          <button 
+            onClick={installPWA}
+            className="flex items-center gap-3 px-8 py-4 bg-zinc-900/50 border border-white/10 rounded-full text-white font-bold text-sm tracking-tight active:scale-95 transition-all duration-300 hover:bg-zinc-800/50"
+          >
+            <Download size={18} />
+            <span>DESCARGAR APP</span>
+          </button>
+        )}
         <button 
           onClick={() => navigate("/register")}
           className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.3em] active:text-white transition-colors duration-300 italic"
