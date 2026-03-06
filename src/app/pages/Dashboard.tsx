@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Sparkles, Download, Calendar as CalendarIcon, Clock, ChevronRight, Mic, X } from "lucide-react";
+import { Sparkles, Download, Calendar as CalendarIcon, Clock, ChevronRight, Mic } from "lucide-react";
 import { classManager, Class, Task } from "../../services/class-manager";
 import { authService } from "../../services/auth.service";
 import { aiService } from "../../services/ai.service";
@@ -14,33 +14,10 @@ export default function Dashboard() {
   const [nextClass, setNextClass] = useState<Class | null>(null);
   const [classes, setClasses] = useState<Class[]>([]);
   const [progressTodayTasks, setProgressTodayTasks] = useState<any[] | null>(null);
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
 
   const today = new Date().toLocaleDateString("es-ES", {
     weekday: "long", month: "long", day: "numeric"
   });
-
-  const { isInstallable, installPWA } = usePWAInstall();
-
-  useEffect(() => {
-    // Mostrar el banner si es instalable y no se ha cerrado antes en esta sesión
-    if (isInstallable) {
-      const bannerDismissed = sessionStorage.getItem("pwa_banner_dismissed");
-      if (!bannerDismissed) {
-        setShowInstallBanner(true);
-      }
-    }
-  }, [isInstallable]);
-
-  const handleInstallClick = () => {
-    installPWA();
-    setShowInstallBanner(false);
-  };
-
-  const dismissBanner = () => {
-    setShowInstallBanner(false);
-    sessionStorage.setItem("pwa_banner_dismissed", "true");
-  };
 
   useEffect(() => {
     try {
@@ -113,35 +90,6 @@ export default function Dashboard() {
 
   return (
     <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] safe-area-inset overflow-hidden">
-      {/* Banner de Instalación PWA (Smart App Banner OLED) */}
-      {showInstallBanner && (
-        <div className="mx-6 mt-6 bg-zinc-900/90 backdrop-blur-xl border border-white/10 rounded-[2rem] p-4 flex items-center justify-between animate-in slide-in-from-top-4 duration-500 shadow-2xl z-50">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg">
-              <span className="text-black font-black text-xl">K</span>
-            </div>
-            <div>
-              <p className="text-sm font-bold tracking-tight">KIIS Academic</p>
-              <p className="text-[10px] text-zinc-500 font-medium">Instalar para mejor experiencia</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={handleInstallClick}
-              className="px-5 py-2.5 bg-white text-black text-xs font-black rounded-full active:scale-95 transition-all"
-            >
-              INSTALAR
-            </button>
-            <button 
-              onClick={dismissBanner}
-              className="p-2.5 text-zinc-500 hover:text-white transition-colors"
-            >
-              <X size={18} />
-            </button>
-          </div>
-        </div>
-      )}
-
       <header className="px-8 pt-16 pb-6 flex items-end justify-between">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 mb-2">Mi Agenda</p>
@@ -151,7 +99,9 @@ export default function Dashboard() {
           {authService.getCurrentUser()?.photoURL ? (
             <img src={authService.getCurrentUser()?.photoURL} className="w-full h-full object-cover" alt="Profile" />
           ) : (
-            <Download size={18} className="text-zinc-400" />
+            <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-500">
+              <Sparkles size={18} />
+            </div>
           )}
         </button>
       </header>
