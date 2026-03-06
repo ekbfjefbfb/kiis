@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
-import { ArrowLeft, Trash2, Clock, Calendar, FileText, Zap, Share2 } from "lucide-react";
-import { motion } from "motion/react";
+import { ChevronLeft, Trash2, Clock, Zap, FileText } from "lucide-react";
 import { notesService, BackendNote } from "../../services/notes.service";
 
 export default function NoteDetail() {
@@ -27,7 +26,7 @@ export default function NoteDetail() {
   };
 
   const handleDelete = async () => {
-    if (!note || !confirm("¿Eliminar esta nota?")) return;
+    if (!note || !confirm("¿Eliminar este registro de memoria?")) return;
     try {
       await notesService.deleteNote(note.id);
       navigate("/notes", { replace: true });
@@ -37,86 +36,65 @@ export default function NoteDetail() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+    <div className="fixed inset-0 bg-black flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-white/5 border-t-white rounded-full animate-spin" />
     </div>
   );
 
   if (!note) return (
-    <div className="min-h-screen bg-black text-white p-6 flex flex-col items-center justify-center text-center">
-      <p className="text-white/40 uppercase font-black text-xs tracking-widest mb-4">Error</p>
-      <h1 className="text-2xl font-black uppercase italic tracking-tighter mb-6">Nota no encontrada</h1>
-      <button onClick={() => navigate(-1)} className="bg-white text-black px-8 py-3 rounded-xl font-black uppercase italic tracking-tight">Volver</button>
+    <div className="fixed inset-0 bg-black text-white flex flex-col items-center justify-center px-10 text-center">
+      <h1 className="text-3xl font-extrabold tracking-tighter italic mb-6">No encontrado.</h1>
+      <button onClick={() => navigate(-1)} className="w-full h-18 bg-white text-black rounded-[2rem] font-bold">Volver</button>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-white/30 pb-20">
-      {/* Header Fijo */}
-      <div className="px-6 pt-10 pb-6 flex items-center justify-between border-b border-white/5 sticky top-0 bg-black/80 backdrop-blur-xl z-20">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-transform">
-          <ArrowLeft size={20} />
+    <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] safe-area-inset overflow-hidden">
+      <header className="px-8 pt-16 pb-6 flex items-center justify-between">
+        <button onClick={() => navigate(-1)} className="w-10 h-10 -ml-2 flex items-center justify-center rounded-full active:bg-white/10 transition-colors">
+          <ChevronLeft size={24} />
         </button>
-        <div className="flex items-center gap-2">
-          <button onClick={handleDelete} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-red-400 active:scale-90 transition-transform">
-            <Trash2 size={18} />
-          </button>
-        </div>
-      </div>
+        <button onClick={handleDelete} className="w-10 h-10 -mr-2 flex items-center justify-center rounded-full active:bg-white/10 text-red-500 transition-colors">
+          <Trash2 size={20} />
+        </button>
+      </header>
 
-      <div className="px-6 pt-8 space-y-8">
-        {/* Título y Meta */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="px-2 py-0.5 rounded-md bg-white/10 text-[9px] font-black uppercase tracking-[0.2em] text-white/50">Nota</span>
-            <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
-              • {new Date(note.created_at || "").toLocaleDateString("es-ES", { day: 'numeric', month: 'long', year: 'numeric' })}
-            </span>
+      <main className="flex-1 overflow-y-auto scrollbar-hide px-8 pt-4 pb-32 space-y-10">
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-600">Memoria de Agenda</span>
+            <div className="w-1 h-1 rounded-full bg-zinc-800" />
+            <span className="text-[10px] font-bold text-zinc-500">{new Date(note.created_at || "").toLocaleDateString("es-ES", { day: 'numeric', month: 'short' })}</span>
           </div>
-          <h1 className="text-4xl font-black uppercase italic tracking-tighter leading-[1.1] text-white">
-            {note.title || "Nota sin título"}
-          </h1>
-        </motion.div>
+          <h1 className="text-4xl font-extrabold tracking-tighter leading-tight italic">{note.title || "Sin título"}</h1>
+        </div>
 
-        {/* Resumen Inteligente */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ delay: 0.1 }}
-          className="bg-zinc-900 border border-white/10 rounded-[32px] p-7 shadow-2xl relative overflow-hidden"
-        >
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+        <section className="bg-zinc-900/30 border border-white/5 rounded-[2.5rem] p-8 shadow-inner relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-6 opacity-10">
+            <Zap size={40} />
+          </div>
           <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-4">
-              <Zap size={16} className="text-emerald-400" />
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 italic">Resumen IA</p>
-            </div>
-            <p className="text-lg text-white/90 leading-relaxed font-medium">
-              {note.summary || "No hay resumen disponible para esta nota."}
+            <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400 mb-4">Resumen Inteligente</h2>
+            <p className="text-xl text-white/90 leading-relaxed font-medium italic">
+              "{note.summary || "Generando síntesis..."}"
             </p>
           </div>
-        </motion.div>
+        </section>
 
-        {/* Transcripción Completa */}
         {note.transcript && (
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.2 }}
-            className="space-y-4 pb-10"
-          >
-            <div className="flex items-center gap-2 px-1">
-              <FileText size={14} className="text-white/20" />
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 italic">Transcripción completa</p>
+          <section className="space-y-4">
+            <div className="flex items-center gap-2 px-2">
+              <FileText size={14} className="text-zinc-600" />
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600">Transcripción</h2>
             </div>
-            <div className="bg-white/5 border border-white/5 rounded-[24px] p-6">
-              <p className="text-[15px] text-white/60 leading-relaxed font-medium whitespace-pre-wrap">
+            <div className="bg-zinc-900/10 border border-white/5 rounded-[2rem] p-6">
+              <p className="text-base text-zinc-400 leading-relaxed font-medium">
                 {note.transcript}
               </p>
             </div>
-          </motion.div>
+          </section>
         )}
-      </div>
+      </main>
     </div>
   );
 }
