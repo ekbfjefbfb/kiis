@@ -278,43 +278,23 @@ export default function AgendaAssistant() {
     setIsProcessing(true);
 
     try {
-      const tasks = classManager.getPendingTasks();
-      const recordings = classManager.getAllRecordings();
-      const today = new Date().toISOString().split('T')[0];
-      const todayRecordings = recordings.filter(r => r.date.startsWith(today));
-      
-      const context = `
-        Estado de la Agenda:
-        - Compromisos Pendientes: ${tasks.map(t => `${t.text} (Fecha: ${t.dueDate})`).join(', ')}
-        - Sesiones Capturadas Hoy: ${todayRecordings.map(r => r.summary).join(' | ')}
-        - Clases en el Calendario: ${classManager.getClasses().map(c => c.name).join(', ')}
-      `;
-
-      let aiResponse = "";
-      
-      const prompt = `${context}\n\nConsulta sobre la Agenda: ${text}`;
-
-      const result = await aiService.chatStructured(prompt, [], (token) => {
-        aiResponse += token;
-        setMessages(prev => prev.map(m => (m.id === assistantId ? { ...m, content: aiResponse } : m)));
+      const result = await aiService.chatStructured(text, [], (token) => {
+        setMessages(prev => prev.map(m => (m.id === assistantId ? { ...m, content: m.content + token } : m)));
       });
 
-      aiResponse = result.text;
+      if (!result.text) throw new Error("No response from AI");
 
-      if (!aiResponse) throw new Error("No response from AI");
-
-      lastAssistantRef.current = aiResponse;
+      lastAssistantRef.current = result.text;
       setMessages(prev => prev.map(m => (
-        m.id === assistantId ? { ...m, content: aiResponse, actions: result.actions as any } : m
+        m.id === assistantId ? { ...m, content: result.text, actions: result.actions as any } : m
       )));
 
       if (autoSpeak) {
         setIsSpeaking(true);
-        audioService.speak(aiResponse, () => setIsSpeaking(false));
+        audioService.speak(result.text, () => setIsSpeaking(false));
       }
     } catch (e) {
       console.error("Assistant error:", e);
-
       const msg = e instanceof Error ? e.message : "Error";
       const needsAuth = msg.includes('[401]') || msg.toLowerCase().includes('unauthorized');
       setAuthRequired(needsAuth);

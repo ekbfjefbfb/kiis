@@ -46,9 +46,9 @@ type ChatStructuredResult = {
 
 type ProgressResponse = {
   success?: boolean;
-  today?: { pending?: number; completed?: number; tasks?: any[] };
-  week?: { pending?: number; completed?: number; tasks?: any[] };
-  completed?: number;
+  today_tasks?: any[];
+  week_tasks?: any[];
+  completed_tasks?: any[];
   last_plan?: any;
   last_interaction?: string;
   error?: string;
@@ -283,7 +283,7 @@ export const aiService = {
 
   async chat(message: string, history: ChatMessage[] = [], onToken?: (token: string) => void): Promise<string> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/unified-chat/message/json`, {
+      const response = await fetch(`${API_BASE_URL}/unified-chat/message/json`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -330,7 +330,7 @@ export const aiService = {
   },
 
   async chatStructured(message: string, history: ChatMessage[] = [], onToken?: (token: string) => void): Promise<ChatStructuredResult> {
-    const response = await fetch(`${API_BASE_URL}/api/unified-chat/message/json`, {
+    const response = await fetch(`${API_BASE_URL}/unified-chat/message/json`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -374,7 +374,7 @@ export const aiService = {
   },
 
   async getProgress(): Promise<ProgressResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/unified-chat/progress`, {
+    const response = await fetch(`${API_BASE_URL}/unified-chat/progress`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
       },
@@ -395,7 +395,7 @@ export const aiService = {
   },
 
   async completeProgressTask(taskId: string): Promise<CompleteProgressResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/unified-chat/progress/complete/${encodeURIComponent(taskId)}`, {
+    const response = await fetch(`${API_BASE_URL}/unified-chat/progress/complete/${encodeURIComponent(taskId)}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -424,7 +424,7 @@ export const aiService = {
     const formData = new FormData();
     formData.append('audio', audioBlob, 'recording.webm');
     
-    const response = await fetch(`${API_BASE_URL}/api/unified-chat/voice/message`, {
+    const response = await fetch(`${API_BASE_URL}/unified-chat/voice/message`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -443,7 +443,7 @@ export const aiService = {
    * Obtener contexto del usuario (uso de tokens, mensajes, etc.)
    */
   async getContext(userId: string): Promise<ChatContextResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/unified-chat/context/${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/unified-chat/context/${userId}`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
       },
@@ -460,7 +460,7 @@ export const aiService = {
    * Forzar refresh del contexto
    */
   async refreshContext(userId: string): Promise<{ success: boolean; message: string; user_id: string }> {
-    const response = await fetch(`${API_BASE_URL}/api/unified-chat/context/refresh/${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/unified-chat/context/refresh/${userId}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('access_token')}`,

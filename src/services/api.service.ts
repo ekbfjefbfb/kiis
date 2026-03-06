@@ -1,7 +1,5 @@
 // src/services/api.service.ts
-export const API_BASE_URL =
-  (import.meta as any).env?.VITE_API_URL ||
-  (typeof window !== 'undefined' ? window.location.origin : '');
+export const API_BASE_URL = 'https://estudente.onrender.com/api';
 
 class ApiService {
   private refreshPromise: Promise<boolean> | null = null;

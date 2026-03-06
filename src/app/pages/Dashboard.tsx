@@ -4,6 +4,7 @@ import { Sparkles, Download, Calendar as CalendarIcon, Clock, ChevronRight, Mic 
 import { classManager, Class, Task } from "../../services/class-manager";
 import { authService } from "../../services/auth.service";
 import { aiService } from "../../services/ai.service";
+import { apiService, API_BASE_URL } from "../../services/api.service";
 import { usePWAInstall } from "../../hooks/usePWAInstall";
 
 export default function Dashboard() {
@@ -38,18 +39,34 @@ export default function Dashboard() {
     }
 
     const refreshData = async () => {
-      const pendingTasks = classManager.getPendingTasks();
+      try {
+        const response = await fetch(`${API_BASE_URL}/agenda/today/tasks`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setTodayTasks(data.tasks || []);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching today tasks:", error);
+        // Fallback a classManager si falla la API
+        const pendingTasks = classManager.getPendingTasks();
+        const todayStr = new Date().toISOString().split('T')[0];
+        setTodayTasks(pendingTasks.filter(t => t.dueDate === todayStr));
+      }
+
       const allClasses = classManager.getClasses();
       setClasses(allClasses);
       setCurrentClass(classManager.suggestCurrentClass());
       
-      const todayStr = new Date().toISOString().split('T')[0];
-      setTodayTasks(pendingTasks.filter(t => t.dueDate === todayStr));
-
       try {
         const p = await aiService.getProgress();
         if (p?.success !== false) {
-          setProgressTodayTasks(Array.isArray(p?.today?.tasks) ? p.today.tasks : null);
+          setProgressTodayTasks(Array.isArray(p?.today_tasks) ? p.today_tasks : null);
         }
       } catch { setProgressTodayTasks(null); }
       
