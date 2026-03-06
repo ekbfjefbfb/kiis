@@ -6,11 +6,60 @@ interface ChatMessage {
   content: string;
 }
 
+type ChatActionTask = {
+  title: string;
+  due_date?: string;
+  priority?: 'low' | 'medium' | 'high';
+};
+
+type ChatActionPlanStep = {
+  step: string;
+  duration?: number;
+};
+
+type ChatAction =
+  | { type: 'tasks'; data: ChatActionTask[] }
+  | { type: 'plan'; data: ChatActionPlanStep[] };
+
 interface ChatResponse {
   success?: boolean;
   response?: string;
   message?: string;
+  error?: string;
+  error_code?: string;
+  timestamp?: string;
+  message_id?: string;
+  actions?: ChatAction[];
+  context?: {
+    usage_percent?: number;
+    needs_refresh?: boolean;
+    auto_refreshed?: boolean;
+  };
 }
+
+type ChatStructuredResult = {
+  text: string;
+  actions?: ChatAction[];
+  message_id?: string;
+  context?: ChatResponse['context'];
+};
+
+type ProgressResponse = {
+  success?: boolean;
+  today?: { pending?: number; completed?: number; tasks?: any[] };
+  week?: { pending?: number; completed?: number; tasks?: any[] };
+  completed?: number;
+  last_plan?: any;
+  last_interaction?: string;
+  error?: string;
+  message?: string;
+};
+
+type CompleteProgressResponse = {
+  success?: boolean;
+  error?: string;
+  message?: string;
+};
 
 interface VoiceChatResponse {
   success: boolean;
@@ -76,7 +125,7 @@ class ChatWebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 2000;
-  private reconnectTimeout: NodeJS.Timeout | null = null;
+  private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
 
   // Callbacks
   private onMessageCallback: WSMessageHandler | null = null;
@@ -234,7 +283,7 @@ export const aiService = {
 
   async chat(message: string, history: ChatMessage[] = [], onToken?: (token: string) => void): Promise<string> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/unified-chat/message`, {
+      const response = await fetch(`${API_BASE_URL}/api/unified-chat/message/json`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -244,10 +293,21 @@ export const aiService = {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let details: ChatResponse | null = null;
+        try {
+          details = await response.json();
+        } catch {
+          details = null;
+        }
+        const msg = details?.error || details?.message || `HTTP error! status: ${response.status}`;
+        throw new Error(`[${response.status}] ${msg}`);
       }
 
       const data: ChatResponse = await response.json();
+
+      if (data?.success === false) {
+        throw new Error(data?.error || data?.message || 'Error del asistente');
+      }
 
       const finalMsg =
         data?.response ||
@@ -264,8 +324,96 @@ export const aiService = {
       return finalMsg;
     } catch (e) {
       console.error("AI Chat Error:", e);
+      if (e instanceof Error) throw e;
       throw new Error("Hubo un error al conectar con el asistente.");
     }
+  },
+
+  async chatStructured(message: string, history: ChatMessage[] = [], onToken?: (token: string) => void): Promise<ChatStructuredResult> {
+    const response = await fetch(`${API_BASE_URL}/api/unified-chat/message/json`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+      },
+      body: JSON.stringify({ message }),
+    });
+
+    if (!response.ok) {
+      let details: ChatResponse | null = null;
+      try {
+        details = await response.json();
+      } catch {
+        details = null;
+      }
+      const msg = details?.error || details?.message || `HTTP error! status: ${response.status}`;
+      throw new Error(`[${response.status}] ${msg}`);
+    }
+
+    const data: ChatResponse = await response.json();
+    if (data?.success === false) {
+      throw new Error(data?.error || data?.message || 'Error del asistente');
+    }
+
+    const text = data?.response || data?.message || "Lo siento, no pude procesar la respuesta.";
+
+    if (onToken) {
+      const words = text.split(' ');
+      for (const word of words) {
+        await new Promise(r => setTimeout(r, 30));
+        onToken(word + ' ');
+      }
+    }
+
+    return {
+      text,
+      actions: data?.actions,
+      message_id: data?.message_id,
+      context: data?.context,
+    };
+  },
+
+  async getProgress(): Promise<ProgressResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/unified-chat/progress`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    });
+
+    if (!response.ok) {
+      let details: ProgressResponse | null = null;
+      try {
+        details = await response.json();
+      } catch {
+        details = null;
+      }
+      const msg = details?.error || details?.message || `HTTP error! status: ${response.status}`;
+      throw new Error(`[${response.status}] ${msg}`);
+    }
+
+    return await response.json();
+  },
+
+  async completeProgressTask(taskId: string): Promise<CompleteProgressResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/unified-chat/progress/complete/${encodeURIComponent(taskId)}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    });
+
+    if (!response.ok) {
+      let details: CompleteProgressResponse | null = null;
+      try {
+        details = await response.json();
+      } catch {
+        details = null;
+      }
+      const msg = details?.error || details?.message || `HTTP error! status: ${response.status}`;
+      throw new Error(`[${response.status}] ${msg}`);
+    }
+
+    return await response.json();
   },
 
   /**

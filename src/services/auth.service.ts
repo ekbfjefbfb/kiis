@@ -25,9 +25,35 @@ export class AuthService {
     this.loadFromStorage();
   }
 
+  private parseJwtPayload(token: string): any | null {
+    try {
+      const parts = token.split('.');
+      if (parts.length < 2) return null;
+      const payload = parts[1];
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+      const json = atob(padded);
+      return JSON.parse(json);
+    } catch {
+      return null;
+    }
+  }
+
+  private isAccessTokenValid(token: string | null): boolean {
+    if (!token) return false;
+    const payload = this.parseJwtPayload(token);
+    if (!payload) return true; // opaque token: can't validate exp here
+    const exp = payload?.exp;
+    if (!exp || typeof exp !== 'number') return true;
+    const nowSec = Math.floor(Date.now() / 1000);
+    // small skew to avoid edge-of-expiry UX bugs
+    return exp - 15 > nowSec;
+  }
+
   private loadFromStorage(): void {
     this.accessToken = localStorage.getItem(this.ACCESS_TOKEN_KEY);
     this.refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
+
     const userStr = localStorage.getItem(this.USER_KEY);
     if (userStr) {
       try {
@@ -35,6 +61,12 @@ export class AuthService {
       } catch {
         this.currentUser = null;
       }
+    }
+
+    // If token is expired, do not treat session as authenticated
+    if (this.accessToken && !this.isAccessTokenValid(this.accessToken)) {
+      this.accessToken = null;
+      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     }
   }
 
@@ -53,9 +85,9 @@ export class AuthService {
       const response = await apiService.post<AuthResponse>('/api/auth/oauth', {
         provider,
         id_token: idToken,
-        name
+        name,
       });
-      
+
       if (response && response.access_token) {
         this.saveToStorage(response);
         return true;
@@ -69,38 +101,50 @@ export class AuthService {
 
   async refreshAccessToken(): Promise<boolean> {
     if (!this.refreshToken) return false;
-    
+
     try {
-      const response = await apiService.post<{ access_token: string; token_type: string }>('/api/auth/refresh', {
-        refresh_token: this.refreshToken
+      const response = await apiService.post<{ access_token: string; refresh_token?: string; token_type: string }>('/api/auth/refresh', {
+        refresh_token: this.refreshToken,
       });
-      
+
       if (response && response.access_token) {
         this.accessToken = response.access_token;
         localStorage.setItem(this.ACCESS_TOKEN_KEY, this.accessToken);
+        if (response.refresh_token) {
+          this.refreshToken = response.refresh_token;
+          localStorage.setItem(this.REFRESH_TOKEN_KEY, this.refreshToken);
+        }
         return true;
       }
       return false;
     } catch (error) {
-       console.error('Token refresh failed:', error);
-       this.logout(); // Enforce logout if refresh fails securely
-       return false;
+      console.error('Token refresh failed:', error);
+      this.logout();
+      return false;
     }
   }
 
-  // Deprecated legacy mode (fallback dev to not break UI immediately if forms are used instead of OAuth)
   async login(email: string, password?: string): Promise<boolean> {
-      // Create a mock jwt idToken for dev test if there is no real oauth client yet
-      const mockIdToken = btoa(JSON.stringify({ email }));
-      return this.loginOAuth('google', mockIdToken);
+    if (!(import.meta as any).env?.DEV) {
+      console.error('Password login is disabled in production. Use OAuth.');
+      return false;
+    }
+
+    const mockIdToken = btoa(JSON.stringify({ email }));
+    return this.loginOAuth('google', mockIdToken);
   }
 
   async register(email: string, password?: string, displayName?: string): Promise<boolean> {
-      const mockIdToken = btoa(JSON.stringify({ email }));
-      return this.loginOAuth('google', mockIdToken, displayName);
+    if (!(import.meta as any).env?.DEV) {
+      console.error('Password register is disabled in production. Use OAuth.');
+      return false;
+    }
+
+    const mockIdToken = btoa(JSON.stringify({ email }));
+    return this.loginOAuth('google', mockIdToken, displayName);
   }
 
-  async logout(): Promise<void> {
+  logout(): void {
     this.accessToken = null;
     this.refreshToken = null;
     this.currentUser = null;
@@ -110,7 +154,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.currentUser && !!this.accessToken;
+    return !!this.currentUser && this.isAccessTokenValid(this.accessToken);
   }
 
   getCurrentUser(): UserData | null {
@@ -118,6 +162,7 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
+    if (!this.isAccessTokenValid(this.accessToken)) return null;
     return this.accessToken;
   }
 }

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { Sparkles } from "lucide-react";
 import { classManager, Class, Task } from "../../services/class-manager";
 import { authService } from "../../services/auth.service";
+import { aiService } from "../../services/ai.service";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -11,6 +12,10 @@ export default function Dashboard() {
   const [currentClass, setCurrentClass] = useState<Class | null>(null);
   const [nextClass, setNextClass] = useState<Class | null>(null);
   const [classes, setClasses] = useState<Class[]>([]);
+  const [todayRecordingsCount, setTodayRecordingsCount] = useState(0);
+  const [progressTodayText, setProgressTodayText] = useState<string | null>(null);
+  const [progressTodayTasks, setProgressTodayTasks] = useState<any[] | null>(null);
+  const [progressError, setProgressError] = useState<string | null>(null);
 
   const today = new Date().toLocaleDateString("es-ES", {
     weekday: "long", month: "long", day: "numeric"
@@ -36,7 +41,7 @@ export default function Dashboard() {
       return;
     }
 
-    const refreshData = () => {
+    const refreshData = async () => {
       const pendingTasks = classManager.getPendingTasks();
       const allClasses = classManager.getClasses();
       setClasses(allClasses);
@@ -46,6 +51,34 @@ export default function Dashboard() {
       
       const todayStr = new Date().toISOString().split('T')[0];
       setTodayTasks(pendingTasks.filter(t => t.dueDate === todayStr).slice(0, 3));
+
+      const allRecordings = classManager.getAllRecordings();
+      setTodayRecordingsCount(allRecordings.filter(r => r.date.startsWith(todayStr)).length);
+
+      try {
+        const p = await aiService.getProgress();
+        if (p?.success !== false) {
+          const todayPending = p?.today?.pending;
+          const todayCompleted = p?.today?.completed;
+          if (typeof todayPending === 'number' || typeof todayCompleted === 'number') {
+            setProgressTodayText(
+              `Progreso hoy: ${todayCompleted || 0} completadas, ${todayPending || 0} pendientes.`
+            );
+          } else {
+            setProgressTodayText(null);
+          }
+
+          const tasksFromProgress = Array.isArray(p?.today?.tasks) ? p.today.tasks : null;
+          setProgressTodayTasks(tasksFromProgress);
+          setProgressError(null);
+        } else {
+          setProgressTodayText(null);
+          setProgressTodayTasks(null);
+        }
+      } catch {
+        setProgressTodayText(null);
+        setProgressTodayTasks(null);
+      }
       
       const weekFromNow = new Date();
       weekFromNow.setDate(weekFromNow.getDate() + 7);
@@ -74,9 +107,66 @@ export default function Dashboard() {
     };
 
     refreshData();
-    const interval = setInterval(refreshData, 30000); // Refrescar cada 30s
+    const interval = setInterval(() => {
+      refreshData();
+    }, 30000); // Refrescar cada 30s
     return () => clearInterval(interval);
   }, []);
+
+  const completeProgressTaskOptimistic = async (taskId: string) => {
+    if (!taskId) return;
+    const prev = progressTodayTasks;
+    setProgressError(null);
+    if (prev) {
+      setProgressTodayTasks(prev.map(t => {
+        const id = String(t?.id || t?.task_id || "");
+        return id === taskId ? { ...t, completed: true } : t;
+      }));
+    }
+
+    try {
+      await aiService.completeProgressTask(taskId);
+      setProgressTodayTasks(current => {
+        if (!current) return current;
+        return current.filter(t => String(t?.id || t?.task_id || "") !== taskId);
+      });
+    } catch (e) {
+      setProgressTodayTasks(prev);
+      const msg = e instanceof Error ? e.message : 'Error';
+      setProgressError(msg);
+    }
+  };
+
+  const openPlanToday = () => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const pending = classManager.getPendingTasks();
+    const dueToday = pending.filter(t => t.dueDate === todayStr);
+    const weekFromNow = new Date();
+    weekFromNow.setDate(weekFromNow.getDate() + 7);
+    const dueWeek = pending.filter(t => {
+      const due = new Date(t.dueDate);
+      return due <= weekFromNow && due > new Date();
+    });
+
+    const classesNames = classManager.getClasses().map(c => c.name).join(", ");
+    const recordings = classManager.getAllRecordings().filter(r => r.date.startsWith(todayStr));
+
+    const prompt = [
+      "Quiero un plan ultra concreto para HOY.",
+      "Formato obligatorio:",
+      "1) 1 Prioridad (una frase)",
+      "2) 3 acciones (en bullets)",
+      "3) 3 tareas (en bullets, accionables)",
+      "4) 1 repaso sugerido (una frase)",
+      "",
+      `Clases: ${classesNames || "(sin clases)"}`,
+      `Grabaciones hoy: ${recordings.map(r => r.summary).join(" | ") || "(ninguna)"}`,
+      `Tareas vencen hoy: ${dueToday.map(t => t.text).join(" | ") || "(ninguna)"}`,
+      `Tareas esta semana: ${dueWeek.slice(0, 6).map(t => `${t.text} (${t.dueDate})`).join(" | ") || "(ninguna)"}`,
+    ].join("\n");
+
+    navigate(`/assistant?q=${encodeURIComponent(prompt)}&autosend=1`);
+  };
 
   return (
     <div className="min-h-[100dvh] bg-black text-white px-7 pt-16 pb-10 flex flex-col font-['Plus_Jakarta_Sans']">
@@ -85,6 +175,37 @@ export default function Dashboard() {
         <p className="text-zinc-500 text-sm font-medium uppercase tracking-widest mb-1">Hoy</p>
         <h1 className="text-3xl font-bold capitalize">{today}</h1>
       </header>
+
+      {/* Momento Wow */}
+      <section className="mb-10">
+        <div className="bg-zinc-900/30 border border-white/5 rounded-[2rem] p-6">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-3">Tu día en 20s</div>
+          <div className="space-y-2">
+            <div className="text-[15px] font-semibold text-white/90">
+              {todayTasks.length > 0 ? `Tienes ${todayTasks.length} tarea${todayTasks.length === 1 ? "" : "s"} que vencen hoy.` : "No tienes tareas urgentes hoy."}
+            </div>
+            <div className="text-[13px] font-medium text-zinc-500">
+              {currentClass ? `Clase en curso: ${currentClass.name}.` : nextClass ? `Próxima clase: ${nextClass.name}.` : "Sin clases próximas."}
+            </div>
+            <div className="text-[13px] font-medium text-zinc-500">
+              {todayRecordingsCount > 0 ? `${todayRecordingsCount} grabación${todayRecordingsCount === 1 ? "" : "es"} hoy.` : "Aún no grabas hoy."}
+            </div>
+            {progressTodayText && (
+              <div className="text-[13px] font-medium text-zinc-500">
+                {progressTodayText}
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={openPlanToday}
+            className="mt-6 w-full h-14 bg-white text-black rounded-2xl font-bold text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all"
+          >
+            <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500" />
+            Generar plan de hoy
+          </button>
+        </div>
+      </section>
       
       {/* Acción Principal: GRABAR (Apple Style) */}
       <section className="mb-12">
@@ -108,26 +229,59 @@ export default function Dashboard() {
 
       <div className="flex-1 space-y-10">
         {/* Tareas Urgentes (Vencen Hoy) */}
-        {todayTasks.length > 0 ? (
+        {(Array.isArray(progressTodayTasks) && progressTodayTasks.length > 0) || todayTasks.length > 0 ? (
           <section>
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-bold tracking-tight text-white">Vence hoy</h2>
               <span className="px-2.5 py-1 bg-red-500/10 text-red-500 text-xs font-bold rounded-full">
-                {todayTasks.length} PENDIENTES
+                {(Array.isArray(progressTodayTasks) && progressTodayTasks.length > 0) ? progressTodayTasks.length : todayTasks.length} PENDIENTES
               </span>
             </div>
+            {progressError && (
+              <div className="mb-4 text-[11px] font-bold text-zinc-500 uppercase tracking-widest">
+                {progressError}
+              </div>
+            )}
             <div className="space-y-3">
-              {todayTasks.map(task => (
-                <div key={task.id} className="bg-zinc-900/40 border border-white/5 rounded-3xl p-5 flex items-center gap-4">
-                  <div className="w-2 h-2 rounded-full bg-red-500 shrink-0 shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[17px] font-semibold text-white truncate">{task.text}</p>
-                    <p className="text-sm text-zinc-500 font-medium tracking-tight">
-                      {classManager.getClassById(task.classId)?.name}
-                    </p>
+              {Array.isArray(progressTodayTasks) && progressTodayTasks.length > 0 ? (
+                progressTodayTasks.map((t: any) => {
+                  const id = String(t?.id || t?.task_id || "");
+                  const title = String(t?.title || t?.text || "Tarea");
+                  const completed = Boolean(t?.completed);
+                  return (
+                    <div key={id || title} className="bg-zinc-900/40 border border-white/5 rounded-3xl p-5 flex items-center gap-4">
+                      <button
+                        onClick={() => completeProgressTaskOptimistic(id)}
+                        disabled={!id || completed}
+                        className={`w-7 h-7 rounded-xl border flex items-center justify-center shrink-0 active:scale-95 transition-all ${
+                          completed ? 'bg-white text-black border-white/10 opacity-40' : 'bg-transparent text-white border-white/10'
+                        }`}
+                        aria-label="Completar"
+                      >
+                        <div className={`w-2 h-2 rounded-full ${completed ? 'bg-black/70' : 'bg-red-500'} shadow-[0_0_10px_rgba(239,68,68,0.5)]`} />
+                      </button>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[17px] font-semibold text-white truncate">{title}</p>
+                        <p className="text-sm text-zinc-500 font-medium tracking-tight">
+                          Hoy
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                todayTasks.map(task => (
+                  <div key={task.id} className="bg-zinc-900/40 border border-white/5 rounded-3xl p-5 flex items-center gap-4">
+                    <div className="w-2 h-2 rounded-full bg-red-500 shrink-0 shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[17px] font-semibold text-white truncate">{task.text}</p>
+                      <p className="text-sm text-zinc-500 font-medium tracking-tight">
+                        {classManager.getClassById(task.classId)?.name}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </section>
         ) : classes.length > 0 && (

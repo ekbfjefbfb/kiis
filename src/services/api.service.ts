@@ -11,8 +11,7 @@ class ApiService {
     if (contentType) {
       headers['Content-Type'] = contentType;
     }
-    
-    // Auth token injection
+
     const token = localStorage.getItem('access_token');
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -31,13 +30,20 @@ class ApiService {
         body: JSON.stringify({ refresh_token: refreshToken }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('access_token', data.access_token);
-        localStorage.setItem('refresh_token', data.refresh_token);
-        return true;
+      if (!response.ok) {
+        return false;
       }
-      return false;
+
+      const data = await response.json();
+      if (!data?.access_token) return false;
+
+      localStorage.setItem('access_token', data.access_token);
+      // refresh_token may not be returned by backend; only overwrite if present
+      if (data?.refresh_token) {
+        localStorage.setItem('refresh_token', data.refresh_token);
+      }
+
+      return true;
     } catch (error) {
       console.error('Token refresh failed:', error);
       return false;
@@ -47,44 +53,47 @@ class ApiService {
   // Generic request wrapper handling parsing and basic HTTP errors
   async request<T>(endpoint: string, options: RequestInit = {}, retryCount: number = 0): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
-    
-    // Inject headers
-    options.headers = {
-      ...this.getHeaders(
-        options.body instanceof FormData ? '' : 'application/json'
-      ),
-      ...options.headers,
+    const isFormData = options.body instanceof FormData;
+
+    // IMPORTANT: do not mutate the caller's options object
+    // and ensure fresh Authorization wins on retry
+    const mergedHeaders: Record<string, string> = {
+      ...(options.headers as Record<string, string> | undefined),
+      ...this.getHeaders(isFormData ? '' : 'application/json'),
     };
-    
+
     // Clean up empty headers like Content-Type when using FormData
-    if (options.body instanceof FormData && options.headers) {
-      delete (options.headers as Record<string, string>)['Content-Type'];
+    if (isFormData) {
+      delete mergedHeaders['Content-Type'];
     }
 
-    try {
-      let response = await fetch(url, options);
+    const requestOptions: RequestInit = {
+      ...options,
+      headers: mergedHeaders,
+    };
 
-      // Handle 401 Unauthorized - Intentar refresh token
+    try {
+      const response = await fetch(url, requestOptions);
+
+      // Handle 401 Unauthorized - attempt refresh token once
       if (response.status === 401 && retryCount === 0) {
-        console.warn('Unauthorized request, attempting token refresh...');
-        
-        // Evitar múltiples refresh simultáneos
+        // Avoid multiple concurrent refresh
         if (!this.refreshPromise) {
           this.refreshPromise = this.refreshToken();
         }
-        
+
         const refreshed = await this.refreshPromise;
         this.refreshPromise = null;
-        
+
         if (refreshed) {
-          // Reintentar la petición con el nuevo token
-          console.log('Token refreshed, retrying request...');
           return this.request<T>(endpoint, options, retryCount + 1);
-        } else {
-          // Refresh falló, pero no hacemos logout (uso anónimo)
-          console.log('Token refresh failed, continuing without auth...');
-          throw new Error('Sesión no disponible.继续 usando modo anónimo.');
         }
+
+        // Hard fail: clear tokens to prevent loops
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('current_user');
+        throw new Error('Sesión expirada. Inicia sesión de nuevo.');
       }
 
       if (!response.ok) {
@@ -93,13 +102,13 @@ class ApiService {
           const errData = await response.json();
           errorMessage = errData.detail || errData.message || errorMessage;
         } catch {
-           // ignore parsing error for non-json fallback
+          // ignore parsing error for non-json fallback
         }
         throw new Error(errorMessage);
       }
 
       // Return Blob directly if we expect PDF/Bytes
-      if (options.headers && (options.headers as Record<string, string>)['Accept'] === 'application/pdf') {
+      if (requestOptions.headers && (requestOptions.headers as Record<string, string>)['Accept'] === 'application/pdf') {
         const blob = await response.blob();
         return blob as unknown as T;
       }
@@ -107,7 +116,6 @@ class ApiService {
       // Check if there is body to parse
       const text = await response.text();
       return (text ? JSON.parse(text) : null) as T;
-      
     } catch (error) {
       console.error(`API Request failed for ${endpoint}:`, error);
       throw error;
