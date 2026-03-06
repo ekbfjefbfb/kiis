@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import { authService } from "../../services/auth.service";
 
 export default function RegisterPage() {
@@ -11,7 +11,6 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Redirigir si ya está autenticado
   useEffect(() => {
     if (authService.isAuthenticated()) {
       navigate("/", { replace: true });
@@ -26,74 +25,89 @@ export default function RegisterPage() {
     try {
       const success = await authService.register(email, password, name);
       if (!success) {
-        setError("No se pudo crear la cuenta. Revisa tu conexión e intenta de nuevo.");
+        setError("Error al crear la cuenta");
         return;
       }
       navigate("/", { replace: true });
     } catch (err: any) {
-      setError(err.message || "Error al crear la cuenta");
+      setError(err.message || "Error de registro");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[100dvh] bg-black text-white flex flex-col px-6 pt-24 pb-8">
-      {/* Logo centrado */}
-      <div className="flex justify-center mb-16">
-        <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg">
-          <span className="text-black text-xl font-bold">K</span>
-        </div>
-      </div>
+    <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] safe-area-inset overflow-hidden">
+      <main className="flex-1 flex flex-col px-10 pt-24 overflow-y-auto scrollbar-hide">
+        <header className="mb-16">
+          <div className="w-16 h-16 bg-white rounded-[2rem] flex items-center justify-center mb-8 shadow-[0_20px_40px_rgba(255,255,255,0.1)]">
+            <span className="text-black text-2xl font-extrabold tracking-tighter">K</span>
+          </div>
+          <h1 className="text-5xl font-extrabold tracking-tighter leading-none mb-4">Empezar.</h1>
+          <p className="text-zinc-500 text-lg font-medium tracking-tight">Crea tu identidad en KIIS OS.</p>
+        </header>
 
-      {/* Formulario */}
-      <form onSubmit={handleRegister} className="flex-1 space-y-3">
-        {error && (
-          <p className="text-red-400 text-sm text-center bg-red-400/10 py-2 rounded-xl border border-red-400/20">{error}</p>
-        )}
-        
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Nombre"
-          className="w-full h-14 bg-zinc-900 rounded-xl px-5 text-white text-base placeholder:text-zinc-600 border border-white/5 outline-none focus:border-white/20 transition-all"
-          required
-        />
-        
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Correo"
-          className="w-full h-14 bg-zinc-900 rounded-xl px-5 text-white text-base placeholder:text-zinc-600 border border-white/5 outline-none focus:border-white/20 transition-all"
-          required
-        />
-        
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Contraseña"
-          className="w-full h-14 bg-zinc-900 rounded-xl px-5 text-white text-base placeholder:text-zinc-600 border border-white/5 outline-none focus:border-white/20 transition-all"
-          required
-        />
+        <form onSubmit={handleRegister} className="space-y-4 pb-10">
+          <div className="space-y-3">
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nombre completo"
+              className="w-full h-18 bg-zinc-900/50 rounded-[2rem] px-8 text-lg font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
+              required
+            />
+            
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Correo electrónico"
+              className="w-full h-18 bg-zinc-900/50 rounded-[2rem] px-8 text-lg font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
+              required
+            />
+            
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Contraseña"
+              className="w-full h-18 bg-zinc-900/50 rounded-[2rem] px-8 text-lg font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
+              required
+            />
+          </div>
 
+          {error && (
+            <div className="px-6 py-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
+              <p className="text-red-500 text-sm font-bold tracking-tight text-center">{error}</p>
+            </div>
+          )}
+
+          <button 
+            disabled={isLoading}
+            type="submit"
+            className="w-full h-20 bg-white text-black rounded-[2.5rem] font-bold text-xl mt-6 active:scale-[0.97] transition-all duration-300 disabled:opacity-50 flex items-center justify-center shadow-[0_20px_40px_rgba(255,255,255,0.1)] group"
+          >
+            {isLoading ? (
+              <Loader2 className="animate-spin" size={28} strokeWidth={2.5} />
+            ) : (
+              <div className="flex items-center gap-3">
+                <span>Crear Cuenta</span>
+                <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
+              </div>
+            )}
+          </button>
+        </form>
+      </main>
+
+      <footer className="p-10 flex flex-col items-center gap-4 bg-black/80 backdrop-blur-lg border-t border-white/5">
         <button 
-          disabled={isLoading}
-          type="submit"
-          className="w-full h-14 bg-white text-black rounded-xl font-bold text-base mt-6 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center shadow-md shadow-white/5"
+          onClick={() => navigate("/login")}
+          className="text-zinc-500 text-sm font-bold uppercase tracking-[0.2em] active:text-white transition-colors duration-300"
         >
-          {isLoading ? <Loader2 className="animate-spin" size={20} /> : "Crear cuenta"}
+          Ya tengo cuenta
         </button>
-      </form>
-
-      <button 
-        onClick={() => navigate("/login")}
-        className="text-zinc-500 text-sm mt-4 active:text-white transition-colors"
-      >
-        Ya tengo cuenta
-      </button>
+      </footer>
     </div>
   );
 }
