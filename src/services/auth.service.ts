@@ -1,10 +1,12 @@
 import { apiService } from './api.service';
 
 interface UserData {
+  id: string;
   email: string;
+  full_name: string;
+  photoURL?: string;
   displayName?: string;
   name?: string;
-  photoURL?: string;
 }
 
 interface AuthResponse {
@@ -97,16 +99,41 @@ export class AuthService {
     }
   }
 
-  // Deprecated legacy mode (fallback dev to not break UI immediately if forms are used instead of OAuth)
-  async login(email: string, password?: string): Promise<boolean> {
-      // Create a mock jwt idToken for dev test if there is no real oauth client yet
-      const mockIdToken = btoa(JSON.stringify({ email }));
-      return this.loginOAuth('google', mockIdToken);
+  async login(email: string, password: string): Promise<boolean> {
+    try {
+      const response = await apiService.post<AuthResponse>('/auth/login', {
+        email,
+        password
+      });
+      
+      if (response && response.access_token) {
+        this.saveToStorage(response);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    }
   }
 
-  async register(email: string, password?: string, displayName?: string): Promise<boolean> {
-      const mockIdToken = btoa(JSON.stringify({ email }));
-      return this.loginOAuth('google', mockIdToken, displayName);
+  async register(email: string, password: string, fullName: string): Promise<boolean> {
+    try {
+      const response = await apiService.post<AuthResponse>('/auth/register', {
+        email,
+        password,
+        full_name: fullName
+      });
+      
+      if (response && response.access_token) {
+        this.saveToStorage(response);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      throw error;
+    }
   }
 
   async logout(): Promise<void> {

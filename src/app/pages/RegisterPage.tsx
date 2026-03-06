@@ -7,6 +7,7 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -22,9 +23,7 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      // Mock de id_token para flujo passwordless que cumpla validación JWT básica si el backend lo requiere
-      const mockJwt = `header.${btoa(JSON.stringify({ email }))}.signature`;
-      const success = await authService.loginOAuth('google', mockJwt, name);
+      const success = await authService.register(email, password, name);
       if (success) {
         navigate("/", { replace: true });
       } else {
@@ -54,7 +53,7 @@ export default function RegisterPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Tu nombre"
+              placeholder="Nombre completo"
               className="w-full h-20 bg-zinc-900/50 rounded-[2.5rem] px-8 text-xl font-semibold placeholder:text-zinc-800 border border-white/5 outline-none focus:border-white/10 transition-all duration-500"
               required
             />
@@ -65,6 +64,15 @@ export default function RegisterPage() {
               placeholder="Correo electrónico"
               className="w-full h-20 bg-zinc-900/50 rounded-[2.5rem] px-8 text-xl font-semibold placeholder:text-zinc-800 border border-white/5 outline-none focus:border-white/10 transition-all duration-500"
               required
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Contraseña (mín. 8 caracteres)"
+              className="w-full h-20 bg-zinc-900/50 rounded-[2.5rem] px-8 text-xl font-semibold placeholder:text-zinc-800 border border-white/5 outline-none focus:border-white/10 transition-all duration-500"
+              required
+              minLength={8}
             />
           </div>
 

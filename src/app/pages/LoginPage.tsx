@@ -6,6 +6,7 @@ import { authService } from "../../services/auth.service";
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -21,13 +22,11 @@ export default function LoginPage() {
     setLoading(true);
     
     try {
-      const mockJwt = `header.${btoa(JSON.stringify({ email }))}.signature`;
-      const success = await authService.loginOAuth('google', mockJwt, email.split('@')[0]);
-      
+      const success = await authService.login(email, password);
       if (success) {
         navigate("/", { replace: true });
       } else {
-        setError("Error de acceso. Inténtalo de nuevo.");
+        setError("Credenciales incorrectas");
       }
     } catch (err: any) {
       setError(err.message || "Error de conexión");
@@ -47,13 +46,21 @@ export default function LoginPage() {
           <p className="text-zinc-500 text-lg font-medium tracking-tight">Tu inteligencia de agenda te espera.</p>
         </header>
 
-        <form onSubmit={handleLogin} className="space-y-8">
+        <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-4">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Correo electrónico"
+              className="w-full h-20 bg-zinc-900/50 rounded-[2.5rem] px-8 text-xl font-semibold placeholder:text-zinc-800 border border-white/5 outline-none focus:border-white/10 transition-all duration-500"
+              required
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Contraseña"
               className="w-full h-20 bg-zinc-900/50 rounded-[2.5rem] px-8 text-xl font-semibold placeholder:text-zinc-800 border border-white/5 outline-none focus:border-white/10 transition-all duration-500"
               required
             />
