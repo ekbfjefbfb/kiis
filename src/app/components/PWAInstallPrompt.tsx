@@ -93,7 +93,7 @@ export default function PWAInstallPrompt() {
               
               <div className="flex-1">
                 <h3 className="text-white font-semibold text-lg mb-1">
-                  Instalar Notdeer
+                  Instalar KIIS
                 </h3>
                 <p className="text-white/80 text-sm mb-4">
                   {isIOS 

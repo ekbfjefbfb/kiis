@@ -1,7 +1,7 @@
 {
-  "name": "Notdeer - Asistente Estudiantil IA",
-  "short_name": "Notdeer",
-  "description": "Graba clases, obtén resúmenes automáticos con IA, gestiona tareas y estudia mejor",
+  "name": "KIIS - Agenda Inteligente",
+  "short_name": "KIIS",
+  "description": "Agenda académica inteligente con IA. Organiza tu tiempo, tareas y clases.",
   "lang": "es",
   "start_url": "/",
   "scope": "/",
