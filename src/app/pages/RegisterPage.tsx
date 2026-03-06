@@ -36,24 +36,6 @@ export default function RegisterPage() {
     }
   };
 
-  const handleOAuthRegister = async (provider: 'google' | 'apple') => {
-    setIsLoading(true);
-    setError("");
-    try {
-      const mockToken = `mock_${provider}_reg_${Date.now()}`;
-      const success = await authService.loginOAuth(provider, mockToken);
-      if (success) {
-        navigate("/", { replace: true });
-      } else {
-        setError(`Error al registrarse con ${provider}`);
-      }
-    } catch (err: any) {
-      setError(err.message || "Error de conexión");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] safe-area-inset overflow-hidden">
       <main className="flex-1 flex flex-col px-10 pt-24 overflow-y-auto scrollbar-hide">
@@ -91,27 +73,6 @@ export default function RegisterPage() {
               <p className="text-red-500 text-sm font-bold tracking-tight text-center">{error}</p>
             </div>
           )}
-
-          <div className="grid grid-cols-2 gap-4 mt-8">
-            <button
-              type="button"
-              onClick={() => handleOAuthRegister('google')}
-              disabled={isLoading}
-              className="h-20 bg-zinc-900/50 border border-white/5 rounded-[2rem] flex items-center justify-center gap-3 active:scale-[0.97] transition-all hover:bg-zinc-900"
-            >
-              <img src="https://www.google.com/favicon.ico" className="w-6 h-6 grayscale" alt="Google" />
-              <span className="font-bold">Google</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleOAuthRegister('apple')}
-              disabled={isLoading}
-              className="h-20 bg-zinc-900/50 border border-white/5 rounded-[2rem] flex items-center justify-center gap-3 active:scale-[0.97] transition-all hover:bg-zinc-900"
-            >
-              <span className="text-2xl mb-1"></span>
-              <span className="font-bold">Apple</span>
-            </button>
-          </div>
 
           <button 
             disabled={isLoading}
