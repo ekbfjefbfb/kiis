@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { 
-  ChevronLeft, Search, FileText, ChevronRight, 
+  ChevronLeft, Search, ChevronRight, 
   Sparkles, Plus
 } from "lucide-react";
 
@@ -10,9 +10,9 @@ export default function NotesPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const notes = [
-    { id: 1, date: "02 MAR", title: "Teorema de Bayes", subject: "MATEMÁTICAS", summary: "Análisis de probabilidades condicionales..." },
-    { id: 2, date: "28 FEB", title: "Revolución Industrial", subject: "HISTORIA", summary: "Impacto socioeconómico en Europa..." },
-    { id: 3, date: "25 FEB", title: "Leyes de Newton", subject: "FÍSICA", summary: "Principios de dinámica y estática..." }
+    { id: 1, date: "02 MAR", title: "Resumen: Teoría de Sistemas", subject: "AGENDA", summary: "Puntos clave de la clase de hoy..." },
+    { id: 2, date: "28 FEB", title: "Acciones: Proyecto Final", subject: "AGENDA", summary: "Lista de tareas detectadas por IA..." },
+    { id: 3, date: "25 FEB", title: "Memoria: Cálculo II", subject: "AGENDA", summary: "Conceptos fundamentales repasados..." }
   ];
 
   return (
@@ -21,7 +21,7 @@ export default function NotesPage() {
         <button onClick={() => navigate(-1)} className="w-10 h-10 -ml-2 flex items-center justify-center rounded-full active:bg-white/10 transition-colors">
           <ChevronLeft size={24} />
         </button>
-        <h1 className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-500">Mis Notas</h1>
+        <h1 className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-500">Memoria de Agenda</h1>
         <button className="w-10 h-10 -mr-2 flex items-center justify-center rounded-full active:bg-white/10 transition-colors">
           <Plus size={24} />
         </button>
@@ -35,7 +35,7 @@ export default function NotesPage() {
           <input 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar en el cerebro..."
+            placeholder="Buscar en la memoria..."
             className="w-full h-16 bg-zinc-900/40 border border-white/5 rounded-[2rem] pl-16 pr-6 text-lg font-medium focus:outline-none focus:border-white/10 focus:bg-zinc-900/60 transition-all placeholder:text-zinc-700"
           />
         </div>
@@ -69,7 +69,7 @@ export default function NotesPage() {
 
           <div className="mt-20 flex flex-col items-center gap-4 opacity-20">
             <Sparkles size={32} strokeWidth={1.5} />
-            <p className="text-[10px] font-bold uppercase tracking-[0.3em]">Cerebro Sincronizado</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em]">Memoria Inteligente</p>
           </div>
         </section>
       </main>

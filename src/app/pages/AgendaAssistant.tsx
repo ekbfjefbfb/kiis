@@ -12,7 +12,7 @@ interface Message {
   actions?: Array<{ type: string; data: any }>;
 }
 
-export default function AcademicAssistant() {
+export default function AgendaAssistant() {
   const navigate = useNavigate();
   const location = useLocation();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -33,7 +33,6 @@ export default function AcademicAssistant() {
   const lastAssistantRef = useRef<string>("");
   const didAutoSendRef = useRef(false);
 
-  // Auto-scroll effect
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({
@@ -52,7 +51,7 @@ export default function AcademicAssistant() {
         setMessages([{
           id: 'welcome',
           role: 'assistant',
-          content: `Hola. Tienes ${pending.filter(t => t.dueDate === today).length} tareas urgentes hoy. ¿En qué te ayudo?`
+          content: `Hola. Tienes ${pending.filter(t => t.dueDate === today).length} compromisos en tu agenda hoy. ¿Cómo te ayudo a organizarte?`
         }]);
       }
     };
@@ -285,16 +284,15 @@ export default function AcademicAssistant() {
       const todayRecordings = recordings.filter(r => r.date.startsWith(today));
       
       const context = `
-        Contexto Académico Actual:
-        - Tareas Pendientes: ${tasks.map(t => `${t.text} (Vence: ${t.dueDate})`).join(', ')}
-        - Grabaciones de Hoy: ${todayRecordings.map(r => r.summary).join(' | ')}
-        - Clases Totales: ${classManager.getClasses().map(c => c.name).join(', ')}
+        Estado de la Agenda:
+        - Compromisos Pendientes: ${tasks.map(t => `${t.text} (Fecha: ${t.dueDate})`).join(', ')}
+        - Sesiones Capturadas Hoy: ${todayRecordings.map(r => r.summary).join(' | ')}
+        - Clases en el Calendario: ${classManager.getClasses().map(c => c.name).join(', ')}
       `;
 
       let aiResponse = "";
       
-      // Sanitización del prompt
-      const prompt = `${context}\n\nPregunta del Estudiante: ${text}`;
+      const prompt = `${context}\n\nConsulta sobre la Agenda: ${text}`;
 
       const result = await aiService.chatStructured(prompt, [], (token) => {
         aiResponse += token;
@@ -344,8 +342,8 @@ export default function AcademicAssistant() {
               <ArrowLeft size={20} />
             </button>
             <div className="leading-none">
-              <div className="text-sm font-bold">IA</div>
-              <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Asistente</div>
+              <div className="text-sm font-bold">Agenda AI</div>
+              <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Asistente Inteligente</div>
             </div>
           </div>
 
@@ -406,7 +404,7 @@ export default function AcademicAssistant() {
                         onClick={() => saveAssistantAsTasks(m)}
                         className="h-9 px-3 bg-zinc-900 text-zinc-300 rounded-2xl text-[11px] font-bold border border-white/5 active:scale-95"
                       >
-                        Guardar
+                        Agendar
                       </button>
                       {saveStatus && (
                         <div className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">
@@ -419,7 +417,7 @@ export default function AcademicAssistant() {
                           disabled={isProcessing}
                           className="h-9 px-3 bg-white text-black rounded-2xl text-[11px] font-bold active:scale-95 disabled:opacity-50"
                         >
-                          Reformular en lista
+                          Convertir en Tareas
                         </button>
                       )}
                       {showPostSaveCta && saveStatus?.startsWith('Guardado:') && (
@@ -427,7 +425,7 @@ export default function AcademicAssistant() {
                           onClick={() => navigate('/')}
                           className="h-9 px-3 bg-white text-black rounded-2xl text-[11px] font-bold active:scale-95"
                         >
-                          Ver en Dashboard
+                          Ver Agenda
                         </button>
                       )}
                     </div>

@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router";
 import Dashboard from "./pages/Dashboard";
 import SmartRecording from "./pages/SmartRecording";
-import AcademicAssistant from "./pages/AcademicAssistant";
+import AgendaAssistant from "./pages/AgendaAssistant";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import Onboarding from "./pages/Onboarding";
@@ -14,7 +14,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/record" element={<SmartRecording />} />
-      <Route path="/assistant" element={<AcademicAssistant />} />
+      <Route path="/assistant" element={<AgendaAssistant />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
