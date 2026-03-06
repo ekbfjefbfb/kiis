@@ -38,31 +38,36 @@ export default function Onboarding() {
 
   return (
     <div className="fixed inset-0 bg-black text-white font-['Plus_Jakarta_Sans'] safe-area-inset overflow-hidden flex flex-col">
-      <main className="flex-1 flex flex-col items-center justify-center px-10 text-center">
-        <div key={currentStep} className="animate-in fade-in slide-in-from-bottom-8 duration-700 flex flex-col items-center">
-          <div className="w-24 h-24 rounded-[2.5rem] bg-zinc-900/50 border border-white/5 flex items-center justify-center mb-12 shadow-2xl">
-            <div className={STEPS[currentStep].color}>
+      <main className="flex-1 flex flex-col items-center justify-center px-10 text-center relative">
+        {/* Decorative ambient glow */}
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-[120px] opacity-20 transition-colors duration-1000 ${
+          currentStep === 0 ? 'bg-red-500' : currentStep === 1 ? 'bg-indigo-500' : 'bg-amber-500'
+        }`} />
+
+        <div key={currentStep} className="animate-in fade-in zoom-in-95 duration-1000 flex flex-col items-center relative z-10">
+          <div className="w-28 h-24 rounded-[2.5rem] bg-zinc-900/40 backdrop-blur-xl border border-white/5 flex items-center justify-center mb-12 shadow-[0_30px_60px_rgba(0,0,0,0.5)] group transition-transform duration-500 hover:scale-105">
+            <div className={`${STEPS[currentStep].color} drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]`}>
               {STEPS[currentStep].icon}
             </div>
           </div>
           
-          <h1 className="text-6xl font-extrabold tracking-tighter leading-none mb-6 italic">
+          <h1 className="text-6xl font-extrabold tracking-tighter leading-none mb-6 italic text-white drop-shadow-sm">
             {STEPS[currentStep].title}
           </h1>
           
-          <p className="text-zinc-500 text-xl font-medium leading-relaxed max-w-[320px]">
+          <p className="text-zinc-400 text-xl font-medium leading-relaxed max-w-[320px] tracking-tight">
             {STEPS[currentStep].description}
           </p>
         </div>
       </main>
 
-      <footer className="p-12 flex flex-col items-center gap-12">
-        <div className="flex gap-2">
+      <footer className="p-12 flex flex-col items-center gap-12 relative z-10">
+        <div className="flex gap-3">
           {STEPS.map((_, i) => (
             <div
               key={i}
-              className={`h-1.5 rounded-full transition-all duration-500 ${
-                i === currentStep ? 'w-10 bg-white' : 'w-2 bg-zinc-800'
+              className={`h-1.5 rounded-full transition-all duration-700 ease-out ${
+                i === currentStep ? 'w-12 bg-white' : 'w-2 bg-zinc-800'
               }`}
             />
           ))}
@@ -70,12 +75,13 @@ export default function Onboarding() {
 
         <button
           onClick={next}
-          className="w-full h-20 bg-white text-black rounded-[2.5rem] font-extrabold text-xl active:scale-[0.97] transition-all duration-300 shadow-[0_20px_40px_rgba(255,255,255,0.1)] flex items-center justify-center group"
+          className="w-full h-20 bg-white text-black rounded-[2.5rem] font-black text-xl active:scale-[0.96] transition-all duration-500 shadow-[0_25px_50px_-12px_rgba(255,255,255,0.15)] flex items-center justify-center group overflow-hidden relative"
         >
-          <div className="flex items-center gap-3">
-            <span>{currentStep === STEPS.length - 1 ? "EMPEZAR" : "CONTINUAR"}</span>
-            <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
+          <div className="flex items-center gap-3 relative z-10">
+            <span className="tracking-tighter">{currentStep === STEPS.length - 1 ? "COMENZAR" : "SIGUIENTE"}</span>
+            <ArrowRight size={24} strokeWidth={3} className="group-hover:translate-x-1 transition-transform duration-300" />
           </div>
+          <div className="absolute inset-0 bg-zinc-100 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
         </button>
       </footer>
     </div>
