@@ -50,11 +50,17 @@ export class AuthService {
   }
 
   async loginOAuth(provider: 'google' | 'apple', idToken: string, name?: string): Promise<boolean> {
+    // Validar que el token tenga formato JWT (3 partes separadas por puntos)
+    if (idToken.split('.').length !== 3) {
+      console.error('Invalid ID Token format: must be a JWT with 3 parts');
+      return false;
+    }
+
     try {
       const response = await apiService.post<AuthResponse>('/auth/oauth', {
         provider,
         id_token: idToken,
-        name
+        name: name || null
       });
       
       if (response && response.access_token) {

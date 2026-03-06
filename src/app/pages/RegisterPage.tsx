@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Loader2, ArrowRight } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { authService } from "../../services/auth.service";
+
+declare global {
+  interface Window {
+    google: any;
+  }
+}
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -14,25 +19,44 @@ export default function RegisterPage() {
     if (authService.isAuthenticated()) {
       navigate("/", { replace: true });
     }
+
+    const initGoogle = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: "TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+          callback: handleGoogleResponse,
+        });
+      }
+    };
+    initGoogle();
   }, [navigate]);
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const handleGoogleResponse = async (response: any) => {
     setIsLoading(true);
-
+    setError("");
     try {
-      // Usamos el flujo OAuth para registro también (Passwordless/OLED Style)
-      const success = await authService.loginOAuth('google', btoa(email), name);
-      if (!success) {
-        setError("Error al crear la cuenta");
-        return;
+      const success = await authService.loginOAuth('google', response.credential, name);
+      if (success) {
+        navigate("/", { replace: true });
+      } else {
+        setError("Error al crear cuenta con Google");
       }
-      navigate("/", { replace: true });
     } catch (err: any) {
-      setError(err.message || "Error de registro");
+      setError(err.message || "Error de conexión");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const triggerGoogleRegister = () => {
+    if (!name.trim()) {
+      setError("Por favor, ingresa tu nombre antes de continuar.");
+      return;
+    }
+    if (window.google) {
+      window.google.accounts.id.prompt();
+    } else {
+      setError("Google SDK no cargado.");
     }
   };
 
@@ -47,25 +71,41 @@ export default function RegisterPage() {
           <p className="text-zinc-500 text-lg font-medium tracking-tight">Crea tu identidad en KIIS OS.</p>
         </header>
 
-        <form onSubmit={handleRegister} className="space-y-4 pb-10">
-          <div className="space-y-3">
+        <div className="space-y-8 pb-10">
+          <div className="space-y-4">
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Nombre completo"
-              className="w-full h-20 bg-zinc-900/50 rounded-[2rem] px-8 text-lg font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
+              placeholder="Tu nombre"
+              className="w-full h-20 bg-zinc-900/50 rounded-[2rem] px-8 text-xl font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
               required
             />
-            
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Correo electrónico"
-              className="w-full h-20 bg-zinc-900/50 rounded-[2rem] px-8 text-lg font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
-              required
-            />
+          </div>
+
+          <div className="space-y-4">
+            <button
+              onClick={triggerGoogleRegister}
+              disabled={isLoading}
+              className="w-full h-20 bg-white text-black rounded-[2rem] flex items-center justify-center gap-4 active:scale-[0.97] transition-all shadow-xl group"
+            >
+              {isLoading ? (
+                <Loader2 className="animate-spin" size={24} />
+              ) : (
+                <>
+                  <img src="https://www.google.com/favicon.ico" className="w-6 h-6" alt="Google" />
+                  <span className="text-xl font-bold">Registrarse con Google</span>
+                </>
+              )}
+            </button>
+
+            <button
+              disabled={true}
+              className="w-full h-20 bg-zinc-900 border border-white/10 text-white rounded-[2rem] flex items-center justify-center gap-4 opacity-50 cursor-not-allowed"
+            >
+              <span className="text-2xl mb-1"></span>
+              <span className="text-xl font-bold">Registrarse con Apple</span>
+            </button>
           </div>
 
           {error && (
@@ -73,22 +113,7 @@ export default function RegisterPage() {
               <p className="text-red-500 text-sm font-bold tracking-tight text-center">{error}</p>
             </div>
           )}
-
-          <button 
-            disabled={isLoading}
-            type="submit"
-            className="w-full h-20 bg-white text-black rounded-[2.5rem] font-bold text-xl mt-6 active:scale-[0.97] transition-all duration-300 disabled:opacity-50 flex items-center justify-center shadow-[0_20px_40px_rgba(255,255,255,0.1)] group"
-          >
-            {isLoading ? (
-              <Loader2 className="animate-spin" size={28} strokeWidth={2.5} />
-            ) : (
-              <div className="flex items-center gap-3">
-                <span>Crear Cuenta</span>
-                <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
-              </div>
-            )}
-          </button>
-        </form>
+        </div>
       </main>
 
       <footer className="p-10 flex flex-col items-center gap-4 bg-black/80 backdrop-blur-lg border-t border-white/5">

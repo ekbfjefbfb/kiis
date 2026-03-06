@@ -3,10 +3,15 @@ import { useNavigate } from "react-router";
 import { Loader2, ArrowRight } from "lucide-react";
 import { authService } from "../../services/auth.service";
 
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -14,25 +19,49 @@ export default function LoginPage() {
     if (authService.isAuthenticated()) {
       navigate("/", { replace: true });
     }
+
+    // Inicializar Google Sign-In
+    const initGoogle = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: "TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com", // El usuario debe proveer esto
+          callback: handleGoogleResponse,
+        });
+      }
+    };
+
+    initGoogle();
   }, [navigate]);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const handleGoogleResponse = async (response: any) => {
     setLoading(true);
-    
+    setError("");
     try {
-      // Intentamos login con el flujo OAuth usando el email como id_token para flujo passwordless
-      const success = await authService.loginOAuth('google', btoa(email), email.split('@')[0]);
+      const success = await authService.loginOAuth('google', response.credential);
       if (success) {
         navigate("/", { replace: true });
       } else {
-        setError("Error de autenticación");
+        setError("Error al iniciar sesión con Google");
       }
     } catch (err: any) {
       setError(err.message || "Error de conexión");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // En el flujo actual, redirigimos al usuario a usar Google/Apple 
+    // ya que el backend requiere un id_token JWT real.
+    setError("Por favor, utiliza Google o Apple para iniciar sesión de forma segura.");
+  };
+
+  const triggerGoogleLogin = () => {
+    if (window.google) {
+      window.google.accounts.id.prompt();
+    } else {
+      setError("Google SDK no cargado.");
     }
   };
 
@@ -47,41 +76,54 @@ export default function LoginPage() {
           <p className="text-zinc-500 text-lg font-medium tracking-tight">Tu inteligencia académica te espera.</p>
         </header>
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div className="space-y-4">
-            <div className="relative group">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Correo electrónico"
-                className="w-full h-20 bg-zinc-900/50 rounded-[2rem] px-8 text-xl font-semibold placeholder:text-zinc-700 border border-white/5 outline-none focus:border-white/20 focus:bg-zinc-900 transition-all duration-500"
-                required
-              />
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4">
+            <button
+              onClick={triggerGoogleLogin}
+              disabled={loading}
+              className="h-20 bg-white text-black rounded-[2rem] flex items-center justify-center gap-4 active:scale-[0.97] transition-all shadow-xl group"
+            >
+              {loading ? (
+                <Loader2 className="animate-spin" size={24} />
+              ) : (
+                <>
+                  <img src="https://www.google.com/favicon.ico" className="w-6 h-6" alt="Google" />
+                  <span className="text-xl font-bold">Continuar con Google</span>
+                </>
+              )}
+            </button>
+
+            <button
+              disabled={true} // Apple requiere configuración de dominio/redirect
+              className="h-20 bg-zinc-900 border border-white/10 text-white rounded-[2rem] flex items-center justify-center gap-4 opacity-50 cursor-not-allowed"
+            >
+              <span className="text-2xl mb-1"></span>
+              <span className="text-xl font-bold">Continuar con Apple</span>
+            </button>
+          </div>
+
+          <div className="relative py-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/5"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase tracking-[0.3em]">
+              <span className="bg-black px-4 text-zinc-700 font-bold">Opcional</span>
             </div>
           </div>
 
-          {error && (
-            <div className="px-6 py-4 bg-red-500/10 border border-red-500/20 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-500">
-              <p className="text-red-500 text-sm font-bold tracking-tight text-center">{error}</p>
-            </div>
-          )}
-
-          <button 
-            disabled={loading}
-            type="submit"
-            className="w-full h-20 bg-white text-black rounded-[2rem] font-bold text-xl mt-10 active:scale-[0.97] transition-all duration-300 disabled:opacity-50 flex items-center justify-center shadow-[0_20px_40px_rgba(255,255,255,0.1)] group"
-          >
-            {loading ? (
-              <Loader2 className="animate-spin" size={28} strokeWidth={2.5} />
-            ) : (
-              <div className="flex items-center gap-3">
-                <span>Continuar</span>
-                <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
-              </div>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Correo electrónico"
+              className="w-full h-20 bg-zinc-900/30 rounded-[2rem] px-8 text-xl font-semibold placeholder:text-zinc-800 border border-white/5 outline-none focus:border-white/10 transition-all"
+            />
+            {error && (
+              <p className="text-red-500 text-sm font-bold tracking-tight text-center px-4">{error}</p>
             )}
-          </button>
-        </form>
+          </form>
+        </div>
       </main>
 
       <footer className="p-12 flex flex-col items-center gap-6">
