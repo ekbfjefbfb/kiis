@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Download } from "lucide-react";
 import { classManager, Class, Task } from "../../services/class-manager";
 import { authService } from "../../services/auth.service";
 import { aiService } from "../../services/ai.service";
+import { usePWAInstall } from "../../hooks/usePWAInstall";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -22,6 +23,10 @@ export default function Dashboard() {
   });
 
   const isAuthenticated = authService.isAuthenticated();
+  const { isInstallable, installPWA } = usePWAInstall();
+  const isMobileBrowser =
+    typeof navigator !== "undefined" &&
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
   useEffect(() => {
     // Check onboarding
@@ -172,8 +177,22 @@ export default function Dashboard() {
     <div className="min-h-[100dvh] bg-black text-white px-7 pt-16 pb-10 flex flex-col font-['Plus_Jakarta_Sans']">
       {/* Header Minimalista */}
       <header className="mb-12">
-        <p className="text-zinc-500 text-sm font-medium uppercase tracking-widest mb-1">Hoy</p>
-        <h1 className="text-3xl font-bold capitalize">{today}</h1>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-zinc-500 text-sm font-medium uppercase tracking-widest mb-1">Hoy</p>
+            <h1 className="text-3xl font-bold capitalize">{today}</h1>
+          </div>
+          {isInstallable && !isMobileBrowser && (
+            <button
+              onClick={installPWA}
+              className="h-10 px-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 shrink-0 active:scale-[0.98] transition-all"
+              aria-label="Instalar"
+            >
+              <Download size={16} />
+              Instalar
+            </button>
+          )}
+        </div>
       </header>
 
       {/* Momento Wow */}
