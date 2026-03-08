@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
-import { ChevronLeft, Trash2, Clock, Zap, FileText } from "lucide-react";
+import { ChevronLeft, Trash2, Zap, FileText } from "lucide-react";
 import { notesService, BackendNote } from "../../services/notes.service";
 
 export default function NoteDetail() {

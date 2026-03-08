@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
-import { ChevronLeft, Calendar, Clock, Sparkles, CheckCircle2, Trash2, MapPin, Zap } from "lucide-react";
+import { ChevronLeft, Calendar, Clock, CheckCircle2, MapPin, Zap } from "lucide-react";
 import { agendaService, SessionWithItems, AgendaItem } from "../../services/agenda.service";
 
 export default function SessionDetail() {

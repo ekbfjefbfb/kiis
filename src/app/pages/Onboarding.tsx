@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { ArrowRight, Mic, Brain, Zap, Sparkles } from "lucide-react";
+import { ArrowRight, Mic, Brain, Sparkles } from "lucide-react";
 
 const STEPS = [
   {

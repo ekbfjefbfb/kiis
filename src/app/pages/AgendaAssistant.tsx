@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { ArrowLeft, Mic, Send, Sparkles, Square, Volume2 } from "lucide-react";
+import { ArrowLeft, Mic, Send, Square, Volume2 } from "lucide-react";
 import { classManager } from "../../services/class-manager";
 import { aiService } from "../../services/ai.service";
 import { audioService } from "../../services/audio.service";

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { 
-  ChevronLeft, ChevronRight, 
+  ChevronLeft, 
   Plus, Calendar as CalendarIcon, MapPin
 } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -16,7 +16,7 @@ interface Event {
 
 export default function CalendarPage() {
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const today = new Date();
 
   const events: Event[] = [
     { id: "1", title: "Historia Universal", type: "class", time: "08:00 AM", room: "A-102" },
@@ -40,19 +40,21 @@ export default function CalendarPage() {
         <div className="flex items-end justify-between mb-12">
           <div>
             <h2 className="text-4xl font-extrabold tracking-tighter leading-none italic">
-              {selectedDate.toLocaleDateString("es-ES", { month: "long" })}
+              {today.toLocaleDateString("es-ES", { month: "long" })}
             </h2>
             <p className="text-zinc-500 font-medium mt-1">
-              {selectedDate.getFullYear()}
+              {today.getFullYear()}
             </p>
           </div>
           <div className="flex gap-2">
-            <button className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900/50 text-zinc-600 active:text-white transition-colors">
+            <button 
+              onClick={() => navigate("/dashboard")}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900/50 text-zinc-600 active:text-white transition-colors"
+              aria-label="Volver al dashboard"
+            >
               <ChevronLeft size={20} />
             </button>
-            <button className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900/50 text-zinc-600 active:text-white transition-colors">
-              <ChevronRight size={20} />
-            </button>
+            <div className="w-10" />
           </div>
         </div>
 
