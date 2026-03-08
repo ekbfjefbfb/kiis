@@ -25,7 +25,6 @@ export function usePWAInstall() {
       e.preventDefault();
       setDeferredPrompt(e);
       setIsInstallable(true);
-      console.log('PWA: beforeinstallprompt event captured');
     };
 
     window.addEventListener('beforeinstallprompt', handler);
@@ -42,7 +41,7 @@ export function usePWAInstall() {
       // Chrome/Edge/Android - mostrar prompt nativo
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      console.log(`PWA: User choice: ${outcome}`);
+      // Silently handle outcome
       
       if (outcome === 'accepted') {
         setDeferredPrompt(null);
