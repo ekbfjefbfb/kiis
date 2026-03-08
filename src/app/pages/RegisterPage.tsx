@@ -11,7 +11,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { isInstallable, installPWA } = usePWAInstall();
+  const { isInstallable, installPWA, isStandalone } = usePWAInstall();
 
   useEffect(() => {
     if (authService.isAuthenticated()) {
@@ -129,13 +129,13 @@ export default function RegisterPage() {
       </main>
 
       <footer className="p-12 flex flex-col items-center gap-6">
-        {isInstallable && (
+        {isInstallable && !isStandalone && (
           <button 
             onClick={installPWA}
-            className="flex items-center gap-3 px-8 py-4 bg-zinc-900/50 border border-white/10 rounded-full text-white font-bold text-sm tracking-tight active:scale-95 transition-all duration-300 hover:bg-zinc-800/50 mb-4"
+            className="w-full max-w-[320px] h-16 bg-white text-black rounded-[2.5rem] font-black text-lg tracking-tight active:scale-95 transition-all duration-300 shadow-[0_20px_40px_rgba(255,255,255,0.15)] flex items-center justify-center gap-3"
           >
-            <Download size={18} />
-            <span>DESCARGAR APP</span>
+            <Download size={24} strokeWidth={2.5} />
+            <span>INSTALAR APP</span>
           </button>
         )}
         <button 
