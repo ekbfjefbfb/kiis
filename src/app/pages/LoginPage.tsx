@@ -124,7 +124,7 @@ export default function LoginPage() {
         )}
         <button 
           onClick={() => navigate("/register")}
-          className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.3em] active:text-white transition-colors duration-300 italic"
+          className="text-white text-sm font-bold uppercase tracking-[0.2em] active:text-zinc-400 transition-colors duration-300"
         >
           Crear cuenta nueva
         </button>
