@@ -116,10 +116,10 @@ export default function LoginPage() {
         {isInstallable && !isStandalone && (
           <button 
             onClick={installPWA}
-            className="w-full max-w-[320px] h-16 bg-white text-black rounded-[2.5rem] font-black text-lg tracking-tight active:scale-95 transition-all duration-300 shadow-[0_20px_40px_rgba(255,255,255,0.15)] flex items-center justify-center gap-3"
+            className="w-full max-w-[280px] h-14 bg-zinc-900/50 border border-white/10 rounded-[2.5rem] text-zinc-300 font-bold text-sm tracking-tight active:scale-95 transition-all duration-300 hover:bg-zinc-800/50 flex items-center justify-center gap-3"
           >
-            <Download size={24} strokeWidth={2.5} />
-            <span>INSTALAR APP</span>
+            <Download size={20} strokeWidth={2} />
+            <span>Instalar app</span>
           </button>
         )}
         <button 

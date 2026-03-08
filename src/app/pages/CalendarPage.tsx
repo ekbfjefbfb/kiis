@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { 
-  ChevronLeft, 
+  ChevronLeft, ChevronRight,
   Plus, Calendar as CalendarIcon, MapPin
 } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -31,7 +31,7 @@ export default function CalendarPage() {
           <ChevronLeft size={24} />
         </button>
         <h1 className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-500">Agenda</h1>
-        <button className="w-10 h-10 -mr-2 flex items-center justify-center rounded-full active:bg-white/10 transition-colors">
+        <button className="w-10 h-10 -mr-2 flex items-center justify-center rounded-full active:bg-white/10 transition-colors opacity-50" disabled>
           <Plus size={24} />
         </button>
       </header>
@@ -62,6 +62,7 @@ export default function CalendarPage() {
           {events.map((event) => (
             <button 
               key={event.id}
+              onClick={() => navigate(`/event/${event.id}`)}
               className="w-full bg-zinc-900/30 border border-white/5 rounded-[2.5rem] p-6 flex items-center justify-between active:scale-[0.98] active:bg-zinc-900/50 transition-all duration-300"
             >
               <div className="flex items-center gap-6">

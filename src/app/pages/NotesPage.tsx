@@ -18,7 +18,7 @@ export default function NotesPage() {
           <ChevronLeft size={24} />
         </button>
         <h1 className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-500">Memoria de Agenda</h1>
-        <button className="w-10 h-10 -mr-2 flex items-center justify-center rounded-full active:bg-white/10 transition-colors">
+        <button className="w-10 h-10 -mr-2 flex items-center justify-center rounded-full active:bg-white/10 transition-colors opacity-50" disabled>
           <Plus size={24} />
         </button>
       </header>
