@@ -183,7 +183,7 @@ export default function Dashboard() {
           <div className="space-y-3">
             {(progressTodayTasks?.length || todayTasks.length) ? (
               (progressTodayTasks || todayTasks).slice(0, 3).map((t: any) => (
-                <button key={t.id} className="w-full bg-zinc-900/30 border border-white/5 rounded-3xl p-5 flex items-center justify-between active:bg-zinc-900/50 transition-all">
+                <button key={t.id} onClick={() => navigate(`/task/${t.id}`)} className="w-full bg-zinc-900/30 border border-white/5 rounded-3xl p-5 flex items-center justify-between active:bg-zinc-900/50 transition-all">
                   <div className="flex items-center gap-4">
                     <div className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
                     <p className="text-base font-bold tracking-tight text-white/90">{t.title || t.text}</p>
