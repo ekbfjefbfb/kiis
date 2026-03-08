@@ -44,8 +44,8 @@ export default function ProfilePage() {
         localStorage.setItem("current_user", JSON.stringify(updatedUser));
         window.location.reload(); // Recarga simple para ver cambios
       }
-    } catch (error) {
-      console.error("Avatar upload failed:", error);
+    } catch {
+      // Silently handle error
     } finally {
       setIsUploading(false);
     }

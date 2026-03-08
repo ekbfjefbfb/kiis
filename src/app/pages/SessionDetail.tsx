@@ -20,8 +20,7 @@ export default function SessionDetail() {
       setIsLoading(true);
       const data = await agendaService.getSession(id);
       setSession(data);
-    } catch (error) {
-      console.error(error);
+    } catch {
       navigate("/dashboard");
     } finally {
       setIsLoading(false);
@@ -40,7 +39,7 @@ export default function SessionDetail() {
     try {
       const newStatus = item.status === 'done' ? 'pending' : 'done';
       await agendaService.updateItem(id, item.id, { status: newStatus });
-    } catch (error) {
+    } catch {
       setSession(prev);
     }
   };

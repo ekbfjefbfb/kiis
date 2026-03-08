@@ -32,8 +32,8 @@ export default function AnalysisDetail() {
         const processed = await intelligentProcessor.processTranscript(note.transcript);
         setAnalysis(processed);
       }
-    } catch (error) {
-      console.error("Error loading analysis:", error);
+    } catch {
+      // Silently handle error
     } finally {
       setIsLoading(false);
     }

@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Sparkles, Download, Calendar as CalendarIcon, Clock, ChevronRight, Mic } from "lucide-react";
+import { Sparkles, Clock, ChevronRight, Mic } from "lucide-react";
 import { classManager, Class, Task } from "../../services/class-manager";
 import { authService } from "../../services/auth.service";
 import { aiService } from "../../services/ai.service";
-import { apiService, API_BASE_URL } from "../../services/api.service";
-import { usePWAInstall } from "../../hooks/usePWAInstall";
+import { API_BASE_URL } from "../../services/api.service";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -26,7 +25,7 @@ export default function Dashboard() {
         navigate("/onboarding", { replace: true });
         return;
       }
-    } catch (e) { console.error(e); }
+    } catch { /* Silently handle localStorage error */ }
 
     if (!authService.isAuthenticated()) {
       navigate("/login", { replace: true });
@@ -46,8 +45,8 @@ export default function Dashboard() {
             setTodayTasks(data.tasks || []);
           }
         }
-      } catch (error) {
-        console.error("Error fetching today tasks:", error);
+      } catch {
+        // Silently handle error - fallback usado abajo
         // Fallback a classManager si falla la API
         const pendingTasks = classManager.getPendingTasks();
         const todayStr = new Date().toISOString().split('T')[0];

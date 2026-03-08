@@ -209,8 +209,8 @@ export default function AgendaAssistant() {
           const audioBlob = await audioService.stopAudioRecording();
           const transcription = await aiService.transcribe(audioBlob);
           setInput(prev => (prev ? prev + " " : "") + transcription);
-        } catch (e) {
-          console.error(e);
+        } catch {
+          // Silently handle error
         } finally {
           setIsRecordingAudio(false);
           setIsListening(false);
@@ -234,8 +234,7 @@ export default function AgendaAssistant() {
           try {
             await audioService.startAudioRecording();
             setIsRecordingAudio(true);
-          } catch (e) {
-            console.error(e);
+          } catch {
             setIsListening(false);
             setIsRecordingAudio(false);
           }
@@ -293,9 +292,8 @@ export default function AgendaAssistant() {
         setIsSpeaking(true);
         audioService.speak(result.text, () => setIsSpeaking(false));
       }
-    } catch (e) {
-      console.error("Assistant error:", e);
-      const msg = e instanceof Error ? e.message : "Error";
+    } catch {
+      const msg = "Error de conexión";
       const needsAuth = msg.includes('[401]') || msg.toLowerCase().includes('unauthorized');
       setAuthRequired(needsAuth);
       setLastError(needsAuth ? "Sesión expirada. Inicia sesión para continuar." : msg);
