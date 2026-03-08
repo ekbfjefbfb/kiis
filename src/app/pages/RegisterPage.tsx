@@ -46,11 +46,11 @@ export default function RegisterPage() {
 
   return (
     <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] safe-area-inset overflow-hidden">
-      <main className="flex-1 flex flex-col px-10 pt-20 overflow-y-auto scrollbar-hide relative">
+      <main className="flex-1 flex flex-col px-10 pt-28 overflow-y-auto scrollbar-hide relative">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-64 bg-white/5 blur-[100px] rounded-full -z-10" />
         
         <header className="mb-12">
-          <div className="w-16 h-16 bg-white rounded-[2rem] flex items-center justify-center mb-8 shadow-[0_20px_40px_rgba(255,255,255,0.1)]">
+          <div className="w-16 h-16 bg-white rounded-[2.5rem] flex items-center justify-center mb-8 shadow-[0_20px_40px_rgba(255,255,255,0.1)]">
             <span className="text-black text-2xl font-extrabold tracking-tighter">K</span>
           </div>
           <h1 className="text-5xl font-extrabold tracking-tighter leading-none mb-4 italic text-white">Únete.</h1>
@@ -128,7 +128,7 @@ export default function RegisterPage() {
         </form>
       </main>
 
-      <footer className="p-10 flex flex-col items-center gap-4 bg-black/80 backdrop-blur-lg border-t border-white/5">
+      <footer className="p-12 flex flex-col items-center gap-6">
         {isInstallable && (
           <button 
             onClick={installPWA}
@@ -140,10 +140,9 @@ export default function RegisterPage() {
         )}
         <button 
           onClick={() => navigate("/login")}
-          className="text-zinc-500 text-sm font-bold uppercase tracking-[0.3em] active:text-white transition-all duration-300 italic flex items-center gap-2"
+          className="text-white text-sm font-bold uppercase tracking-[0.2em] active:text-zinc-400 transition-colors duration-300"
         >
-          <span>Ya tengo cuenta</span>
-          <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+          Ya tengo cuenta
         </button>
       </footer>
     </div>
