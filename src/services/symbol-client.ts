@@ -32,4 +32,7 @@ const SYMBOLS: Record<string, string> = Object.entries(OPS).reduce((acc, [k, v])
 
 // CODIFICADOR
 function encode(operation: string, data?: any): string {
-  co
+  const symbol = OPS[operation] || '?';
+  const payload = data ? JSON.stringify(data) : '';
+  return symbol + payload;
+}
