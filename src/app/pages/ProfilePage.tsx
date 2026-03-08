@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import { 
   ChevronLeft, User, Mail, Shield, LogOut, 
-  Download, ChevronRight, Bell, Camera, Loader2
+  Download, Bell, Camera, Loader2
 } from "lucide-react";
 import { usePWAInstall } from "../../hooks/usePWAInstall";
 import { authService } from "../../services/auth.service";
@@ -111,12 +111,13 @@ export default function ProfilePage() {
             <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-600 px-2">General</h3>
             <div className="space-y-3">
               {[
-                { icon: <Mail size={18} />, label: "Cuenta", value: "Verificada" },
-                { icon: <Bell size={18} />, label: "Notificaciones", value: "Silencio" },
-                { icon: <Shield size={18} />, label: "Privacidad", value: "Máxima" }
+                { icon: <Mail size={18} />, label: "Cuenta", value: "Verificada", action: () => navigate("/account") },
+                { icon: <Bell size={18} />, label: "Notificaciones", value: "Silencio", action: () => navigate("/notifications") },
+                { icon: <Shield size={18} />, label: "Privacidad", value: "Máxima", action: () => navigate("/privacy") }
               ].map((item, i) => (
                 <button
                   key={i}
+                  onClick={item.action}
                   className="w-full bg-zinc-900/30 border border-white/5 p-6 rounded-[2rem] flex items-center justify-between active:bg-zinc-900/50 transition-all"
                 >
                   <div className="flex items-center gap-5">
