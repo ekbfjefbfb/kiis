@@ -9,7 +9,7 @@ interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  actions?: Array<{ type: string; data: any }>;
+  actions?: Array<{ type: string; data: unknown }>;
 }
 
 export default function AgendaAssistant() {

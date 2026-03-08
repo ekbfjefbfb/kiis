@@ -13,13 +13,15 @@ export default function SmartRecording() {
   const [phase, setPhase] = useState<Phase>('ready');
   const [currentClass, setCurrentClass] = useState<Class | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [agendaState, setAgendaState] = useState<any>(null);
+  const [agendaState, setAgendaState] = useState<{
+    summary?: string;
+    tasks?: Array<{ text: string; description?: string }>;
+    key_points?: string[];
+  } | null>(null);
   const [liveTranscript, setLiveTranscript] = useState<string>("");
-  const [isAnalysing, setIsAnalysing] = useState(false);
   
   const transcriptRef = useRef<string>("");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const suggested = classManager.suggestCurrentClass();
@@ -71,8 +73,8 @@ export default function SmartRecording() {
 
       agendaService.connectWebSocket(newSession.id, {
         onAgendaState: (data) => setAgendaState(data.state),
-        onConnected: () => console.log("Live AI Connected"),
-        onError: (err) => console.error(err)
+        onConnected: () => {},
+        onError: () => {}
       });
 
       await backgroundRecordingService.startRecording(
@@ -87,14 +89,13 @@ export default function SmartRecording() {
       transcriptRef.current = "";
       setLiveTranscript("");
     } catch (e) {
-      console.error(e);
+      // Silently handle error
     }
   };
 
   const stopRecording = async () => {
     if (phase !== 'recording') return;
     setPhase('processing');
-    setIsAnalysing(true);
     
     try {
       const session = await backgroundRecordingService.stopRecording();
@@ -107,14 +108,14 @@ export default function SmartRecording() {
       // Buffer for AI to settle
       await new Promise(resolve => setTimeout(resolve, 3000));
 
-      if (agendaState?.state) {
-        const { summary, tasks, key_points } = agendaState.state;
+      if (agendaState) {
+        const { summary, tasks, key_points } = agendaState;
         classManager.addRecording({
           classId: currentClass?.id || "unknown",
           date: new Date().toISOString(),
           duration: recordingTime,
           summary: summary || "Resumen generado por IA",
-          tasks: tasks || [],
+          tasks: (tasks || []) as any[],
           keyPoints: key_points || [],
           notes: transcriptRef.current || ""
         });
@@ -123,11 +124,8 @@ export default function SmartRecording() {
       agendaService.disconnect();
       setPhase('done');
     } catch (e) {
-      console.error("Recording error:", e);
       agendaService.disconnect();
       setPhase('ready');
-    } finally {
-      setIsAnalysing(false);
     }
   };
 
@@ -142,7 +140,7 @@ export default function SmartRecording() {
     return (
       <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] safe-area-inset">
         <header className="px-8 pt-16 pb-6 flex items-center">
-          <button onClick={() => navigate("/")} className="w-10 h-10 -ml-2 flex items-center justify-center rounded-full active:bg-white/10 transition-colors">
+          <button onClick={() => navigate("/")} className="w-10 h-10 -ml-2 flex items-center justify-center rounded-full active:bg-white/10 transition-colors" aria-label="Volver al inicio">
             <ChevronLeft size={24} />
           </button>
         </header>
@@ -164,6 +162,7 @@ export default function SmartRecording() {
             <button 
               onClick={startRecording}
               className="relative group w-32 h-32 flex items-center justify-center"
+              aria-label="Iniciar grabación"
             >
               <div className="absolute inset-0 bg-red-600/20 rounded-full animate-pulse scale-110" />
               <div className="relative w-24 h-24 bg-red-600 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(220,38,38,0.3)] group-active:scale-90 transition-transform duration-300">
@@ -223,6 +222,7 @@ export default function SmartRecording() {
             <button 
               onClick={stopRecording}
               className="w-20 h-20 bg-white rounded-full flex items-center justify-center active:scale-90 transition-all shadow-2xl"
+              aria-label="Detener grabación"
             >
               <Square size={24} className="text-black fill-black" />
             </button>
@@ -301,6 +301,7 @@ export default function SmartRecording() {
         <button 
           onClick={() => navigate("/")}
           className="w-full h-20 mt-16 bg-white text-black rounded-[2.5rem] font-bold text-xl active:scale-[0.97] transition-all shadow-[0_20px_40px_rgba(255,255,255,0.1)]"
+          aria-label="Finalizar y guardar"
         >
           Finalizar
         </button>

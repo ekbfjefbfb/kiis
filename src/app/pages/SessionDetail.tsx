@@ -98,7 +98,7 @@ export default function SessionDetail() {
           ].map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id as 'summary' | 'tasks' | 'transcript')}
               className={`flex-1 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${
                 activeTab === tab.id ? 'bg-white text-black shadow-lg' : 'text-zinc-500'
               }`}

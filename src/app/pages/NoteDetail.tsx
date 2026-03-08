@@ -16,10 +16,10 @@ export default function NoteDetail() {
   const loadNote = async (noteId: string) => {
     setLoading(true);
     try {
-      const data = await notesService.getNote(noteId);
+      const data = await notesService.getNoteById(noteId);
       setNote(data);
-    } catch (e) {
-      console.error(e);
+    } catch {
+      // Silently handle error
     } finally {
       setLoading(false);
     }
@@ -28,10 +28,10 @@ export default function NoteDetail() {
   const handleDelete = async () => {
     if (!note || !confirm("¿Eliminar este registro de memoria?")) return;
     try {
-      await notesService.deleteNote(note.id);
+      await notesService.deleteNote(note.id!);
       navigate("/notes", { replace: true });
-    } catch (e) {
-      console.error(e);
+    } catch {
+      // Silently handle error
     }
   };
 

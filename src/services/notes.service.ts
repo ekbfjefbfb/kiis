@@ -85,6 +85,13 @@ export class NotesService {
   }
 
   /**
+   * Eliminar nota existente
+   */
+  async deleteNote(noteId: string): Promise<void> {
+    await apiService.delete(`/api/class-notes/${noteId}`);
+  }
+
+  /**
    * Exporta a documento APA 7
    */
   async generateApa7Pdf(payload: {
