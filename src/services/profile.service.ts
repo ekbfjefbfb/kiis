@@ -1,5 +1,11 @@
 import { apiService } from './api.service';
 
+export interface UpdateProfileRequest {
+  username?: string;
+  full_name?: string;
+  phone_number?: string;
+}
+
 export interface UserProfile {
   id: string;
   username: string;
@@ -21,6 +27,13 @@ class ProfileService {
    */
   async getProfile(): Promise<UserProfile> {
     return await apiService.get<UserProfile>('/api/profile/me');
+  }
+
+  /**
+   * Actualizar perfil del usuario (username, full_name, phone_number)
+   */
+  async updateProfile(data: UpdateProfileRequest): Promise<UserProfile> {
+    return await apiService.put<UserProfile>('/api/profile/me', data);
   }
 
   /**

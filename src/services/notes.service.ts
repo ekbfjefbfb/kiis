@@ -1,5 +1,12 @@
 import { apiService } from './api.service';
 
+export interface UpdateNoteRequest {
+  title?: string;
+  transcript?: string;
+  summary?: string;
+  key_points?: string[];
+}
+
 export interface BackendTask {
   id?: string;
   text: string;
@@ -45,6 +52,13 @@ export class NotesService {
    */
   async getNoteById(noteId: string): Promise<BackendNote> {
     return await apiService.get<BackendNote>(`/api/class-notes/${noteId}`);
+  }
+
+  /**
+   * Editar nota existente (title, transcript, summary, key_points)
+   */
+  async updateNote(noteId: string, data: UpdateNoteRequest): Promise<BackendNote> {
+    return await apiService.put<BackendNote>(`/api/class-notes/${noteId}`, data);
   }
 
   /**

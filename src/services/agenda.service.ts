@@ -135,7 +135,30 @@ class AgendaService {
   // ========== HTTP API ==========
 
   /**
-   * Crear nueva sesión de clase
+   * Listar sesiones con filtros opcionales
+   */
+  async listSessions(filters?: { status?: 'active' | 'done'; limit?: number; offset?: number }): Promise<AgendaSession[]> {
+    const params: Record<string, string> = {};
+    if (filters?.status) params['status'] = filters.status;
+    if (filters?.limit !== undefined) params['limit'] = String(filters.limit);
+    if (filters?.offset !== undefined) params['offset'] = String(filters.offset);
+    
+    const queryString = Object.keys(params).length > 0 
+      ? '?' + new URLSearchParams(params).toString() 
+      : '';
+    
+    const response = await apiService.get<{ sessions: AgendaSession[] }>(`/api/agenda/sessions${queryString}`);
+    return response.sessions || [];
+  }
+
+  /**
+   * Eliminar sesión completa (sesión + items + chunks)
+   */
+  async deleteSession(sessionId: string): Promise<void> {
+    await apiService.delete(`/api/agenda/sessions/${sessionId}`);
+  }
+
+  /**
    */
   async createSession(data: CreateSessionRequest): Promise<AgendaSession> {
     return await apiService.post<AgendaSession>('/api/agenda/sessions', data);
