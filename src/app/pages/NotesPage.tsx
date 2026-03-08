@@ -1,13 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { 
-  ChevronLeft, Search, ChevronRight, 
-  Sparkles, Plus
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, Plus } from "lucide-react";
 
 export default function NotesPage() {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
 
   const notes = [
     { id: 1, date: "02 MAR", title: "Resumen: Teoría de Sistemas", subject: "AGENDA", summary: "Puntos clave de la clase de hoy..." },
@@ -28,18 +24,6 @@ export default function NotesPage() {
       </header>
 
       <main className="flex-1 flex flex-col px-8 pt-4 overflow-hidden">
-        <div className="relative mb-10 group">
-          <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600">
-            <Search size={20} />
-          </div>
-          <input 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar en la memoria..."
-            className="w-full h-16 bg-zinc-900/40 border border-white/5 rounded-[2rem] pl-16 pr-6 text-lg font-medium focus:outline-none focus:border-white/10 focus:bg-zinc-900/60 transition-all placeholder:text-zinc-700"
-          />
-        </div>
-
         <section className="flex-1 overflow-y-auto scrollbar-hide pb-20">
           <div className="space-y-4">
             {notes.map((note) => (
