@@ -31,7 +31,7 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] safe-area-inset overflow-hidden">
+    <div className="min-h-screen bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] overflow-hidden">
       {/* Header with Search Input */}
       <div className="bg-zinc-900/50 px-4 pt-12 pb-4 border-b border-white/5 sticky top-0 z-10 w-full backdrop-blur-lg">
         <div className="flex items-center gap-3 mb-4">

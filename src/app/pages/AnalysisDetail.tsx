@@ -40,7 +40,7 @@ export default function AnalysisDetail() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] safe-area-inset overflow-hidden">
+    <div className="min-h-screen bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] overflow-hidden">
       {/* Header */}
       <header className="sticky top-0 bg-black/95 backdrop-blur-sm z-10 py-6 -mx-6 px-6 border-b border-white/5">
         <div className="flex items-center gap-4">

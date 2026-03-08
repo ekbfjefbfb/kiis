@@ -88,7 +88,7 @@ export default function Dashboard() {
   }, [navigate]);
 
   return (
-    <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] safe-area-inset overflow-hidden">
+    <div className="min-h-screen bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] overflow-hidden">
       <header className="px-8 pt-16 pb-6 flex items-end justify-between">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 mb-2">Mi Agenda</p>

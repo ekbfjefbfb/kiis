@@ -37,7 +37,7 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black text-white font-['Plus_Jakarta_Sans'] safe-area-inset overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-black text-white font-['Plus_Jakarta_Sans'] overflow-hidden flex flex-col">
       <main className="flex-1 flex flex-col items-center justify-center px-10 text-center relative">
         {/* Decorative ambient glow */}
         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-[120px] opacity-20 transition-colors duration-1000 ${

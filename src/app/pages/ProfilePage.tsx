@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import { 
-  ChevronLeft, User, Mail, Shield, LogOut, 
+  ChevronLeft, ChevronRight, User, Mail, Shield, LogOut, 
   Download, Bell, Camera, Loader2
 } from "lucide-react";
 import { usePWAInstall } from "../../hooks/usePWAInstall";
@@ -52,7 +52,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] safe-area-inset overflow-hidden">
+    <div className="min-h-screen bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] overflow-hidden">
       <header className="px-8 pt-16 pb-6 flex items-center justify-between">
         <button onClick={() => navigate(-1)} className="w-10 h-10 -ml-2 flex items-center justify-center rounded-full active:bg-white/10 transition-colors">
           <ChevronLeft size={24} />

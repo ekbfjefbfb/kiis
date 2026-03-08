@@ -36,20 +36,20 @@ export default function NoteDetail() {
   };
 
   if (loading) return (
-    <div className="fixed inset-0 bg-black flex items-center justify-center">
+    <div className="min-h-screen bg-black flex items-center justify-center">
       <div className="w-8 h-8 border-2 border-white/5 border-t-white rounded-full animate-spin" />
     </div>
   );
 
   if (!note) return (
-    <div className="fixed inset-0 bg-black text-white flex flex-col items-center justify-center px-10 text-center">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-10 text-center">
       <h1 className="text-3xl font-extrabold tracking-tighter italic mb-6">No encontrado.</h1>
       <button onClick={() => navigate(-1)} className="w-full h-18 bg-white text-black rounded-[2rem] font-bold">Volver</button>
     </div>
   );
 
   return (
-    <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] safe-area-inset overflow-hidden">
+    <div className="min-h-screen bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] overflow-hidden">
       <header className="px-8 pt-16 pb-6 flex items-center justify-between">
         <button onClick={() => navigate(-1)} className="w-10 h-10 -ml-2 flex items-center justify-center rounded-full active:bg-white/10 transition-colors">
           <ChevronLeft size={24} />

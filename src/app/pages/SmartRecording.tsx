@@ -138,7 +138,7 @@ export default function SmartRecording() {
   // UI: Ready Phase
   if (phase === 'ready') {
     return (
-      <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] safe-area-inset">
+      <div className="min-h-screen bg-black text-white flex flex-col font-['Plus_Jakarta_Sans']">
         <header className="px-8 pt-16 pb-6 flex items-center">
           <button onClick={() => navigate("/")} className="w-10 h-10 -ml-2 flex items-center justify-center rounded-full active:bg-white/10 transition-colors" aria-label="Volver al inicio">
             <ChevronLeft size={24} />
@@ -182,7 +182,7 @@ export default function SmartRecording() {
   // UI: Recording Phase
   if (phase === 'recording') {
     return (
-      <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] overflow-hidden">
+      <div className="min-h-screen bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-red-900/10 to-transparent pointer-events-none" />
         
         <header className="relative z-10 px-8 pt-16 flex flex-col items-center text-center">
@@ -235,7 +235,7 @@ export default function SmartRecording() {
   // UI: Processing Phase
   if (phase === 'processing') {
     return (
-      <div className="fixed inset-0 bg-black text-white flex flex-col items-center justify-center px-12 text-center font-['Plus_Jakarta_Sans']">
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-12 text-center font-['Plus_Jakarta_Sans']">
         <div className="mb-10 relative">
           <div className="absolute inset-0 bg-indigo-500/20 blur-3xl animate-pulse" />
           <Loader2 size={64} className="text-indigo-500 animate-spin relative z-10" strokeWidth={1.5} />
@@ -266,7 +266,7 @@ export default function SmartRecording() {
     const summary = agendaState?.summary || "Resumen procesado con éxito";
 
     return (
-      <div className="fixed inset-0 bg-black text-white px-8 pt-20 pb-12 flex flex-col font-['Plus_Jakarta_Sans'] overflow-y-auto">
+      <div className="min-h-screen bg-black text-white px-8 pt-20 pb-12 flex flex-col font-['Plus_Jakarta_Sans'] overflow-y-auto">
         <header className="mb-12">
           <div className="w-14 h-14 bg-green-500/10 rounded-2xl flex items-center justify-center mb-6">
             <CheckCircle2 size={32} className="text-green-500" />

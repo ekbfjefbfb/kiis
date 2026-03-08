@@ -309,7 +309,7 @@ export default function AgendaAssistant() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] overflow-hidden">
+    <div className="min-h-screen bg-black text-white flex flex-col font-['Plus_Jakarta_Sans'] overflow-hidden">
       <header className="flex-none px-6 pt-10 pb-4 border-b border-white/5 bg-black/80 backdrop-blur-xl z-20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
